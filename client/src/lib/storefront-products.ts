@@ -1,8 +1,9 @@
-export const STOREFRONT_ID = "da1aecbc-a969-4b93-a5d3-40e7c80c8987";
-export const STOREFRONT_API_BASE = `https://suite.arclabtechnology.com/api/public/storefronts/${STOREFRONT_ID}`;
-const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
+import { getApiBase } from "@/lib/config";
+import type { StorefrontConfig, ShippingZone } from "@/lib/config";
 
 type StorefrontProductStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+
+const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 
 type ProductImage = string | {
   id?: string | number;
@@ -41,6 +42,31 @@ export type StorefrontProduct = {
   variants?: StorefrontVariant[] | null;
 };
 
+export type OrderItem = {
+  variantId: string;
+  quantity: number;
+};
+
+export type OrderSubmission = {
+  customerName: string;
+  phone: string;
+  address: string;
+  items: OrderItem[];
+  shippingZoneId?: string;
+  notes?: string;
+};
+
+export type OrderResult = {
+  success: boolean;
+  orderId: string;
+  total: number;
+  shipping: number;
+  message: string;
+};
+
+// Re-export types from config for convenience
+export type { StorefrontConfig, ShippingZone };
+
 export function getProductGallery(product: Pick<StorefrontProduct, "image_urls" | "images" | "image_url">) {
   if (product.image_urls?.length) {
     return product.image_urls.filter(Boolean);
@@ -65,7 +91,6 @@ export function getProductGallery(product: Pick<StorefrontProduct, "image_urls" 
 
 export function getProductImage(product: Pick<StorefrontProduct, "image_urls" | "images" | "image_url">) {
   const [firstImage] = getProductGallery(product);
-
   return firstImage || "";
 }
 
@@ -154,8 +179,10 @@ export function getProductNumericId(product: Pick<StorefrontProduct, "id" | "slu
   return Array.from(product.slug).reduce((hash, char) => hash + char.charCodeAt(0), 0);
 }
 
+// ─── API Fetchers ────────────────────────────────────────────
+
 export async function fetchStorefrontProducts() {
-  const res = await fetch(`${STOREFRONT_API_BASE}/products`);
+  const res = await fetch(`${getApiBase()}/products`);
 
   if (!res.ok) {
     throw new Error("Could not load products.");
@@ -166,7 +193,7 @@ export async function fetchStorefrontProducts() {
 }
 
 export async function fetchStorefrontProduct(slug: string) {
-  const res = await fetch(`${STOREFRONT_API_BASE}/products/${slug}`);
+  const res = await fetch(`${getApiBase()}/products/${slug}`);
 
   if (!res.ok) {
     throw new Error("Could not load product.");
@@ -174,4 +201,41 @@ export async function fetchStorefrontProduct(slug: string) {
 
   const data = await res.json();
   return (data.product || null) as StorefrontProduct | null;
+}
+
+export async function fetchStorefrontConfig(): Promise<StorefrontConfig> {
+  const res = await fetch(`${getApiBase()}/config`);
+
+  if (!res.ok) {
+    throw new Error("Could not load storefront config.");
+  }
+
+  return res.json();
+}
+
+export async function fetchInventory(productIds: number[]) {
+  const ids = productIds.join(",");
+  const res = await fetch(`${getApiBase()}/inventory?ids=${ids}`);
+
+  if (!res.ok) {
+    throw new Error("Could not load inventory.");
+  }
+
+  return res.json();
+}
+
+export async function submitOrder(data: OrderSubmission): Promise<OrderResult> {
+  const res = await fetch(`${getApiBase()}/orders`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Could not place order.");
+  }
+
+  return result as OrderResult;
 }

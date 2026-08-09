@@ -4,11 +4,11 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { StorefrontProvider } from "@/contexts/storefront-context";
 import { CartProvider } from "@/contexts/cart-context";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ProductPage from "@/pages/product";
-import BookingPage from "@/pages/booking";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useRef } from "react";
 
@@ -86,8 +86,6 @@ function Router() {
   }, []);
 
   useEffect(() => {
-    // On a full page load (refresh), the browser has already restored the
-    // scroll position — forcing it to 0 here causes a visible flick to the hero.
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
       currentLocation.current = location;
@@ -101,7 +99,7 @@ function Router() {
 
     const restoreScroll = () => window.scrollTo({ top: targetY, left: 0, behavior: "auto" });
     const timeoutIds = [80, 240, 520, 900].map((delay) =>
-      window.setTimeout(restoreScroll, delay),
+      window.setTimeout(restoreScroll, delay)
     );
 
     return () => {
@@ -122,7 +120,6 @@ function Router() {
             <Home />
           </motion.div>
         </Route>
-        <Route path="/booking" component={BookingPage} />
         <Route path="/product/:id">
           {(params) => (
             <motion.div
@@ -154,12 +151,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </CartProvider>
+      <StorefrontProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </CartProvider>
+      </StorefrontProvider>
     </QueryClientProvider>
   );
 }

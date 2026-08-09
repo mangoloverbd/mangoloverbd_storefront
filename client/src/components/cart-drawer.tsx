@@ -1,10 +1,11 @@
 import { useCart } from "@/contexts/cart-context";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X, ShoppingBag, ArrowDownRight } from "lucide-react";
+import { Minus, Plus, X, ArrowDownRight } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useMemo, useState, useEffect } from "react";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
+import { useStorefront } from "@/contexts/storefront-context";
 
 const cartEase = [0.22, 1, 0.36, 1] as const;
 
@@ -177,8 +178,8 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                     Subtotal
                                 </span>
                                 {subtotal > 0 ? (
-                                    <span className="font-garet text-xl font-bold text-black max-md:text-white md:text-2xl">
-                                        BDT {subtotal.toLocaleString()}
+                                    <span className="text-xl font-bold text-black max-md:text-white md:text-2xl">
+                                        ৳{subtotal.toLocaleString()}
                                     </span>
                                 ) : (
                                     <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">
@@ -244,7 +245,11 @@ export default function CartDrawer() {
             images: items.slice(0, 2).map((item) => ({
                 src: item.image,
                 alt: item.title
-            }))
+            })),
+            items: items.map((item) => ({
+                variantId: item.variantId || String(item.productId),
+                quantity: item.quantity,
+            })),
         };
     }, [items]);
 
@@ -276,7 +281,7 @@ export default function CartDrawer() {
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetContent
                         side="right"
-                        className="top-0 bottom-0 w-full h-[100dvh] supports-[height:100dvh]:h-dvh max-h-screen overflow-hidden [&>button]:hidden bg-brand-ivory border-l border-black/5 md:w-[500px] p-0"
+                        className="top-0 bottom-0 w-full h-[100dvh] supports-[height:100dvh]:h-dvh max-h-screen overflow-hidden [&>button]:hidden bg-[var(--brand-background)] border-l border-black/5 md:w-[500px] p-0"
                     >
                         <CartInnerContent {...innerProps} />
                     </SheetContent>
