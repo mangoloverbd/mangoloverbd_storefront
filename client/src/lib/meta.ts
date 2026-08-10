@@ -29,7 +29,7 @@ function getFbcFromLocation() {
 
 function getBrowserId() {
   if (typeof window === "undefined") return "";
-  const storageKey = "storefront-meta-browser-id";
+  const storageKey = "stepprs-meta-browser-id";
   const existing = window.localStorage.getItem(storageKey);
   if (existing) return existing;
 

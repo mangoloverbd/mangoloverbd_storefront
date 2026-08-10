@@ -1,12 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
-import { getStorefrontHandle } from "@/lib/config";
 
 export interface CartItem {
     id: string;
     productId: number;
-    variantId: string;
     title: string;
     price: string;
     image: string;
@@ -16,7 +14,7 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: { id: number; title: string; price: string; image: string; variantId: string }, size: string, quantity?: number) => void;
+    addToCart: (product: { id: number; title: string; price: string; image: string }, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
     clearCart: () => void;
@@ -27,55 +25,51 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-function getCartStorageKey(): string {
-    const handle = getStorefrontHandle() || "default";
-    return `storefront-cart:${handle}`;
-}
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
 
     // Load cart from localStorage on mount
     useEffect(() => {
-        try {
-            const savedCart = localStorage.getItem(getCartStorageKey());
-            if (savedCart) {
+        const savedCart = localStorage.getItem('stepprs-cart');
+        if (savedCart) {
+            try {
                 setItems(JSON.parse(savedCart));
+            } catch (e) {
+                console.error('Failed to parse cart from localStorage', e);
             }
-        } catch (e) {
-            console.error('Failed to parse cart from localStorage', e);
         }
     }, []);
 
     // Save cart to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem(getCartStorageKey(), JSON.stringify(items));
+        localStorage.setItem('stepprs-cart', JSON.stringify(items));
     }, [items]);
 
-    const addToCart = useCallback((
-        product: { id: number; title: string; price: string; image: string; variantId: string },
+    const addToCart = (
+        product: { id: number; title: string; price: string; image: string },
         size: string,
         quantity: number = 1
     ) => {
-        const itemId = `${product.id}-${product.variantId}-${size}`;
+        const itemId = `${product.id}-${size}`;
 
         setItems(prevItems => {
             const existingItem = prevItems.find(item => item.id === itemId);
 
             if (existingItem) {
+                // Update quantity if item already exists
                 return prevItems.map(item =>
                     item.id === itemId
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             } else {
+                // Add new item
                 return [
                     ...prevItems,
                     {
                         id: itemId,
                         productId: product.id,
-                        variantId: product.variantId,
                         title: product.title,
                         price: product.price,
                         image: product.image,
@@ -86,6 +80,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
         });
 
+        // Open cart drawer after adding
         setIsOpen(true);
         trackMerchantSuiteEvent("cart");
 
@@ -99,19 +94,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             currency: "BDT",
             value,
             content_type: "product",
-            content_ids: [String(product.variantId || product.id)],
-            contents: [{ id: String(product.variantId || product.id), quantity, item_price: value }],
+            content_ids: [String(product.id)],
+            contents: [{ id: String(product.id), quantity, item_price: value }],
           },
         });
-    }, []);
+    };
 
-    const removeFromCart = useCallback((itemId: string) => {
+    const removeFromCart = (itemId: string) => {
         setItems(prevItems => prevItems.filter(item => item.id !== itemId));
-    }, []);
+    };
 
-    const updateQuantity = useCallback((itemId: string, quantity: number) => {
+    const updateQuantity = (itemId: string, quantity: number) => {
         if (quantity <= 0) {
-            setItems(prevItems => prevItems.filter(item => item.id !== itemId));
+            removeFromCart(itemId);
             return;
         }
 
@@ -120,11 +115,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 item.id === itemId ? { ...item, quantity } : item
             )
         );
-    }, []);
+    };
 
-    const clearCart = useCallback(() => {
+    const clearCart = () => {
         setItems([]);
-    }, []);
+    };
 
     const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
