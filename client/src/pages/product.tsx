@@ -98,6 +98,24 @@ function formatTimelineDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function ProductSkeleton() {
+  return (
+    <div className="min-h-screen bg-brand-ivory">
+      <div className="grid grid-cols-1 lg:grid-cols-12">
+        <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
+          <div className="mx-auto aspect-square w-full max-w-[1080px] animate-pulse rounded-[8px] bg-[#ededed]" />
+        </div>
+        <div className="lg:col-span-5 flex flex-col gap-5 bg-brand-ivory p-8 md:p-16">
+          <div className="h-9 w-2/3 animate-pulse rounded bg-[#ededed]" />
+          <div className="h-6 w-1/3 animate-pulse rounded bg-[#ededed]" />
+          <div className="mt-4 h-12 w-1/2 animate-pulse rounded-[4px] bg-[#ededed]" />
+          <div className="mt-8 h-12 w-full animate-pulse rounded-[4px] bg-black/10" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
   const { addToCart } = useCart();
@@ -157,6 +175,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const gallery = getProductGallery(product);
   const displayImage = getProductImage(product) || productImage;
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
+  const isLoading = !merchantAvailabilityKnown && !cachedProduct;
   const compareAtAmount = Number(product.compare_at_price);
 
   const verifyOrderable = async () => {
@@ -212,6 +231,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [isFetched, merchantProduct, slug]);
 
   useEffect(() => {
+    if (isLoading) return;
     const eventId = createEventId();
     trackMetaEvent({
       eventName: "ViewContent",
@@ -279,6 +299,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         price: selectedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
       };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <ProductSkeleton />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
