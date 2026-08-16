@@ -155,8 +155,18 @@ export function getProductNumericId(product: Pick<StorefrontProduct, "id" | "slu
   return Array.from(product.slug).reduce((hash, char) => hash + char.charCodeAt(0), 0);
 }
 
+// Free ngrok tunnels return an HTML "visit site" interstitial to browser
+// requests, which breaks JSON parsing. This header skips that interstitial so
+// the storefront can read the Suite's API. Harmless once the Suite is on a
+// real domain.
+const STOREFRONT_FETCH_HEADERS: Record<string, string> = {
+  "ngrok-skip-browser-warning": "true",
+};
+
 export async function fetchStorefrontProducts() {
-  const res = await fetch(`${STOREFRONT_API_BASE}/products`);
+  const res = await fetch(`${STOREFRONT_API_BASE}/products`, {
+    headers: STOREFRONT_FETCH_HEADERS,
+  });
 
   if (!res.ok) {
     throw new Error("Could not load products.");
@@ -167,7 +177,9 @@ export async function fetchStorefrontProducts() {
 }
 
 export async function fetchStorefrontProduct(slug: string) {
-  const res = await fetch(`${STOREFRONT_API_BASE}/products/${slug}`);
+  const res = await fetch(`${STOREFRONT_API_BASE}/products/${slug}`, {
+    headers: STOREFRONT_FETCH_HEADERS,
+  });
 
   if (!res.ok) {
     throw new Error("Could not load product.");

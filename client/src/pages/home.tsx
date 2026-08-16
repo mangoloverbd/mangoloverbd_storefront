@@ -110,7 +110,7 @@ const specialProducts = [
   {
     id: 301,
     title: "Top 10",
-    slug: "stepprs-massage-insoles",
+    slug: "cocoa-brown-trouser",
     count: "10",
     price: "৳ 1,290.00",
     sizeLabel: "Default",
@@ -119,7 +119,7 @@ const specialProducts = [
   {
     id: 302,
     title: "Accessories",
-    slug: "stepprs-massage-insoles",
+    slug: "clean-white-trouser",
     count: "12",
     price: "৳ 890.00",
     sizeLabel: "Default",
@@ -128,7 +128,7 @@ const specialProducts = [
   {
     id: 303,
     title: "Bottoms",
-    slug: "stepprs-massage-insoles",
+    slug: "black-high-leggings",
     count: "08",
     price: "৳ 1,190.00",
     sizeLabel: "Default",
