@@ -4,137 +4,15 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import {
+  fetchStorefrontProducts,
+  getProductImage,
+  formatProductPrice,
+  type StorefrontProduct,
+} from "@/lib/storefront-products";
 
-const latestDropProducts = [
-  {
-    title: "Linen Baggy Trouser - Clean White",
-    slug: "linen-baggy-trouser-clean-white",
-    price: "৳ 799.00",
-    image: "/new1.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Earthy Olive",
-    slug: "linen-baggy-trouser-earthy-olive",
-    price: "৳ 799.00",
-    image: "/new2.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Black",
-    slug: "linen-baggy-trouser-black",
-    price: "৳ 799.00",
-    image: "/new3.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Cocoa Brown",
-    slug: "linen-baggy-trouser-cocoa-brown",
-    price: "৳ 799.00",
-    image: "/new4.webp",
-  },
-];
-
-const whatsNewProducts = [
-  {
-    id: 201,
-    title: "Black Blazer Dress",
-    slug: "black-blazer-dress",
-    price: "৳ 1,690.00",
-    sizeLabel: "Default",
-    image: "/new1.webp",
-  },
-  {
-    id: 202,
-    title: "Black High Leggings",
-    slug: "black-high-leggings",
-    price: "৳ 990.00",
-    sizeLabel: "Default",
-    image: "/new2.webp",
-  },
-  {
-    id: 203,
-    title: "Clean White Trouser",
-    slug: "clean-white-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    image: "/new3.webp",
-  },
-  {
-    id: 204,
-    title: "Cocoa Brown Trouser",
-    slug: "cocoa-brown-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    image: "/new4.webp",
-  },
-];
-
-const justArrivedProducts = [
-  {
-    id: 101,
-    title: "Black Blazer Dress",
-    slug: "black-blazer-dress",
-    price: "৳ 1,690.00",
-    sizeLabel: "Default",
-    sizes: 5,
-    image: "/new1.webp",
-  },
-  {
-    id: 102,
-    title: "Black High Leggings",
-    slug: "black-high-leggings",
-    price: "৳ 990.00",
-    sizeLabel: "Default",
-    sizes: 4,
-    image: "/new2.webp",
-  },
-  {
-    id: 103,
-    title: "Clean White Trouser",
-    slug: "clean-white-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    sizes: 5,
-    image: "/new3.webp",
-  },
-  {
-    id: 104,
-    title: "Cocoa Brown Trouser",
-    slug: "cocoa-brown-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    sizes: 3,
-    image: "/new4.webp",
-  },
-];
-
-const specialProducts = [
-  {
-    id: 301,
-    title: "Top 10",
-    slug: "stepprs-massage-insoles",
-    count: "10",
-    price: "৳ 1,290.00",
-    sizeLabel: "Default",
-    image: "/new4.webp",
-  },
-  {
-    id: 302,
-    title: "Accessories",
-    slug: "stepprs-massage-insoles",
-    count: "12",
-    price: "৳ 890.00",
-    sizeLabel: "Default",
-    image: "/pexels-ekrulila-26316180_1.jpg",
-  },
-  {
-    id: 303,
-    title: "Bottoms",
-    slug: "stepprs-massage-insoles",
-    count: "08",
-    price: "৳ 1,190.00",
-    sizeLabel: "Default",
-    image: "/new3.webp",
-  },
-];
+// Product data is fetched live from the Merchant Suite inside the Home component below.
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -178,6 +56,28 @@ export default function Home() {
   const [essentialsRef, essentialsInView] = useReveal();
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
   const justArrivedGridRef = useRef<HTMLDivElement>(null);
+
+  const { data: merchantProducts = [] } = useQuery({
+    queryKey: ["merchant-suite-products-home"],
+    queryFn: fetchStorefrontProducts,
+  });
+
+  const toProductCard = (p: StorefrontProduct, i: number) => ({
+    id: typeof p.id === "number" ? p.id : i + 1,
+    title: p.name,
+    slug: p.slug,
+    price: formatProductPrice(p.price),
+    image: getProductImage(p) || "/new1.webp",
+    sizeLabel: String(p.variants?.[0]?.attributes?.size ?? "Default"),
+    sizes: p.variants?.length ?? 1,
+    count: String(p.variants?.length ?? 1),
+  });
+
+  const cards = merchantProducts.map(toProductCard);
+  const latestDropProducts = cards.slice(0, 4);
+  const whatsNewProducts = cards.slice(0, 4);
+  const justArrivedProducts = cards.slice(0, 4);
+  const specialProducts = cards.slice(0, 3);
 
   useEffect(() => {
     const grids = [whatsNewGridRef.current, justArrivedGridRef.current];
@@ -292,7 +192,7 @@ export default function Home() {
             ref={heroRef}
             className="relative min-h-[640px] w-full overflow-hidden bg-black md:min-h-[760px]"
           >
-            <Link href="/product/stepprs-massage-insoles" className="absolute inset-0 block">
+            <Link href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`} className="absolute inset-0 block">
               <img
                 src="/hero1.webp"
                 alt="Latest Fashion Drop"
@@ -324,7 +224,7 @@ export default function Home() {
               </motion.h1>
               <motion.div variants={reveal}>
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
                   className="mt-6 inline-flex w-fit items-center justify-center rounded-[4px] border-2 border-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.28em] text-white transition-colors hover:bg-white hover:text-black md:mt-10 md:px-7 md:py-3 md:text-base"
                 >
                   DISCOVER MORE
@@ -429,7 +329,7 @@ export default function Home() {
             </motion.h2>
 
             <Link
-              href="/product/stepprs-massage-insoles"
+              href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
             >
               Discover More
@@ -490,7 +390,7 @@ export default function Home() {
             </motion.h2>
 
             <Link
-              href="/product/stepprs-massage-insoles"
+              href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
             >
               VIEW ALL
@@ -579,7 +479,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
                   className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
                 >
                   EXPLORE THE EDIT
@@ -624,7 +524,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
                   className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
                 >
                   SHOP ESSENTIALS
@@ -653,7 +553,7 @@ export default function Home() {
               Our <span className="font-display italic text-[1.15em]">special</span> collections
             </motion.h2>
             <Link
-              href="/product/stepprs-massage-insoles"
+              href={`/product/${merchantProducts[0]?.slug ?? "stepprs-massage-insoles"}`}
               className="mt-8 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
             >
               EXPLORE ALL
@@ -672,7 +572,7 @@ export default function Home() {
               >
                 <div className="h-full">
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
-                    <Link href="/product/stepprs-massage-insoles" className="block h-full">
+                    <Link href={`/product/${product.slug}`} className="block h-full">
                       <img
                         src={product.image}
                         alt={product.title}
@@ -681,7 +581,7 @@ export default function Home() {
                       />
                     </Link>
                   </div>
-                  <Link href="/product/stepprs-massage-insoles" className="block px-0 pb-2 pt-5 text-center text-black md:pt-7">
+                  <Link href={`/product/${product.slug}`} className="block px-0 pb-2 pt-5 text-center text-black md:pt-7">
                     <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:text-xl md:tracking-[0.08em]">
                       {product.title}
                       <sup className="ml-0.5 text-xs font-medium tracking-[0.1em] text-black/50 align-super md:text-sm">
