@@ -21,6 +21,9 @@ export const orderRequestSchema = z.object({
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
+const MERCHANT_SUITE_URL = (process.env.MERCHANT_SUITE_URL ?? "https://suite.arclabtechnology.com").replace(/\/$/, "");
+const CUSTOM_ORDERS_API_KEY = process.env.CUSTOM_ORDERS_API_KEY ?? "stepprsbangladesh-098765";
+
 function createOrderRef() {
   const timestamp = Date.now().toString().slice(-8);
   const suffix = randomInt(100, 1000).toString();
@@ -33,11 +36,11 @@ export async function processOrder(order: OrderRequest) {
   let orderRef = "";
 
   try {
-    const response = await fetch("https://suite.arclabtechnology.com/api/custom-orders/webhook", {
+    const response = await fetch(`${MERCHANT_SUITE_URL}/api/custom-orders/webhook`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "stepprsbangladesh-098765"
+        "x-api-key": CUSTOM_ORDERS_API_KEY
       },
       body: JSON.stringify({
         // We no longer send order_id, the dashboard generates it!

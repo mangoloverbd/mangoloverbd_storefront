@@ -1,5 +1,6 @@
-export const STOREFRONT_ID = "da1aecbc-a969-4b93-a5d3-40e7c80c8987";
-export const STOREFRONT_API_BASE = `https://suite.arclabtechnology.com/api/public/storefronts/${STOREFRONT_ID}`;
+export const STOREFRONT_ID = import.meta.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
+const MERCHANT_SUITE_URL = (import.meta.env.VITE_MERCHANT_SUITE_URL ?? "https://suite.arclabtechnology.com").replace(/\/$/, "");
+export const STOREFRONT_API_BASE = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${STOREFRONT_ID}`;
 const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 
 type StorefrontProductStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;

@@ -58,6 +58,7 @@ export default defineConfig({
     strictPort: true,
   },
   root: path.resolve(import.meta.dirname, "client"),
+  envDir: import.meta.dirname,
   server: {
     host: "0.0.0.0",
     allowedHosts: true,

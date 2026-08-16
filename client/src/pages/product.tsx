@@ -128,7 +128,27 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug) || staticProduct;
   const product = merchantProduct || cachedProduct || generatedProduct;
-  const selectedBundle = staticBundles[selectedBundleIdx];
+  const bundles = (() => {
+    if (slug === "stepprs-massage-insoles") return staticBundles;
+    const variants = merchantProduct?.variants?.filter((variant) => {
+      if (variant.available === false) return false;
+      return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
+    });
+    if (variants?.length) {
+      return variants.map((variant, i) => {
+        const amount = Number.isFinite(Number(variant.price)) ? Number(variant.price) : Number(product.price) || 0;
+        return {
+          id: i + 1,
+          title: String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default"),
+          price: `৳${amount.toLocaleString()}`,
+          amount,
+        };
+      });
+    }
+    const base = Number(product.price) || 0;
+    return [{ id: 1, title: "Default", price: `৳${base.toLocaleString()}`, amount: base }];
+  })();
+  const selectedBundle = bundles[selectedBundleIdx] ?? bundles[0];
   const selectedVariant = merchantProduct?.variants?.[0] || null;
   const productImage = product.image_url || "";
   const merchantAvailabilityKnown = isFetched || isError;
@@ -156,6 +176,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   useEffect(() => {
     setCachedProduct(getCachedStorefrontProduct(window.localStorage, slug));
+  }, [slug]);
+
+  useEffect(() => {
+    setSelectedBundleIdx(0);
   }, [slug]);
 
   useEffect(() => {
@@ -355,7 +379,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     Select Bundle
                   </span>
                   <div className="grid grid-cols-3 gap-2 md:pt-3">
-                    {staticBundles.map((bundle, idx) => (
+                    {bundles.map((bundle, idx) => (
                       <button
                         key={bundle.id}
                         type="button"
