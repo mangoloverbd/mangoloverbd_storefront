@@ -292,7 +292,7 @@ export default function Home() {
             ref={heroRef}
             className="relative min-h-[640px] w-full overflow-hidden bg-black md:min-h-[760px]"
           >
-            <Link href="/product/stepprs-massage-insoles" className="absolute inset-0 block">
+            <Link href="/products" className="absolute inset-0 block">
               <img
                 src="/hero1.webp"
                 alt="Latest Fashion Drop"
@@ -324,7 +324,7 @@ export default function Home() {
               </motion.h1>
               <motion.div variants={reveal}>
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href="/products"
                   className="mt-6 inline-flex w-fit items-center justify-center rounded-[4px] border-2 border-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.28em] text-white transition-colors hover:bg-white hover:text-black md:mt-10 md:px-7 md:py-3 md:text-base"
                 >
                   DISCOVER MORE
@@ -429,7 +429,7 @@ export default function Home() {
             </motion.h2>
 
             <Link
-              href="/product/stepprs-massage-insoles"
+              href="/products"
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
             >
               Discover More
@@ -490,7 +490,7 @@ export default function Home() {
             </motion.h2>
 
             <Link
-              href="/product/stepprs-massage-insoles"
+              href="/products"
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
             >
               VIEW ALL
@@ -579,7 +579,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href="/products"
                   className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
                 >
                   EXPLORE THE EDIT
@@ -624,7 +624,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/product/stepprs-massage-insoles"
+                  href="/products"
                   className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
                 >
                   SHOP ESSENTIALS
