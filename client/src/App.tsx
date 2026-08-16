@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/cart-context";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import ProductPage from "@/pages/product";
+import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useRef } from "react";
@@ -122,6 +123,7 @@ function Router() {
             <Home />
           </motion.div>
         </Route>
+        <Route path="/products" component={ProductsPage} />
         <Route path="/booking" component={BookingPage} />
         <Route path="/product/:id">
           {(params) => (
