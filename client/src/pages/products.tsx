@@ -4,8 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import {
   fetchStorefrontProducts,
+  fetchStorefrontProductInventory,
   getProductImage,
   formatProductPrice,
+  mergeInventory,
+  STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 
@@ -15,10 +18,64 @@ const reveal = {
   visible: { filter: "blur(0)", transform: "translateY(0)", opacity: 1 },
 };
 
+function ProductCard({ product, index }: { product: StorefrontProduct; index: number }) {
+  const { data: inventory } = useQuery({
+    queryKey: ["merchant-suite-inventory", product.slug],
+    queryFn: () => fetchStorefrontProductInventory(product.slug),
+    enabled: Boolean(product.slug),
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
+  });
+  const merged = mergeInventory(product, inventory?.inventory) ?? product;
+  const image = getProductImage(merged);
+
+  return (
+    <motion.article
+      key={merged.slug}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-10%" }}
+      variants={reveal}
+      transition={{ ...transition, delay: Math.min(index * 0.04, 0.3) }}
+      className="group"
+    >
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
+        <Link href={`/product/${merged.slug}`} className="block h-full">
+          {image ? (
+            <img
+              src={image}
+              alt={merged.name}
+              loading="lazy"
+              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-[#ededed] text-[10px] uppercase tracking-[0.3em] text-black/30">
+              No image
+            </div>
+          )}
+          {merged.available === false && (
+            <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+              Sold out
+            </span>
+          )}
+        </Link>
+      </div>
+      <Link href={`/product/${merged.slug}`} className="block pb-2 pt-5 text-black md:pt-7">
+        <h3 className="text-base font-medium uppercase leading-tight tracking-[0.04em] md:text-xl md:tracking-[0.06em]">
+          {merged.name}
+        </h3>
+        <p className="mt-3 text-lg font-normal tracking-[0.01em] text-black md:text-xl">
+          {formatProductPrice(merged.price)}
+        </p>
+      </Link>
+    </motion.article>
+  );
+}
+
 export default function ProductsPage() {
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
   return (
@@ -54,50 +111,9 @@ export default function ProductsPage() {
 
         {products && products.length > 0 && (
           <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
-            {products.map((product: StorefrontProduct, index: number) => {
-              const image = getProductImage(product);
-              return (
-                <motion.article
-                  key={product.slug}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-10%" }}
-                  variants={reveal}
-                  transition={{ ...transition, delay: Math.min(index * 0.04, 0.3) }}
-                  className="group"
-                >
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
-                    <Link href={`/product/${product.slug}`} className="block h-full">
-                      {image ? (
-                        <img
-                          src={image}
-                          alt={product.name}
-                          loading="lazy"
-                          className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-[#ededed] text-[10px] uppercase tracking-[0.3em] text-black/30">
-                          No image
-                        </div>
-                      )}
-                      {product.available === false && (
-                        <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
-                          Sold out
-                        </span>
-                      )}
-                    </Link>
-                  </div>
-                  <Link href={`/product/${product.slug}`} className="block pb-2 pt-5 text-black md:pt-7">
-                    <h3 className="text-base font-medium uppercase leading-tight tracking-[0.04em] md:text-xl md:tracking-[0.06em]">
-                      {product.name}
-                    </h3>
-                    <p className="mt-3 text-lg font-normal tracking-[0.01em] text-black md:text-xl">
-                      {formatProductPrice(product.price)}
-                    </p>
-                  </Link>
-                </motion.article>
-              );
-            })}
+            {products.map((product: StorefrontProduct, index: number) => (
+              <ProductCard key={product.slug} product={product} index={index} />
+            ))}
           </div>
         )}
       </div>

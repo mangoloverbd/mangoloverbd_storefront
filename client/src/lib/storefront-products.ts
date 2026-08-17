@@ -3,6 +3,11 @@ const MERCHANT_SUITE_URL = (import.meta.env.VITE_MERCHANT_SUITE_URL ?? "https://
 export const STOREFRONT_API_BASE = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${STOREFRONT_ID}`;
 const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 
+// How often the storefront re-checks the Suite for stock/image/price changes.
+// The Suite's inventory feed purges its cache the moment stock changes, so a
+// fresh poll reflects an edit within roughly this window — Shopify-like sync.
+export const STOREFRONT_POLL_INTERVAL_MS = 8000;
+
 type StorefrontProductStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
 type ProductImage = string | {
@@ -179,6 +184,7 @@ export async function fetchStorefrontProducts() {
 export async function fetchStorefrontProduct(slug: string) {
   const res = await fetch(`${STOREFRONT_API_BASE}/products/${slug}`, {
     headers: STOREFRONT_FETCH_HEADERS,
+    cache: "no-store",
   });
 
   if (!res.ok) {
@@ -187,4 +193,57 @@ export async function fetchStorefrontProduct(slug: string) {
 
   const data = await res.json();
   return (data.product || null) as StorefrontProduct | null;
+}
+
+export type StorefrontInventoryVariant = {
+  available: boolean;
+  stock_quantity: number;
+};
+
+export type StorefrontInventoryEntry = {
+  available: boolean;
+  stock_quantity: number;
+  variants: Record<string, StorefrontInventoryVariant>;
+};
+
+export type StorefrontProductInventory = {
+  inventory: StorefrontInventoryEntry | null;
+  as_of: string;
+};
+
+export async function fetchStorefrontProductInventory(slug: string) {
+  const res = await fetch(`${STOREFRONT_API_BASE}/products/${encodeURIComponent(slug)}/inventory`, {
+    headers: STOREFRONT_FETCH_HEADERS,
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Could not load inventory.");
+  }
+
+  const data = (await res.json()) as StorefrontProductInventory;
+  return data;
+}
+
+// Overlay the Suite's real-time stock truth (from the inventory feed) onto a
+// catalog product. Variant stock is keyed by variant id. Safe to call with nulls.
+export function mergeInventory(
+  product: StorefrontProduct | null | undefined,
+  entry: StorefrontInventoryEntry | null | undefined,
+): StorefrontProduct | null {
+  if (!product) return null;
+  if (!entry) return product;
+
+  const mergedVariants = product.variants?.map((variant) => {
+    const inv = entry.variants[String(variant.id)];
+    if (!inv) return variant;
+    return { ...variant, available: inv.available, stock_quantity: inv.stock_quantity };
+  });
+
+  return {
+    ...product,
+    available: entry.available,
+    stock_quantity: entry.stock_quantity,
+    variants: mergedVariants ?? product.variants,
+  };
 }

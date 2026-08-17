@@ -3,16 +3,84 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
+  fetchStorefrontProductInventory,
   formatProductPrice,
   getProductImage,
   hasPublishedProducts,
+  mergeInventory,
+  STOREFRONT_POLL_INTERVAL_MS,
+  type StorefrontProduct,
 } from "@/lib/storefront-products";
 
-export default function ProductGrid() {
+function ProductCard({ p }: { p: StorefrontProduct }) {
   const [, setLocation] = useLocation();
+  const { data: inventory } = useQuery({
+    queryKey: ["merchant-suite-inventory", p.slug],
+    queryFn: () => fetchStorefrontProductInventory(p.slug),
+    enabled: Boolean(p.slug),
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
+  });
+  const product = mergeInventory(p, inventory?.inventory) ?? p;
+  const image = getProductImage(product);
+
+  return (
+    <motion.div
+      key={p.id || p.slug}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
+      onClick={() => setLocation(`/product/${product.slug}`)}
+      className="group flex cursor-pointer flex-col bg-brand-ivory"
+    >
+      {/* Image */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
+        {image ? (
+          <img
+            src={image}
+            className="h-full w-full object-contain p-8 mix-blend-multiply transition-transform duration-1000 group-hover:scale-105 md:p-12"
+            alt={product.name}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
+            No image
+          </div>
+        )}
+        {product.available === false && (
+          <span className="absolute left-3 top-3 bg-neutral-500/70 px-2 py-1 text-[8px] font-bold uppercase tracking-[0.3em] text-white">
+            Sold out
+          </span>
+        )}
+        <div className="absolute bottom-3 right-3 opacity-0 transition-all duration-500 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100">
+          <span className="bg-black/70 px-2.5 py-1 text-[7px] uppercase tracking-[0.4em] font-medium text-white backdrop-blur-sm md:text-[8px]">
+            View
+          </span>
+        </div>
+      </div>
+
+      {/* Product Info */}
+      <div className="px-3 md:px-0 pt-3 pb-4 md:pt-5 md:pb-8 border-t border-black/[0.07] flex flex-col gap-1.5">
+        <h3 className="text-[0.85rem] md:text-2xl font-display font-light uppercase tracking-tight leading-tight text-black">
+          {product.name}
+        </h3>
+        <div className="flex items-center justify-between">
+          <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium">
+            {formatProductPrice(product.price)}
+          </span>
+          <span className="text-[7px] md:text-[9px] uppercase tracking-[0.35em] font-medium opacity-20">
+            {product.available === false ? "Unavailable" : `${product.stock_quantity ?? 0} in stock`}
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default function ProductGrid() {
   const { data: products = [], isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products"],
     queryFn: fetchStorefrontProducts,
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
   return (
@@ -61,56 +129,9 @@ export default function ProductGrid() {
             md:gap-6 lg:gap-8 md:bg-transparent md:px-16 md:pt-12 md:pb-0
           "
         >
-          {products.map((p, i) => {
-            const image = getProductImage(p);
-
-            return (
-              <motion.div
-                key={p.id || p.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: i * 0.1 }}
-                onClick={() => setLocation(`/product/${p.slug}`)}
-                className="group flex cursor-pointer flex-col bg-brand-ivory"
-              >
-                {/* Image */}
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
-                  {image ? (
-                    <img
-                      src={image}
-                      className="h-full w-full object-contain p-8 mix-blend-multiply transition-transform duration-1000 group-hover:scale-105 md:p-12"
-                      alt={p.name}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
-                      No image
-                    </div>
-                  )}
-                  <div className="absolute bottom-3 right-3 opacity-0 transition-all duration-500 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="bg-black/70 px-2.5 py-1 text-[7px] uppercase tracking-[0.4em] font-medium text-white backdrop-blur-sm md:text-[8px]">
-                      View
-                    </span>
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div className="px-3 md:px-0 pt-3 pb-4 md:pt-5 md:pb-8 border-t border-black/[0.07] flex flex-col gap-1.5">
-                  <h3 className="text-[0.85rem] md:text-2xl font-display font-light uppercase tracking-tight leading-tight text-black">
-                    {p.name}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium">
-                      {formatProductPrice(p.price)}
-                    </span>
-                    <span className="text-[7px] md:text-[9px] uppercase tracking-[0.35em] font-medium opacity-20">
-                      {p.available === false ? "Unavailable" : `${p.stock_quantity ?? 0} in stock`}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+          {products.map((p) => (
+            <ProductCard key={p.id || p.slug} p={p} />
+          ))}
         </div>
       )}
 

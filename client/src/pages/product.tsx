@@ -11,14 +11,17 @@ import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { Counter } from "@/components/ui/animated-counter";
 import {
   fetchStorefrontProduct,
+  fetchStorefrontProductInventory,
   findGeneratedStorefrontProduct,
   getCachedStorefrontProduct,
   getProductGallery,
   getProductImage,
   getProductNumericId,
   isProductOrderable,
+  mergeInventory,
   removeCachedStorefrontProduct,
   setCachedStorefrontProduct,
+  STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
@@ -142,13 +145,21 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
     enabled: Boolean(slug),
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
+  });
+
+  const { data: merchantInventory } = useQuery({
+    queryKey: ["merchant-suite-inventory", slug],
+    queryFn: () => fetchStorefrontProductInventory(slug),
+    enabled: Boolean(slug),
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
   const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug) || staticProduct;
-  const product = merchantProduct || cachedProduct || generatedProduct;
+  const product = mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
   const bundles = (() => {
     if (slug === "stepprs-massage-insoles") return staticBundles;
-    const variants = merchantProduct?.variants?.filter((variant) => {
+    const variants = product?.variants?.filter((variant) => {
       if (variant.available === false) return false;
       return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
     });
@@ -167,10 +178,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     return [{ id: 1, title: "Default", price: `৳${base.toLocaleString()}`, amount: base }];
   })();
   const selectedBundle = bundles[selectedBundleIdx] ?? bundles[0];
-  const selectedVariant = merchantProduct?.variants?.[0] || null;
+  const selectedVariant = product?.variants?.[0] || null;
   const productImage = product.image_url || "";
   const merchantAvailabilityKnown = isFetched || isError;
-  const merchantUnavailable = merchantAvailabilityKnown && (!merchantProduct || !isProductOrderable(merchantProduct));
+  const merchantUnavailable = merchantAvailabilityKnown && (!merchantProduct || !isProductOrderable(product));
   const isUnavailable = availabilityBlocked || merchantUnavailable;
   const gallery = getProductGallery(product);
   const displayImage = getProductImage(product) || productImage;
@@ -185,7 +196,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
     if (!merchantAvailabilityKnown) {
       const result = await refetch();
-      const orderable = isProductOrderable(result.data);
+      const orderable = isProductOrderable(mergeInventory(result.data, merchantInventory?.inventory));
       setAvailabilityBlocked(!orderable);
       return orderable;
     }
