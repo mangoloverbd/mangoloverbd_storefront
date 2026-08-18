@@ -2,8 +2,12 @@ import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
 
-const storefrontId = "da1aecbc-a969-4b93-a5d3-40e7c80c8987";
-const storefrontProductsUrl = `https://suite.arclabtechnology.com/api/public/storefronts/${storefrontId}/products`;
+const storefrontId = process.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
+const MERCHANT_SUITE_URL = (process.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+if (!MERCHANT_SUITE_URL) {
+  throw new Error("VITE_MERCHANT_SUITE_URL environment variable is not set");
+}
+const storefrontProductsUrl = `${MERCHANT_SUITE_URL}/api/public/storefronts/${storefrontId}/products`;
 const generatedProductsFile = "client/src/lib/generated-storefront-products.ts";
 
 const productSlugs = [

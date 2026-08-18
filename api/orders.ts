@@ -86,7 +86,10 @@ async function processOrder(order: OrderRequest) {
   let orderRef = "";
 
   try {
-    const merchantSuiteUrl = (process.env.MERCHANT_SUITE_URL ?? "https://suite.arclabtechnology.com").replace(/\/$/, "");
+    const merchantSuiteUrl = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+    if (!merchantSuiteUrl) {
+      throw new Error("MERCHANT_SUITE_URL environment variable is not set");
+    }
     const customOrdersApiKey = process.env.CUSTOM_ORDERS_API_KEY ?? "stepprsbangladesh-098765";
     const response = await fetch(`${merchantSuiteUrl}/api/custom-orders/webhook`, {
       method: "POST",

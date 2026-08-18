@@ -21,7 +21,10 @@ export const orderRequestSchema = z.object({
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
-const MERCHANT_SUITE_URL = (process.env.MERCHANT_SUITE_URL ?? "https://suite.arclabtechnology.com").replace(/\/$/, "");
+const MERCHANT_SUITE_URL = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+if (!MERCHANT_SUITE_URL) {
+  throw new Error("MERCHANT_SUITE_URL environment variable is not set");
+}
 const CUSTOM_ORDERS_API_KEY = process.env.CUSTOM_ORDERS_API_KEY ?? "stepprsbangladesh-098765";
 
 function createOrderRef() {
