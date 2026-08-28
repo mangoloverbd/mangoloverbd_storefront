@@ -689,7 +689,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
             className="mb-7 flex items-start justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black"
+              className="text-[1.4rem] whitespace-nowrap font-normal tracking-[-0.02em] text-black md:text-[clamp(1.9rem,5vw,3rem)] md:whitespace-normal"
             >
               <span className="font-medium">আমাদের</span>{" "}
               <span
