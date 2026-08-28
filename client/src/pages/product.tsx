@@ -144,6 +144,27 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+  useEffect(() => {
+    if (currentReel !== 0) return;
+    let cancelled = false;
+    const tryParse = () => {
+      const FB = (window as any).FB;
+      if (!FB || !FB.XFBML) {
+        if (!cancelled) setTimeout(tryParse, 300);
+        return;
+      }
+      if (!FB._reelInit) {
+        FB.init({ xfbml: true, version: "v18.0" });
+        FB._reelInit = true;
+      }
+      const node = document.querySelector(".fb-video");
+      if (node) FB.XFBML.parse(node);
+    };
+    tryParse();
+    return () => {
+      cancelled = true;
+    };
+  }, [currentReel]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -665,14 +686,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           className="absolute inset-0"
                         >
                           {currentReel === 0 ? (
-                            <iframe
-                              src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F787999280771399%2F&show_text=false&width=267&t=0"
-                              className="absolute inset-0 h-full w-full"
-                              style={{ border: "none", overflow: "hidden" }}
-                              scrolling="no"
-                              frameBorder={0}
-                              allowFullScreen
-                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                            <div
+                              className="fb-video absolute inset-0 h-full w-full"
+                              data-href="https://www.facebook.com/reel/787999280771399/"
+                              data-width="auto"
+                              data-autoplay="true"
+                              data-show-text="false"
+                              data-allowfullscreen="true"
                             />
                           ) : (
                             <wistia-player
