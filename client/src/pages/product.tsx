@@ -697,7 +697,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-1.5 pb-2">
+                  <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
                     {reelMediaIds.map((_, i) => (
                       <button
                         key={i}
