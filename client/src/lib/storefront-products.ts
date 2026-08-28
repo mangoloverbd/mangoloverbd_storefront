@@ -148,6 +148,31 @@ export function formatProductPrice(price: StorefrontProduct["price"]) {
   })}`;
 }
 
+export function formatProductPriceRange(product: StorefrontProduct): string {
+  const prices: number[] = [];
+
+  if (product.variants && product.variants.length) {
+    for (const variant of product.variants) {
+      const amount = Number(variant.price);
+      if (Number.isFinite(amount)) prices.push(amount);
+    }
+  }
+
+  if (prices.length === 0) {
+    const amount = Number(product.price);
+    if (Number.isFinite(amount)) prices.push(amount);
+  }
+
+  if (prices.length === 0) return "৳ 0.00";
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  if (min === max) return formatProductPrice(min);
+
+  return `${formatProductPrice(min)} – ${formatProductPrice(max)}`;
+}
+
 export function getProductAmount(price: StorefrontProduct["price"]) {
   const amount = Number(price);
   return Number.isFinite(amount) ? Math.round(amount) : 0;

@@ -7,6 +7,7 @@ import {
   fetchStorefrontProductInventory,
   getProductImage,
   formatProductPrice,
+  formatProductPriceRange,
   mergeInventory,
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
@@ -64,7 +65,7 @@ function ProductCard({ product, index }: { product: StorefrontProduct; index: nu
           {merged.name}
         </h3>
         <p className="mt-3 text-lg font-normal tracking-[0.01em] text-black md:text-xl">
-          {formatProductPrice(merged.price)}
+          {formatProductPriceRange(merged)}
         </p>
       </Link>
     </motion.article>

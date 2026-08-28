@@ -5,6 +5,7 @@ import {
   fetchStorefrontProducts,
   fetchStorefrontProductInventory,
   formatProductPrice,
+  formatProductPriceRange,
   getProductImage,
   hasPublishedProducts,
   mergeInventory,
@@ -65,7 +66,7 @@ function ProductCard({ p }: { p: StorefrontProduct }) {
         </h3>
         <div className="flex items-center justify-between">
           <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium">
-            {formatProductPrice(product.price)}
+            {formatProductPriceRange(product)}
           </span>
           <span className="text-[7px] md:text-[9px] uppercase tracking-[0.35em] font-medium opacity-20">
             {product.available === false ? "Unavailable" : `${product.stock_quantity ?? 0} in stock`}

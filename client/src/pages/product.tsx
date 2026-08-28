@@ -15,6 +15,7 @@ import {
   fetchStorefrontProductInventory,
   findGeneratedStorefrontProduct,
   formatProductPrice,
+  formatProductPriceRange,
   getCachedStorefrontProduct,
   getProductGallery,
   getProductImage,
@@ -746,7 +747,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
                       {p.name}
                     </h3>
-                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{formatProductPrice(p.price)}</p>
+                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{formatProductPriceRange(p)}</p>
                   </div>
                 </Link>
               </motion.article>
