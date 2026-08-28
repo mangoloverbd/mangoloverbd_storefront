@@ -197,7 +197,7 @@ export default function Home() {
     visible: { filter: "blur(0)", transform: "translateY(0)", opacity: 1 },
   };
 
-  const [heroRef, heroInView] = useReveal();
+  const [heroRef] = useReveal();
   const [whatsNewRef, whatsNewInView] = useReveal();
   const [latestDropRef, latestDropInView] = useReveal();
   const [justArrivedRef, justArrivedInView] = useReveal();
@@ -329,7 +329,7 @@ export default function Home() {
         <div className="w-full px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/1298] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[760px]"
+            className="relative aspect-[940/1100] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -339,22 +339,7 @@ export default function Home() {
               />
             </Link>
 
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              animate={heroInView ? "visible" : "hidden"}
-              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const, staggerChildren: 0.08, delayChildren: 0.1 }}
-              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end px-6 pb-12 text-center md:px-16 md:pb-12"
-            >
-              <motion.div variants={reveal}>
-                <Link
-                  href="/products"
-                  className="pointer-events-auto inline-flex w-fit items-center justify-center rounded-[4px] border-2 border-[#163B33] bg-[#FBBB14]/80 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.28em] text-[#163B33] backdrop-blur-sm transition-colors hover:bg-[#163B33] hover:text-[#FBBB14] md:px-7 md:py-3 md:text-base"
-                >
-                  DISCOVER MORE
-                </Link>
-              </motion.div>
-            </motion.div>
+
           </div>
         </div>
       </section>
