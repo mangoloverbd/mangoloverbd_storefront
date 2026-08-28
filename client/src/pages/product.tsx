@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, ChevronDown } from "lucide-react";
+import { ArrowDownRight, ChevronDown, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/cart-context";
@@ -485,6 +485,41 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       Buy it Now
                       <ArrowDownRight className="h-5 w-5 stroke-[1px] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                     </Button>
+                  </div>
+
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="h-px flex-1 bg-black/10" />
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-black/40">
+                      অথবা
+                    </span>
+                    <div className="h-px flex-1 bg-black/10" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <a
+                      href="tel:+8801301636461"
+                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white px-2 text-[11px] font-medium tracking-[0.02em] text-black/70 transition-all hover:border-black/40 hover:text-black"
+                    >
+                      <Phone className="h-4 w-4 stroke-[1.5px]" />
+                      ফোনে অর্ডার
+                    </a>
+                    <a
+                      href={`https://wa.me/8801301636461?text=${encodeURIComponent(
+                        `Hello, I'd like to order: ${product.name} (${selectedBundle.title})`,
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white px-2 text-[11px] font-medium tracking-[0.02em] text-black/70 transition-all hover:border-black/40 hover:text-black"
+                    >
+                      <img
+                        src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
+                        alt="Whatsapp"
+                        width={16}
+                        height={16}
+                        className="h-4 w-4"
+                      />
+                      হোয়াটসএপ-এ অর্ডার
+                    </a>
                   </div>
 
                   <div className="rounded-[8px] border border-black/10 bg-white/35 px-4 py-5 md:px-5">
