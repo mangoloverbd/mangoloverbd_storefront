@@ -34,12 +34,24 @@ test("SPA fallback handles app routes without swallowing assets or API requests"
 });
 
 test("HTML shell is never stored by browser caches", () => {
+  const spaHeaders = config.headers.find(
+    (entry) => entry.source === spaRewrite.source,
+  );
+  const spaCacheControl = spaHeaders?.headers.find(
+    (header) => header.key.toLowerCase() === "cache-control",
+  )?.value;
+  const matchesSpaHeaders = new RegExp(`^${spaHeaders?.source ?? "$a"}$`);
+
+  assert.match(spaCacheControl ?? "", /no-store/);
+  for (const route of ["/", "/products", "/booking", "/product/honey"]) {
+    assert.equal(matchesSpaHeaders.test(route), true, `${route} must be no-store`);
+  }
+
   const indexHeaders = config.headers.find(
     (entry) => entry.source === "/index.html",
   );
-  const cacheControl = indexHeaders?.headers.find(
+  const indexCacheControl = indexHeaders?.headers.find(
     (header) => header.key.toLowerCase() === "cache-control",
   )?.value;
-
-  assert.match(cacheControl ?? "", /no-store/);
+  assert.match(indexCacheControl ?? "", /no-store/);
 });
