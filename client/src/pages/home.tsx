@@ -353,7 +353,7 @@ export default function Home() {
 
       {/* Categories Section */}
       <section className="w-full bg-[#f5f5f5] pb-2 pt-8 md:pb-3 md:pt-12">
-        <div className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12">
+        <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -427,7 +427,7 @@ export default function Home() {
       <section className="w-full overflow-hidden bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           ref={whatsNewRef}
-          className="mx-auto max-w-[1500px] pl-3 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
           initial="hidden"
           animate={whatsNewInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
@@ -500,7 +500,7 @@ export default function Home() {
       <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           ref={latestDropRef}
-          className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
           initial="hidden"
           animate={latestDropInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
@@ -561,7 +561,7 @@ export default function Home() {
       <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
         <motion.div
           ref={justArrivedRef}
-          className="mx-auto max-w-[1500px] pl-3 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
           initial="hidden"
           animate={justArrivedInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
@@ -727,7 +727,7 @@ export default function Home() {
       <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
         <motion.div
           ref={specialRef}
-          className="mx-auto max-w-[1500px] pl-3 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
           initial="hidden"
           animate={specialInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}

@@ -334,7 +334,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     <Layout>
       <div className="min-h-screen bg-brand-ivory">
           <div className="grid grid-cols-1 lg:grid-cols-12">
-            <div className="lg:col-span-7 bg-brand-ivory p-3 md:p-16 xl:p-20">
+            <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
               <div
                 className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-[#f6f6f6]"
               >
@@ -400,7 +400,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
             <div
               className="lg:col-span-5 flex flex-col bg-brand-ivory"
             >
-              <div className="flex-grow space-y-6 px-3 pb-10 pt-2 md:space-y-10 md:p-16 xl:p-20">
+              <div className="flex-grow space-y-6 px-4 pb-10 pt-2 md:space-y-10 md:p-16 xl:p-20">
                 <div className="space-y-4 md:space-y-6">
                   <h1 className="max-w-full break-words font-sans text-2xl font-semibold leading-tight tracking-tight text-black sm:text-3xl md:text-4xl lg:text-[2.75rem]">
                     {product.name}
@@ -655,7 +655,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Reels Section */}
-                <div className="pt-8 space-y-4 border-t border-black/5 mt-8 md:mx-0 overflow-hidden bg-brand-ivory">
+                <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
                       {[1, 2, 3].map((idx, reelIdx) => (
@@ -705,7 +705,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           initial="hidden"
           animate="visible"
           transition={{ staggerChildren: 0.12 }}
-          className="mx-auto max-w-[1500px] px-3 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
         >
           <motion.div
             variants={reveal}
