@@ -313,7 +313,7 @@ export default function Home() {
 
   const categories = [
     { label: "Homemade-হোমমেড", image: "/categories/category-default.png" },
-    { label: "Honey-মধু", image: "/categories/honey.webp" },
+    { label: "Honey-মধু", image: "/categories/honey-4.webp" },
     { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/category-default.png" },
     { label: "Jaggery & Sugar-গুড় ও চিনি", image: "/categories/category-default.png" },
     { label: "Lachcha Semai-লাচ্ছা সেমাই", image: "/categories/category-default.png" },
