@@ -685,9 +685,30 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           <motion.h2
             variants={reveal}
             transition={transition}
-            className="text-[12px] md:text-sm font-sans uppercase tracking-[0.15em] text-black mb-5 md:mb-6"
+            className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black mb-5 md:mb-6"
           >
-            You May Also Like
+            <span className="font-medium">আমাদের</span>{" "}
+            <span
+              className="relative inline-block"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+            >
+              কিছু আরও পণ্য
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 120 60"
+                preserveAspectRatio="none"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
+                style={{ overflow: "visible" }}
+              >
+                <path
+                  d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                  fill="none"
+                  stroke="#FBBB14"
+                  strokeWidth="4.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
           </motion.h2>
 
           <motion.div
