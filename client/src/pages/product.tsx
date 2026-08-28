@@ -667,9 +667,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
                       {["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"].map((wistiaMediaId, reelIdx) => {
-                        const reelCount = 3;
-                        const reelDist = Math.min(Math.abs(reelIdx - activeReel), reelCount - Math.abs(reelIdx - activeReel));
-                        const reelNear = reelDist <= 1;
+                        const reelActive = reelIdx === activeReel;
                         return (
                         <motion.div
                           key={`${wistiaMediaId}-${reelIdx}`}
@@ -681,7 +679,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           transition={{ type: "spring", stiffness: 260, damping: 30 }}
                         >
                           <div className={`absolute inset-0 ${reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
-                            {reelNear ? (
+                            {reelActive ? (
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
