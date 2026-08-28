@@ -664,12 +664,24 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           transition={{ duration: 0.3 }}
                           className="absolute inset-0"
                         >
-                          <wistia-player
-                            media-id={reelMediaIds[currentReel]}
-                            aspect="0.5625"
-                            autoplay="true"
-                            style={{ width: "100%", height: "100%", display: "block" }}
-                          />
+                          {currentReel === 0 ? (
+                            <iframe
+                              src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F787999280771399%2F&show_text=false&width=267&t=0"
+                              className="absolute inset-0 h-full w-full"
+                              style={{ border: "none", overflow: "hidden" }}
+                              scrolling="no"
+                              frameBorder={0}
+                              allowFullScreen
+                              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                            />
+                          ) : (
+                            <wistia-player
+                              media-id={reelMediaIds[currentReel]}
+                              aspect="0.5625"
+                              autoplay="true"
+                              style={{ width: "100%", height: "100%", display: "block" }}
+                            />
+                          )}
                         </motion.div>
                       </AnimatePresence>
 
