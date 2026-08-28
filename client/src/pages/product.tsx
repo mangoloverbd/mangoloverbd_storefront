@@ -668,8 +668,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
-                                autoplay={idx === 2 ? "true" : undefined}
-                                muted={idx === 2 ? "true" : undefined}
                                 style={{ width: "100%", height: "100%", display: "block" }}
                               />
                             ) : (
