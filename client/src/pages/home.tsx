@@ -313,7 +313,7 @@ export default function Home() {
 
   const categories = [
     { label: "হোমমেড", image: "/categories/category-default.png" },
-    { label: "মধু", image: "/categories/category-default.png" },
+    { label: "মধু", image: "/categories/honey.webp" },
     { label: "তেল ও ঘি", image: "/categories/category-default.png" },
     { label: "গুড় ও চিনি", image: "/categories/category-default.png" },
     { label: "লাচ্ছা সেমাই", image: "/categories/category-default.png" },
@@ -369,7 +369,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="text-[clamp(1.5rem,4vw,2.25rem)] font-normal tracking-[-0.02em] text-black">
+            <h2 className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
               <span className="font-medium">আমাদের</span>{" "}
               <span
                 className="relative inline-block"
@@ -380,14 +380,14 @@ export default function Home() {
                   aria-hidden="true"
                   viewBox="0 0 120 60"
                   preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[150%] w-[128%] -translate-x-1/2 -translate-y-1/2"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
                   style={{ overflow: "visible" }}
                 >
                   <path
                     d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
                     fill="none"
                     stroke="#FBBB14"
-                    strokeWidth="3"
+                    strokeWidth="4.5"
                     strokeLinecap="round"
                   />
                 </svg>
@@ -400,13 +400,13 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
-            className="mx-auto mt-10 grid max-w-[820px] grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-4 sm:gap-x-6"
+            className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
             {categories.map(({ label, image }) => (
               <Link
                 key={label}
                 href="/products"
-                className="group flex flex-col items-center text-center"
+                className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
               >
                 <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
                   <img
