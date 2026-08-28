@@ -390,7 +390,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               Website designed and developed by <a href="https://api.whatsapp.com/send/?phone=8801301636461" className="text-black font-bold normal-case">Arc Labs Corporation</a> / <span className="tracking-normal normal-case">© 2026 ম্যাংগো লাভার - Mango Lover</span>
             </div>
             <div className="flex gap-8 text-[9px] uppercase tracking-[0.4em] text-black/40">
-              <div className="flex items-center gap-2"><Globe className="w-3 h-3" /> Dhaka</div>
+              <div className="flex items-center gap-2"><Globe className="w-3 h-3" /> Dhaka, Bangladesh</div>
               <div className="hidden md:flex items-center gap-2 font-modern">{time} BST</div>
             </div>
           </div>
