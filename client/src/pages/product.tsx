@@ -679,18 +679,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           transition={{ type: "spring", stiffness: 260, damping: 30 }}
                         >
                           <div className={`absolute inset-0 ${reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
-                            {reelActive ? (
-                              <wistia-player
-                                media-id={wistiaMediaId}
-                                aspect="0.5625"
-                                style={{ width: "100%", height: "100%", display: "block" }}
-                              />
-                            ) : (
-                              <div
-                                className="absolute inset-0 bg-cover bg-center"
-                                style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/image)` }}
-                              />
-                            )}
+                            <wistia-player
+                              media-id={wistiaMediaId}
+                              aspect="0.5625"
+                              style={{ width: "100%", height: "100%", display: "block" }}
+                            />
                           </div>
                         </motion.div>
                         );
