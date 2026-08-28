@@ -594,7 +594,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             role="tab"
                             aria-selected={active}
                             onClick={() => setOpenSection(i)}
-                            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 text-[11px] transition-colors ${
+                            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 text-[13px] transition-colors md:text-[15px] ${
                               active
                                 ? "border-black text-black"
                                 : "border-transparent text-black/40"
