@@ -119,7 +119,7 @@ function Router() {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // On a full page load (refresh), the browser has already restored the
     // scroll position — forcing it to 0 here causes a visible flick to the hero.
     if (isInitialLoad.current) {
@@ -133,9 +133,14 @@ function Router() {
     isHistoryNavigation.current = false;
     currentLocation.current = location;
 
-    const restoreScroll = () => window.scrollTo({ top: targetY, left: 0, behavior: "auto" });
-    const timeoutIds = [80, 240, 520, 900].map((delay) =>
-      window.setTimeout(restoreScroll, delay),
+    // Restore synchronously before paint so the entering page is already at its
+    // final scroll position when it fades in — avoids mid-fade scrolling jank.
+    window.scrollTo({ top: targetY, left: 0, behavior: "auto" });
+    const timeoutIds = [120, 400].map((delay) =>
+      window.setTimeout(
+        () => window.scrollTo({ top: targetY, left: 0, behavior: "auto" }),
+        delay,
+      ),
     );
 
     return () => {
