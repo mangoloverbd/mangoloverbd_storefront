@@ -316,7 +316,7 @@ export default function Home() {
     { label: "Honey-মধু", image: "/categories/honey-4.webp" },
     { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-1.webp" },
     { label: "Jaggery-গুড়", image: "/categories/jaggery-1.webp" },
-    { label: "Semai সেমাই", image: "/categories/lachcha-1.webp" },
+    { label: "Semai-সেমাই", image: "/categories/lachcha-1.webp" },
     { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1.webp" },
     { label: "Dates-খেজুর", image: "/categories/dates-1.webp" },
     { label: "Nuts & Seeds-বাদাম ও বীজ", image: "/categories/nuts-1.webp" },
