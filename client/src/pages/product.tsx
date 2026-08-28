@@ -659,7 +659,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
                       {[1, 2, 3].map((idx, reelIdx) => {
-                        const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : null;
+                        const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : idx === 3 ? "6hjeb0mxzy" : null;
                         const isWistia = Boolean(wistiaMediaId);
                         return (
                         <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
