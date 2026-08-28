@@ -679,7 +679,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             media-id={reelMediaIds[currentReel]}
                             aspect="0.5625"
                             autoplay="true"
-                            muted="true"
                             style={{ width: "100%", height: "100%", display: "block" }}
                           />
                         </motion.div>
