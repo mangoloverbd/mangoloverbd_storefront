@@ -666,67 +666,32 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
-                      {[1, 2, 3].map((idx, reelIdx) => {
-                        const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : idx === 3 ? "6hjeb0mxzy" : null;
-                        const isWistia = Boolean(wistiaMediaId);
+                      {["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy", "4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"].map((wistiaMediaId, reelIdx) => {
+                        const reelCount = 6;
+                        const reelDist = Math.min(Math.abs(reelIdx - activeReel), reelCount - Math.abs(reelIdx - activeReel));
+                        const reelNear = reelDist <= 1;
                         return (
                         <motion.div
-                          key={idx}
-                          className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}
+                          key={`${wistiaMediaId}-${reelIdx}`}
+                          className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform h-[391px]`}
                           animate={{
                             scale: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.92,
                             opacity: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.65,
                           }}
                           transition={{ type: "spring", stiffness: 260, damping: 30 }}
                         >
-                          <div className={`absolute inset-0 ${isWistia && reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
-                            {isWistia ? (
+                          <div className={`absolute inset-0 ${reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
+                            {reelNear ? (
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
                                 style={{ width: "100%", height: "100%", display: "block" }}
                               />
                             ) : (
-                              <>
-                                <video
-                                  autoPlay
-                                  muted
-                                  loop
-                                  playsInline
-                                  preload="metadata"
-                                  className="w-full h-full object-cover brightness-95"
-                                >
-                                  <source src={`/vid_0${idx}.mp4`} type="video/mp4" />
-                                </video>
-
-                                <div className="absolute inset-x-2 bottom-2 p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[8px] flex items-center justify-between opacity-80 transition-all duration-300 group-hover:opacity-100">
-                                  <div className="flex min-w-0 flex-col justify-center px-1.5 overflow-hidden">
-                                    <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-white line-clamp-2 leading-tight">{product?.name}</span>
-                                    <span className="text-[9px] font-garet font-bold text-white mt-0.5">{selectedBundle?.price}</span>
-                                  </div>
-                                  <button
-                                    disabled={isUnavailable || (selectedBundle?.amount ?? 0) <= 0}
-                                    onClick={async () => {
-                                      if (!product || !(await verifyOrderable())) {
-                                        return;
-                                      }
-
-                                      addToCart(
-                                        {
-                                          id: getProductNumericId(product),
-                                          title: `${product.name} (${selectedBundle?.title})`,
-                                          price: selectedBundle?.price ?? "",
-                                          image: displayImage,
-                                        },
-                                        selectedBundle?.title ?? "",
-                                      );
-                                    }}
-                                    className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2 rounded-[8px] text-[8px] font-bold uppercase tracking-widest transition-colors backdrop-blur-sm"
-                                  >
-                                    Add to Cart
-                                  </button>
-                                </div>
-                              </>
+                              <div
+                                className="absolute inset-0 bg-cover bg-center"
+                                style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/swatch)` }}
+                              />
                             )}
                           </div>
                         </motion.div>
