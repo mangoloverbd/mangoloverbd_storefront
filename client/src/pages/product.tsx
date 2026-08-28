@@ -533,13 +533,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     </a>
                   </div>
 
-                  <div className="rounded-[8px] border border-black/[0.06] bg-white/20 px-3 py-2 md:px-3">
-                    <div className="relative pb-1 pt-2">
+                  <div className="rounded-[8px] border border-black/[0.06] bg-white/20 px-3 py-1.5 md:px-3">
+                    <div className="relative pb-0.5 pt-1.5">
                       <div className="absolute left-[14%] right-[14%] top-[16px] h-px bg-black/10" />
                       <div className="relative z-20 grid grid-cols-3 gap-2">
                         {deliveryTimeline.map((item) => (
                           <div key={item.title} className="flex flex-col items-center text-center">
-                            <span className="mb-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-ivory text-black">
+                            <span className="mb-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-ivory text-black">
                               {item.title === "অর্ডার গ্রহণ" ? (
                                 <ShoppingBag className="h-4 w-4" weight="Filled" />
                               ) : item.title === "প্রসেসিং" ? (
