@@ -692,7 +692,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
               className="relative inline-block"
               style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              কিছু আরও পণ্য
+              আরও কিছু পণ্য
               <svg
                 aria-hidden="true"
                 viewBox="0 0 120 60"
