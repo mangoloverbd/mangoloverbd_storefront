@@ -315,8 +315,8 @@ export default function Home() {
     { label: "Homemade-হোমমেড", image: "/categories/category-default.png" },
     { label: "Honey-মধু", image: "/categories/honey-4.webp" },
     { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-1.webp" },
-    { label: "Jaggery & Sugar-গুড় ও চিনি", image: "/categories/jaggery-1.webp" },
-    { label: "Lachcha Semai-লাচ্ছা সেমাই", image: "/categories/lachcha-1.webp" },
+    { label: "Jaggery-গুড়", image: "/categories/jaggery-1.webp" },
+    { label: "Semai সেমাই", image: "/categories/lachcha-1.webp" },
     { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1.webp" },
     { label: "Dates-খেজুর", image: "/categories/dates-1.webp" },
     { label: "Nuts & Seeds-বাদাম ও বীজ", image: "/categories/nuts-1.webp" },
@@ -402,8 +402,14 @@ export default function Home() {
                   />
                 </div>
                 <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                  <span className="block md:inline">{label.split("-")[0]}-</span>
-                  <span className="block md:inline">{label.split("-")[1]}</span>
+                  {label.includes("-") ? (
+                    <>
+                      <span className="block md:inline">{label.split("-")[0]}-</span>
+                      <span className="block md:inline">{label.split("-")[1]}</span>
+                    </>
+                  ) : (
+                    <span>{label}</span>
+                  )}
                 </span>
               </Link>
             ))}
