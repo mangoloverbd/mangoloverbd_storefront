@@ -690,7 +690,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             ) : (
                               <div
                                 className="absolute inset-0 bg-cover bg-center"
-                                style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/swatch)` }}
+                                style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/image)` }}
                               />
                             )}
                           </div>
