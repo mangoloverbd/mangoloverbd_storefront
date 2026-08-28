@@ -61,6 +61,13 @@ const featureGroups = [
   },
 ];
 
+// Route remote catalog images through Vercel's image optimizer (prod only) so
+// they are resized + CDN-cached; falls back to the direct URL in dev.
+const optimizedImage = (url: string | null | undefined, width = 500) =>
+  url && import.meta.env.PROD
+    ? `/_vercel/image?w=${width}&url=${encodeURIComponent(url)}`
+    : (url ?? "");
+
 const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 const reveal = {
   hidden: { filter: "blur(10px)", transform: "translateY(20%)", opacity: 0 },
@@ -697,9 +704,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <Link href={`/product/${p.slug}`} className="block">
                   <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
                     <img
-                      src={p.image_url ?? ""}
+                      src={optimizedImage(p.image_url, 500)}
                       alt={p.name ?? ""}
-                      loading="lazy"
                       className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>

@@ -75,5 +75,21 @@
   ],
   "cleanUrls": true,
   "trailingSlash": false,
-  "outputDirectory": "dist/public"
+  "outputDirectory": "dist/public",
+  "images": {
+    "qualities": [
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ],
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "ldiktvcavyabivpxfwpn.supabase.co"
+      }
+    ]
+  }
 }
