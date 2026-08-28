@@ -646,14 +646,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Reels Section — single video viewer */}
-                <div className="pt-4 mt-4 -mx-4 md:mx-0 md:mt-0 md:pt-0 overflow-hidden bg-brand-ivory">
+                <div className="pt-4 mt-4 md:mt-0 md:pt-0 overflow-hidden bg-brand-ivory">
                   <h2
                     className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
                     style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                   >
                     আমরা ও আমাদের সত্যতা
                   </h2>
-                  <div className="relative mx-auto w-full max-w-[380px] px-1">
+                  <div className="relative mx-auto w-full max-w-[380px]">
                     <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black shadow-lg">
                       <AnimatePresence mode="wait">
                         <motion.div
