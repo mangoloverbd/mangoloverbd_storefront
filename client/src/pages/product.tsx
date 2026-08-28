@@ -653,19 +653,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   >
                     আমরা ও আমাদের সত্যতা
                   </h2>
-                  <div className="relative mx-auto flex max-w-[460px] items-center gap-1 px-1 py-2 md:gap-2 md:px-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Previous reel"
-                      disabled={currentReel === 0}
-                      onClick={() => goReel(-1)}
-                      className="shrink-0 rounded-full border border-black/10 bg-white/70 text-black hover:bg-black hover:text-white disabled:opacity-30"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </Button>
-
-                    <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-[6px] bg-black shadow-lg">
+                  <div className="relative mx-auto w-full max-w-[380px] px-1">
+                    <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black shadow-lg">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={currentReel}
@@ -683,18 +672,29 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           />
                         </motion.div>
                       </AnimatePresence>
-                    </div>
 
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Next reel"
-                      disabled={currentReel === reelMediaIds.length - 1}
-                      onClick={() => goReel(1)}
-                      className="shrink-0 rounded-full border border-black/10 bg-white/70 text-black hover:bg-black hover:text-white disabled:opacity-30"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Previous reel"
+                        disabled={currentReel === 0}
+                        onClick={() => goReel(-1)}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Next reel"
+                        disabled={currentReel === reelMediaIds.length - 1}
+                        onClick={() => goReel(1)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-2">
