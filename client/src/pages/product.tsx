@@ -659,7 +659,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
                       {[1, 2, 3].map((idx, reelIdx) => (
-                        <div key={idx} className="relative h-[340px] flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group">
+                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group ${idx === 1 ? "h-[391px]" : "h-[340px]"}`}>
                           <div className="absolute inset-0">
                             {idx === 1 ? (
                               <wistia-player
