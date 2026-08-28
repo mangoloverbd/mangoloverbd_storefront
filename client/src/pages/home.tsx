@@ -290,13 +290,13 @@ export default function Home() {
         <div className="w-full px-0">
           <div
             ref={heroRef}
-            className="relative min-h-[640px] w-full overflow-hidden bg-[#FBBB14] md:min-h-[760px]"
+            className="relative aspect-[940/1298] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[760px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
                 src="/hero-mango-lover.webp"
                 alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
-                className="h-full w-full object-contain object-top md:object-center"
+                className="h-full w-full object-cover object-bottom md:object-contain md:object-center"
               />
             </Link>
 
@@ -305,7 +305,7 @@ export default function Home() {
               initial="hidden"
               animate={heroInView ? "visible" : "hidden"}
               transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const, staggerChildren: 0.08, delayChildren: 0.1 }}
-              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end px-6 pb-8 text-center md:px-16 md:pb-12"
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end px-6 pb-12 text-center md:px-16 md:pb-12"
             >
               <motion.div variants={reveal}>
                 <Link

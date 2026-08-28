@@ -82,10 +82,13 @@ test("uses the Mango Lover hero poster", () => {
 test("renders a full-bleed editorial hero", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
   assert.match(homeSource, /className="w-full px-0"/);
-  assert.match(homeSource, /className="relative min-h-\[640px\] w-full overflow-hidden bg-\[#FBBB14\] md:min-h-\[760px\]"/);
-  // The poster is portrait and carries its own baked-in headline: contain it so
-  // no edge type is cropped, and keep the overlay click-through except on the CTA.
-  assert.match(homeSource, /className="h-full w-full object-contain object-top md:object-center"/);
+  // Mobile crops ~8% of leaf off the top of the 940x1411 poster and leaves no
+  // bare yellow band below it; desktop keeps the uncropped fixed-height hero.
+  assert.match(homeSource, /className="relative aspect-\[940\/1298\] w-full overflow-hidden bg-\[#FBBB14\] md:aspect-auto md:min-h-\[760px\]"/);
+  // Desktop contains the whole portrait poster so none of its baked-in Bangla
+  // type is cropped. Mobile covers instead, anchored to the bottom so the only
+  // thing the crop can eat is leaf at the top.
+  assert.match(homeSource, /className="h-full w-full object-cover object-bottom md:object-contain md:object-center"/);
   assert.match(homeSource, /pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end/);
   assert.match(homeSource, /pointer-events-auto inline-flex w-fit/);
   assert.match(homeSource, /md:px-7 md:py-3 md:text-base/);
