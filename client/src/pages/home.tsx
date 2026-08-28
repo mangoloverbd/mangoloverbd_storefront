@@ -7,6 +7,18 @@ import { Link } from "wouter";
 
 const latestDropProducts = [
   {
+    title: "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
+    slug: "black-seed-flower-honey",
+    price: "৳ 700.00 – ৳ 1,400.00",
+    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
+  },
+  {
+    title: "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
+    slug: "sundarbans-natural-honey",
+    price: "৳ 750.00 – ৳ 1,400.00",
+    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
+  },
+  {
     title: "Linen Baggy Trouser - Clean White",
     slug: "linen-baggy-trouser-clean-white",
     price: "৳ 799.00",
@@ -461,7 +473,7 @@ export default function Home() {
                     <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
                       {product.title}
                     </h3>
-                    <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">{product.price}</p>
+                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{product.price}</p>
                   </div>
                 </Link>
               </motion.article>
