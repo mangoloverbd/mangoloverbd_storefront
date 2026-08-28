@@ -670,7 +670,15 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : idx === 3 ? "6hjeb0mxzy" : null;
                         const isWistia = Boolean(wistiaMediaId);
                         return (
-                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
+                        <motion.div
+                          key={idx}
+                          className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}
+                          animate={{
+                            scale: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.92,
+                            opacity: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.65,
+                          }}
+                          transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                        >
                           <div className={`absolute inset-0 ${isWistia && reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
                             {isWistia ? (
                               <wistia-player
@@ -721,7 +729,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                               </>
                             )}
                           </div>
-                        </div>
+                        </motion.div>
                         );
                       })}
                     </div>
