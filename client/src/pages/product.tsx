@@ -646,7 +646,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Reels Section — single video viewer */}
-                <div className="pt-4 mt-4 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
+                <div className="pt-4 mt-4 -mx-4 md:mx-0 overflow-hidden border-t border-black/[0.08] bg-brand-ivory">
                   <div className="relative mx-auto flex max-w-[460px] items-center gap-1 px-1 py-2 md:gap-2 md:px-3">
                     <Button
                       variant="ghost"
