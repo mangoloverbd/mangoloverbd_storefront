@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -125,7 +125,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [activeImage, setActiveImage] = useState(0);
   const reelMediaIds = ["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"];
   const [currentReel, setCurrentReel] = useState(0);
-  const [reel0Playing, setReel0Playing] = useState(false);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -145,27 +144,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  useEffect(() => {
-    if (currentReel !== 0 || !reel0Playing) return;
-    let cancelled = false;
-    const tryParse = () => {
-      const FB = (window as any).FB;
-      if (!FB || !FB.XFBML) {
-        if (!cancelled) setTimeout(tryParse, 300);
-        return;
-      }
-      if (!FB._reelInit) {
-        FB.init({ xfbml: true, version: "v18.0" });
-        FB._reelInit = true;
-      }
-      const node = document.querySelector(".fb-video");
-      if (node) FB.XFBML.parse(node);
-    };
-    tryParse();
-    return () => {
-      cancelled = true;
-    };
-  }, [currentReel, reel0Playing]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -686,40 +664,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           transition={{ duration: 0.3 }}
                           className="absolute inset-0"
                         >
-                          {currentReel === 0 ? (
-                            reel0Playing ? (
-                              <div
-                                className="fb-video absolute inset-0 h-full w-full"
-                                data-href="https://www.facebook.com/reel/787999280771399/"
-                                data-width="auto"
-                                data-autoplay="true"
-                                data-show-text="false"
-                                data-allowfullscreen="true"
-                              />
-                            ) : (
-                              <button
-                                type="button"
-                                aria-label="Play video"
-                                onClick={() => setReel0Playing(true)}
-                                className="absolute inset-0 flex items-center justify-center bg-cover bg-center"
-                                style={{
-                                  backgroundImage:
-                                    "url(https://graph.facebook.com/787999280771399/picture?type=large)",
-                                }}
-                              >
-                                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm">
-                                  <Play className="h-7 w-7 translate-x-[2px]" fill="currentColor" />
-                                </span>
-                              </button>
-                            )
-                          ) : (
-                            <wistia-player
-                              media-id={reelMediaIds[currentReel]}
-                              aspect="0.5625"
-                              autoplay="true"
-                              style={{ width: "100%", height: "100%", display: "block" }}
-                            />
-                          )}
+                          <wistia-player
+                            media-id={reelMediaIds[currentReel]}
+                            aspect="0.5625"
+                            autoplay="true"
+                            style={{ width: "100%", height: "100%", display: "block" }}
+                          />
                         </motion.div>
                       </AnimatePresence>
 
