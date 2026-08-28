@@ -658,12 +658,15 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
-                      {[1, 2, 3].map((idx, reelIdx) => (
-                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group ${idx === 1 ? "h-[391px]" : "h-[340px]"}`}>
+                      {[1, 2, 3].map((idx, reelIdx) => {
+                        const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : null;
+                        const isWistia = Boolean(wistiaMediaId);
+                        return (
+                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
                           <div className="absolute inset-0">
-                            {idx === 1 ? (
+                            {isWistia ? (
                               <wistia-player
-                                media-id="4i954w3zt8"
+                                media-id={wistiaMediaId}
                                 aspect="0.5625"
                                 style={{ width: "100%", height: "100%", display: "block" }}
                               />
@@ -711,7 +714,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             )}
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
