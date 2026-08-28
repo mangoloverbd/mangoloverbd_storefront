@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDownRight, ChevronDown, Phone } from "lucide-react";
@@ -13,6 +14,7 @@ import {
   fetchStorefrontProduct,
   fetchStorefrontProductInventory,
   findGeneratedStorefrontProduct,
+  formatProductPrice,
   getCachedStorefrontProduct,
   getProductGallery,
   getProductImage,
@@ -58,13 +60,6 @@ const featureGroups = [
     details: ["Trimmable to Fit", "Breathable Vents"],
   },
 ];
-
-const placeholderProducts = [1, 2, 3, 4, 5, 6].map((id) => ({
-  id,
-  title: `Product ${id}`,
-  price: "৳---",
-  type: "Demo",
-}));
 
 const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 const reveal = {
@@ -157,6 +152,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug) || staticProduct;
   const product = mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
+
+  const relatedProducts = generatedStorefrontProducts
+    .filter((p) => p.slug !== product?.slug)
+    .slice(0, 6);
   const bundles = (() => {
     if (slug === "stepprs-massage-insoles") return staticBundles;
     const variants = product?.variants?.filter((variant) => {
@@ -685,50 +684,36 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           </motion.h2>
 
           <motion.div
-            variants={reveal}
-            transition={transition}
-            className="grid grid-cols-3 gap-1.5 md:gap-2 pb-2 mb-4 md:mb-6"
-          >
-            <button className="bg-black text-white px-1 md:px-5 py-2.5 md:py-3 rounded-[8px] text-[8px] md:text-[9px] uppercase tracking-[0.1em] md:tracking-[0.2em] font-medium text-center">
-              New Arrivals
-            </button>
-            <button className="border border-black/10 bg-white text-black/40 px-1 md:px-5 py-2.5 md:py-3 rounded-[8px] text-[8px] md:text-[9px] uppercase tracking-[0.1em] md:tracking-[0.2em] font-medium hover:text-black hover:border-black/30 transition-colors text-center">
-              Best Sellers
-            </button>
-            <button className="border border-black/10 bg-white text-black/40 px-1 md:px-5 py-2.5 md:py-3 rounded-[8px] text-[8px] md:text-[9px] uppercase tracking-[0.1em] md:tracking-[0.2em] font-medium hover:text-black hover:border-black/30 transition-colors text-center">
-              Essentials
-            </button>
-          </motion.div>
-
-          <motion.div
             transition={{ staggerChildren: 0.08 }}
             className="grid grid-cols-2 md:grid-cols-3 gap-[1px] md:gap-8 bg-black/10 md:bg-transparent"
           >
-            {placeholderProducts.map((p) => (
+            {relatedProducts.map((p) => (
               <motion.div
-                key={p.id}
+                key={p.slug}
                 variants={reveal}
                 transition={transition}
                 className="group flex cursor-pointer flex-col bg-brand-ivory"
               >
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6] flex items-center justify-center">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
-                    No image
-                  </span>
-                </div>
-                <div className="px-3 md:px-0 pt-3 pb-4 md:pt-4 md:pb-6 flex flex-col gap-1 md:gap-1.5 border-t border-black/5">
+                <Link href={`/product/${p.slug}`} className="block">
+                  <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
+                    <img
+                      src={p.image_url ?? ""}
+                      alt={p.name ?? ""}
+                      loading="lazy"
+                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                </Link>
+                <Link href={`/product/${p.slug}`} className="block px-3 md:px-0 pt-3 pb-4 md:pt-4 md:pb-6 flex flex-col gap-1 md:gap-1.5 border-t border-black/5">
                   <h3 className="text-[11px] md:text-lg font-display font-light uppercase tracking-tight leading-tight text-black line-clamp-1">
-                    {p.title}
+                    {p.name}
                   </h3>
                   <div className="flex items-center justify-between">
                     <span className="text-[9px] md:text-[10px] font-garet font-bold">
-                      {p.price}
-                    </span>
-                    <span className="text-[7px] md:text-[9px] uppercase tracking-[0.2em] md:tracking-[0.3em] font-medium opacity-30 line-clamp-1">
-                      {p.type}
+                      {formatProductPrice(p.price)}
                     </span>
                   </div>
-                </div>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

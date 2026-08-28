@@ -360,7 +360,7 @@ export default function Home() {
       </section>
 
       {/* Categories Section */}
-      <section className="w-full bg-[#f5f5f5] py-8 md:py-12">
+      <section className="w-full bg-[#f5f5f5] pb-2 pt-8 md:pb-3 md:pt-12">
         <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
