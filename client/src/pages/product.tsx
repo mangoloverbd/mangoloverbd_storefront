@@ -426,16 +426,16 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           type="button"
                           onClick={() => setSelectedBundleIdx(idx)}
                           aria-pressed={selected}
-                          className={`flex flex-col items-center justify-center rounded-[6px] border px-3 py-1.5 text-center transition-all duration-200 ${
+                          className={`flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
                             selected
-                              ? "border-black bg-black text-white"
-                              : "border-black/15 bg-white text-black hover:border-black/40"
+                              ? "border-black bg-white text-black"
+                              : "border-black/10 bg-white text-black hover:border-black/30"
                           }`}
                         >
                           <span className="text-[11px] font-medium tracking-[0.04em]">
                             {bundle.title}
                           </span>
-                          <span className="mt-0.5 text-[11px] font-light font-garet">
+                          <span className="mt-0.5 text-[11px] font-medium font-garet">
                             {bundle.price}
                           </span>
                         </button>
