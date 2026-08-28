@@ -673,8 +673,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           key={`${wistiaMediaId}-${reelIdx}`}
                           className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform h-[391px]`}
                           animate={{
-                            scale: 1,
-                            opacity: 1,
+                            scale: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.92,
+                            opacity: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.65,
                           }}
                           transition={{ type: "spring", stiffness: 260, damping: 30 }}
                         >
