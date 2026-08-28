@@ -139,10 +139,13 @@ export function formatProductPrice(price: StorefrontProduct["price"]) {
   const amount = Number(price);
 
   if (!Number.isFinite(amount)) {
-    return "৳0";
+    return "৳ 0.00";
   }
 
-  return `৳${amount.toLocaleString()}`;
+  return `৳ ${amount.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 export function getProductAmount(price: StorefrontProduct["price"]) {
