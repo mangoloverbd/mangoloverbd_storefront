@@ -134,7 +134,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   });
   const [reelsRef, reelsApi] = useEmblaCarousel({
     align: "center",
-    loop: true,
+    loop: false,
     dragFree: false,
     duration: 25,
   });
@@ -666,8 +666,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
                   <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
-                      {["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy", "4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"].map((wistiaMediaId, reelIdx) => {
-                        const reelCount = 6;
+                      {["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"].map((wistiaMediaId, reelIdx) => {
+                        const reelCount = 3;
                         const reelDist = Math.min(Math.abs(reelIdx - activeReel), reelCount - Math.abs(reelIdx - activeReel));
                         const reelNear = reelDist <= 1;
                         return (
