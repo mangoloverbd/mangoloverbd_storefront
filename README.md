@@ -130,6 +130,75 @@ published in the dashboard yet — that is a dashboard-side task, not a storefro
 
 ---
 
+## Supabase and products — where product data actually lives
+
+Products live in the **Mango Lover BD Supabase project** (`ldiktvcavyabivpxfwpn`), shared with the
+dashboard. This repo has **no Supabase client and no database credentials**; it reads products over
+the Suite's public HTTP API and writes nothing.
+
+### Adding a product
+
+**You cannot add a product from this repo.** Products are created on the **dashboard's Products page**
+(`/products` in the Merchant Suite). The dashboard's server writes to Supabase using the service-role
+key; this storefront then reads the result — within about 8 seconds, with no commit and no deploy.
+
+That restriction is enforced by the database, not just by convention: `products`, `product_images`,
+and `product_variants` have RLS enabled with **only a `service_role` policy**. A browser holding a
+publishable/anon key can neither read nor write them. The only way to write from here would be to ship
+a service-role key into public JavaScript, which would hand anyone full control of the database.
+
+End to end:
+
+1. Dashboard → Products → add name, price, COG, description.
+2. Upload product images there — they go to Supabase Storage (`product-images` bucket), **not** to
+   `client/public/`.
+3. Add variants if the product has size/weight options.
+4. **Publish it.** This is the step people miss.
+5. Refresh the storefront. It appears within ~8s, and the same product shows on the dashboard's
+   Products page because both sides are reading one Supabase row.
+
+### `published = true` is the gate
+
+The Suite serves only rows matching `org_id = <workspace>` **and** `published = true`. A saved but
+unpublished product exists in Supabase and is visible in the dashboard, yet is invisible on the
+storefront. An empty `products` array from the API almost always means "nothing published yet" rather
+than a storefront bug. `selling_price` must also be set, or the API returns `available: false` and the
+card renders greyed out.
+
+### Tables (read-only reference)
+
+| Table | Holds |
+|---|---|
+| `products` | name, slug, description, `selling_price`, `compare_at_price`, `cog`, `published`, `image_url` |
+| `product_images` | gallery rows: `image_url`, `storage_path`, `alt_text`, `sort_order`, `is_primary` |
+| `product_variants` | `attributes` jsonb, `stock_quantity`, `cog`, `price_adjustment` (variant price = product `selling_price` + adjustment) |
+
+Every row carries `org_id`, the fixed Mango Lover BD workspace. Note the rename across the boundary:
+Supabase stores `selling_price`, the public API emits `price`. Code here should follow the API shape
+(`StorefrontProduct` in `client/src/lib/storefront-products.ts`).
+
+Stock is deliberately served by a separate `/inventory` endpoint with a much shorter cache TTL than
+the catalog, so add-to-cart is never acting on stale stock. Read it via
+`fetchStorefrontProductInventory()` / `mergeInventory()`; don't infer stock from a catalog field.
+
+### The hardcoded arrays in `home.tsx` are not products
+
+`client/src/pages/home.tsx` still contains `latestDropProducts`, `whatsNewProducts`,
+`justArrivedProducts`, and `specialProducts` — leftover Stepprs clothing with `/new1.webp`-style
+images. These are placeholder demo data. **They never reach Supabase and never appear in the
+dashboard.** Retyping them with mango products would create a second source of truth that silently
+goes stale and can't be edited by anyone but a developer.
+
+The live catalog is already wired up in `client/src/pages/products.tsx`,
+`client/src/pages/product.tsx`, and `client/src/components/product-grid.tsx`. The right fix for the
+homepage is to replace those arrays with `fetchStorefrontProducts()` (sliced per section) so the
+dashboard drives the homepage too.
+
+`client/public/` is for fixed brand assets — logo, hero poster, favicons. Product photos belong in
+Supabase Storage.
+
+---
+
 ## Layout
 
 ```

@@ -95,7 +95,90 @@ build-time config or from the API key, never from user input.
 
 ---
 
-## 4. Layout and conventions
+## 4. Supabase and product data
+
+Products live in the **Mango Lover BD Supabase project** (`ldiktvcavyabivpxfwpn`), which the dashboard
+and this storefront share. But they reach it very differently.
+
+### You cannot add products from this repo
+
+This is enforced, not just conventional. `products`, `product_images`, and `product_variants` all have
+RLS enabled with **only a `service_role` policy** — no `anon` or `authenticated` policy exists. A
+browser holding a publishable/anon key can neither read nor write those tables. Only the dashboard's
+server, which holds `SUPABASE_SERVICE_ROLE_KEY`, can write them, and that key must never appear in
+this repo.
+
+So: **to add a product, use the dashboard's Products page** (`/products` in the Suite). It writes to
+Supabase, and this storefront picks it up within ~8 seconds with no commit and no deploy. There is no
+storefront-side path that creates a product, and adding one would mean shipping a service-role key to
+the browser — a full database compromise.
+
+### The write path (dashboard → Supabase)
+
+`POST /api/products/save` in the Suite's `server/index.js` inserts into `products` with `org_id` set to
+the fixed workspace, then inserts `product_variants` rows, then generates image embeddings in the
+background. `POST /api/products/:id/images` uploads to the `product-images` Storage bucket and inserts
+`product_images` rows. `PATCH /api/products/:id` edits; `POST /api/products/publish-all` publishes in bulk.
+
+### The read path (Supabase → this storefront)
+
+The Suite's `loadPublicProducts(orgId)` selects from `products` filtered by
+`org_id = <workspace>` **and `published = true`**, joins `product_images` and `product_variants`, and
+serializes through `toPublicProduct()`. That JSON is what
+`client/src/lib/storefront-products.ts` receives.
+
+**`published = true` is the gate.** A product saved but not published exists in Supabase, shows on the
+dashboard's Products page, and is invisible to the storefront. An empty `products` array from the API
+almost always means "nothing is published yet", not a storefront bug. `selling_price` must also be
+non-null or `available` comes back `false` and the card renders greyed out.
+
+### Schema (read-only reference — never write these from here)
+
+`products`: `id` uuid, `org_id` uuid, `name`, `slug`, `description`, `url`, `image_url`,
+`selling_price` numeric, `compare_at_price` numeric, `cog` numeric, `stock_quantity` int,
+`published` bool (default false), `published_at`, `source_url`, `created_at`, `updated_at`,
+`image_embedding`, `image_description`.
+
+`product_images`: `id`, `org_id`, `product_id`, `image_url`, `storage_path`, `alt_text`,
+`sort_order`, `is_primary`. Files live in the `product-images` Storage bucket.
+
+`product_variants`: `id`, `org_id`, `product_id`, `attributes` jsonb, `cog`, `stock_quantity` int,
+`price_adjustment` numeric (variant price = product `selling_price` + `price_adjustment`).
+
+Field-name mapping matters: Supabase stores **`selling_price`**, the public API emits **`price`**.
+Write against the API's shape (`StorefrontProduct` in `storefront-products.ts`), not the table's.
+
+Note for anyone debugging stock: variant stock is `product_variants.stock_quantity`, but
+product-level stock is currently written to `app_settings` as `<orgId>:product_stock:<productId>`
+rather than `products.stock_quantity`. That is a known dashboard-side inconsistency; from here, always
+read stock through the `/inventory` endpoint and never infer it from a catalog field.
+
+### Hardcoded demo arrays in `home.tsx` — do not mistake these for products
+
+`client/src/pages/home.tsx` still contains `latestDropProducts`, `whatsNewProducts`,
+`justArrivedProducts`, and `specialProducts` — hardcoded arrays of leftover Stepprs clothing with
+`/new1.webp`-style images. **They never touch Supabase and never appear in the dashboard.** Editing
+them creates a second, silently-stale source of truth.
+
+The live catalog is already wired into `client/src/pages/products.tsx`,
+`client/src/pages/product.tsx`, and `client/src/components/product-grid.tsx` via TanStack Query. The
+correct fix for the homepage is to replace those arrays with `fetchStorefrontProducts()` (sliced for
+each section), not to retype them with mango products.
+
+### Adding a product end to end
+
+1. Dashboard → Products → add the product with name, price, COG, description.
+2. Upload images there (they go to Supabase Storage, not `client/public/`).
+3. Add variants if the product has size/weight options.
+4. **Publish it** — unpublished products stay invisible to the storefront.
+5. Storefront picks it up within ~8s. Verify with the curl in the README; no deploy needed.
+
+Product photos belong in Supabase Storage. `client/public/` is for fixed brand assets — logo, hero
+poster, favicons — that are part of the design, not the catalog.
+
+---
+
+## 5. Layout and conventions
 
 ```
 client/index.html                    title + OG/Twitter meta
@@ -128,7 +211,7 @@ what this codebase already does.
 
 ---
 
-## 5. Branding
+## 6. Branding
 
 | Asset | File | Wired into |
 |---|---|---|
@@ -157,7 +240,7 @@ of orphaned hero images from the previous brand.
 
 ---
 
-## 6. Verification
+## 7. Verification
 
 ```bash
 npm run check                                    # tsc, no emit
@@ -184,17 +267,20 @@ file you edited is actually the one being rendered.
 
 ---
 
-## 7. Hard Rules
+## 8. Hard Rules
 
 1. **Never commit `.env`** or any file containing a secret. `.env` is gitignored — keep it that way.
 2. **Never expose `CUSTOM_ORDERS_API_KEY`, `META_ACCESS_TOKEN`, or any Supabase service-role key to
    the client**, and never move one behind a `VITE_` prefix.
 3. **No Supabase client and no direct database access in this repo.** Commerce data flows through the
-   Suite's `/api/public/v1/...` endpoints. (A read-only publishable-key revision subscription is the
-   only exception in the approved architecture — it does not exist here yet, and if it is added it is
-   notification-only, never writes.)
-4. **Never hardcode product, price, or stock data.** Those live in Supabase and are edited in the
-   dashboard. Hardcoding them creates a second source of truth that will silently go stale.
+   Suite's `/api/public/v1/...` endpoints. RLS on `products`, `product_images`, and `product_variants`
+   exposes only a `service_role` policy, so a browser key cannot read or write them anyway. (A
+   read-only publishable-key revision subscription is the only exception in the approved architecture —
+   it does not exist here yet, and if added it is notification-only, never writes.)
+4. **Never hardcode product, price, or stock data, and never add a product from this repo.** Products
+   are created on the dashboard's Products page, which writes to Supabase; this storefront only reads
+   them. Hardcoding creates a second source of truth that goes stale silently and never reaches the
+   dashboard.
 5. **All Suite catalog calls go through `client/src/lib/storefront-products.ts`.**
 6. **Never accept a workspace/org id from a visitor or URL.** It comes from build-time config or the
    API key.
@@ -209,7 +295,7 @@ file you edited is actually the one being rendered.
 
 ---
 
-## 8. Working style
+## 9. Working style
 
 - State assumptions; ask when a request has two plausible readings.
 - Smallest change that solves the problem. No speculative abstraction or configurability.
