@@ -291,39 +291,61 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
-            <p className="text-[10px] uppercase tracking-[0.2em] md:tracking-[0.4em] font-medium leading-[1.8] md:leading-[2.4] text-black/50 md:max-w-md md:text-balance leading-relaxed">
-              Defining the future of luxury couture through Swiss modernist principles and master craftsmanship.
+            <img
+              src={mangoLoverLogo}
+              alt="Mango Lover"
+              className="h-9 w-auto md:hidden"
+            />
+            <p className="text-[13px] font-bold leading-[2] text-black/60 md:max-w-md">
+              সাধ্যের মধ্যে সেরা মানের পন্য আপনার ও আপনার পরিবারের জন্য, যা আমরা পাঠাই একদম মাঠ পর্যায় থেকে, তাই পাচ্ছেন সাশ্রয়ী দামে সেরা মানের পন্যের নিশ্চয়তা।
             </p>
             <div className="flex gap-6">
               <Instagram className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
               <Twitter className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
               <Mail className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
             </div>
-          </div>
-
-          {/* Navigation Column */}
-          <div className="md:col-span-2 space-y-6">
-            <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-brand-gold block">Information</span>
-            <ul className="space-y-4 text-[10px] uppercase tracking-widest font-medium text-black/60">
-              <li><a href="#" className="hover:text-black transition-colors block">Shipping Policy</a></li>
-              <li><a href="#" className="hover:text-black transition-colors block">Terms and Conditions</a></li>
-              <li><a href="#" className="hover:text-black transition-colors block">Exchange and Return Policy</a></li>
-            </ul>
-          </div>
-
-
-
-          {/* Newsletter Column */}
-          <div className="md:col-span-4 space-y-6">
-            <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-brand-gold block">Newsletter</span>
-            <div className="flex border-b border-black/10 pb-4">
-              <input
-                type="email"
-                placeholder="JOIN THE ATELIER"
-                className="bg-transparent border-none outline-none flex-grow text-[9px] uppercase tracking-[0.4em] font-medium placeholder:text-black/20"
-              />
-              <button className="text-[9px] uppercase tracking-[0.4em] font-bold hover:text-brand-gold transition-colors">Join</button>
+            <div className="space-y-6 pt-2">
+              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block">Newsletter</span>
+              <div className="flex border-b border-black/10 pb-4">
+                <input
+                  type="email"
+                  placeholder="JOIN THE ATELIER"
+                  className="bg-transparent border-none outline-none flex-grow text-[9px] uppercase tracking-[0.4em] font-medium placeholder:text-black/20"
+                />
+                <button className="text-[9px] uppercase tracking-[0.4em] font-bold hover:text-brand-gold transition-colors">Join</button>
+              </div>
             </div>
+          </div>
+
+          {/* Link Columns */}
+          <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-12">
+            <div className="space-y-6">
+              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block">Information</span>
+              <ul className="space-y-4 text-[10px] uppercase tracking-widest font-medium text-black/60">
+                {["About us", "Contact us", "Company Information", "Mango Lover Stories", "Terms & Conditions", "Privacy Policy", "Careers", "Refund & Exchange"].map((label) => (
+                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-6">
+              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block">Shop By</span>
+              <ul className="space-y-4 text-[10px] uppercase tracking-widest font-medium text-black/60">
+                {["Oil & Ghee", "Honey", "Dates", "Spices", "Nuts & Seeds", "Beverage", "Home-Made Foods"].map((label) => (
+                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-6">
+              <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block">Support</span>
+              <ul className="space-y-4 text-[10px] uppercase tracking-widest font-medium text-black/60">
+                {["Support Center", "How to Order", "Order Tracking", "Payment & Shipping", "Frequently Asked Questions", "Consumer Policy"].map((label) => (
+                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                ))}
+              </ul>
+            </div>
+
           </div>
         </div>
 
