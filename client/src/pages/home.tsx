@@ -311,6 +311,17 @@ export default function Home() {
     );
   }
 
+  const categories = [
+    "হোমমেড",
+    "মধু",
+    "তেল ও ঘি",
+    "গুড় ও চিনি",
+    "লাচ্ছা সেমাই",
+    "ফ্রেশ আম",
+    "খেজুর",
+    "খাঁটি শস্য",
+  ];
+
   return (
     <Layout>
       {/* Hero Section */}
@@ -345,6 +356,47 @@ export default function Home() {
               </motion.div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="w-full bg-[#FAFAF8] py-14 md:py-20">
+        <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            className="text-center"
+          >
+            <p className="text-xs font-medium uppercase tracking-[0.35em] text-black/40">
+              Categories
+            </p>
+            <h2 className="mt-3 text-[clamp(1.75rem,4.5vw,2.5rem)] font-light tracking-[-0.02em] text-black">
+              আমাদের ক্যাটাগরিসমূহ
+            </h2>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
+            className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4"
+          >
+            {categories.map((label) => (
+              <Link
+                key={label}
+                href="/products"
+                className="group relative flex aspect-[4/3] items-center justify-center rounded-[14px] border border-black/[0.08] bg-white px-3 text-center transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-black/20 hover:shadow-[0_14px_34px_-16px_rgba(0,0,0,0.25)]"
+              >
+                <span className="relative text-[15px] font-medium tracking-[0.01em] text-black md:text-base">
+                  {label}
+                  <span className="absolute -bottom-2 left-1/2 h-px w-0 -translate-x-1/2 bg-black transition-[width] duration-300 ease-out group-hover:w-2/3" />
+                </span>
+              </Link>
+            ))}
+          </motion.div>
         </div>
       </section>
 
