@@ -90,7 +90,14 @@ function useReveal() {
       { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    // Fallback: some mobile Safari engines never fire the initial
+    // intersection callback, leaving content stuck at opacity:0 (blank page).
+    // Reveal after a short delay so the page is never invisible.
+    const fallback = window.setTimeout(() => setInView(true), 1000);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, []);
   return [ref, inView] as const;
 }
@@ -684,8 +691,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
+          animate="visible"
           transition={{ staggerChildren: 0.12 }}
           className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
         >

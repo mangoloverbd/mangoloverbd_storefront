@@ -181,7 +181,14 @@ function useReveal() {
       { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    // Fallback: some mobile Safari engines never fire the initial
+    // intersection callback, leaving content stuck at opacity:0 (blank page).
+    // Reveal after a short delay so the page is never invisible.
+    const fallback = window.setTimeout(() => setInView(true), 1000);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, []);
 
   return [ref, inView] as const;
@@ -349,8 +356,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
@@ -382,8 +388,7 @@ export default function Home() {
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
