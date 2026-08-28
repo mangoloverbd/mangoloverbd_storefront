@@ -81,7 +81,7 @@ export default function ProductsPage() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-[1500px] px-4 py-10 md:px-8 md:py-16 xl:px-12">
+      <div className="mx-auto max-w-[1500px] px-3 py-10 md:px-8 md:py-16 xl:px-12">
         <header className="mb-10 md:mb-16">
           <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-black/50">Shop</p>
           <h1 className="mt-3 text-[clamp(2.2rem,6vw,3.4rem)] font-bold leading-none tracking-[-0.04em] text-black">
