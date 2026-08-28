@@ -197,6 +197,19 @@ dashboard drives the homepage too.
 `client/public/` is for fixed brand assets — logo, hero poster, favicons. Product photos belong in
 Supabase Storage.
 
+### Supabase MCP (optional, for agents)
+
+`.mcp.json` (Claude Code) and `.codex/config.toml` (Codex/OpenCode) configure a project-scoped Supabase
+MCP server so an AI agent working in this repo can inspect the shared database — confirm a product row
+exists, check whether it is published, see why the catalog came back empty. Both are **read-only** and
+limited to the `docs,database,debugging,development` tool groups.
+
+Claude Code needs a one-time OAuth: run `/mcp`, select `supabase`, authenticate.
+
+This is developer tooling only. It runs in your agent's process under your own Supabase credentials,
+is not part of the shipped bundle, and gives the deployed storefront no database access. Schema
+changes and migrations stay in the dashboard repo.
+
 ---
 
 ## Layout
@@ -229,8 +242,15 @@ do not carry that convention across.
 `script/build.ts` fetches the live catalog and **overwrites**
 `client/src/lib/generated-storefront-products.ts`. While no products are published in the dashboard,
 every `npm run build` silently rewrites that file to an empty array, which shows up as a large
-unintended diff. Check `git status` after building and `git checkout -- client/src/lib/generated-storefront-products.ts`
-if it was clobbered. Never commit that emptied version.
+unintended diff.
+
+This is not limited to builds you run yourself. The global git hook at
+`~/.codex/git-hooks/pre-push` (active via `core.hooksPath`, since `.git/hooks/` is empty) runs
+`lint`, `typecheck`, `test`, and `build` — so **`git push` clobbers the file too**, and it reappears
+as an unstaged ~374-line deletion right after a push that looked clean.
+
+Check `git status` after every build *and* every push; restore with
+`git checkout -- client/src/lib/generated-storefront-products.ts`. Never commit the emptied version.
 
 ---
 
@@ -280,5 +300,5 @@ change. Run `npm run check` too — `tsc` catches what source-text tests cannot.
 Vercel auto-deploys on push to `main`. `vercel.json` sets `outputDirectory: dist/public`, SPA
 rewrites, and immutable cache headers on hashed assets.
 
-Before pushing: `npm run check`, run the tests, and confirm `git status` has no clobbered
-`generated-storefront-products.ts`.
+Before pushing: `npm run check` and run the tests. After pushing, run `git status` again — the
+global pre-push hook builds, which clobbers `generated-storefront-products.ts`.
