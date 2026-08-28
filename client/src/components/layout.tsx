@@ -145,7 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="flex h-14 items-center justify-between pl-2.5 pr-0.5 md:h-24 md:px-16">
+        <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
               <Link href="/collection"><a className="hover:text-brand-gold transition-colors">Collection</a></Link>
@@ -186,7 +186,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               onClick={() => setCartOpen(true)}
-              className="group relative flex h-9 items-center justify-center rounded-[8px] px-0 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
+              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
             >
               <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100 md:hidden" />
               {/* Icon on mobile, wordmark on desktop — the label stays in the
