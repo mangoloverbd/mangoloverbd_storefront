@@ -148,6 +148,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [reelsRef, reelsApi] = useEmblaCarousel({
     align: "center",
     loop: true,
+    dragFree: true,
+    duration: 45,
   });
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
@@ -633,22 +635,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Reels Section */}
-                <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden">
-                  <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-4">
+                <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
+                  <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
                     <div className="flex touch-pan-y items-center">
                       {[1, 2, 3].map((idx, reelIdx) => (
                         <div key={idx} className="relative h-[340px] flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black shadow-lg group">
-                          <motion.div
-                            initial={false}
-                            animate={shouldReduceMotion ? { opacity: 1, scale: 1, y: 0 } : {
-                              opacity: activeReel === reelIdx ? 1 : 0.72,
-                              scale: activeReel === reelIdx ? 1 : 0.92,
-                              y: activeReel === reelIdx ? 0 : 8,
-                            }}
-                            whileHover={shouldReduceMotion ? undefined : { opacity: 1, scale: 0.98, y: 0 }}
-                            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                            className="absolute inset-0"
-                          >
+                          <div className="absolute inset-0">
                             <video
                               autoPlay
                               muted
@@ -676,7 +668,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 Shop
                               </button>
                             </div>
-                          </motion.div>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -688,7 +680,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       </div>
 
       {/* You May Also Like Section */}
-      <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
+      <section className="w-full bg-[#f6f6f6] pb-10 md:pb-16 pt-0">
         <motion.div
           initial="hidden"
           animate="visible"
