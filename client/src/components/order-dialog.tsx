@@ -306,7 +306,7 @@ export default function OrderDialog({
                   </motion.div>
                 </motion.div>
               ) : (
-                <form onSubmit={placeOrder} className="mt-8 space-y-8" noValidate>
+                <form onSubmit={placeOrder} className="mt-6 space-y-6" noValidate>
                   <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
                     <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
                       <img
@@ -372,7 +372,7 @@ export default function OrderDialog({
                     />
                   </label>
 
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                       <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
                         Delivery Charge - ডেলিভারি চার্জ
                       </span>
@@ -413,7 +413,7 @@ export default function OrderDialog({
                     )}
                   </div>
 
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                     <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
                       Payment Method - পেমেন্ট পদ্ধতি
                     </span>
