@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -123,7 +123,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
 
   const [activeImage, setActiveImage] = useState(0);
-  const [activeReel, setActiveReel] = useState(0);
+  const reelMediaIds = ["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"];
+  const [currentReel, setCurrentReel] = useState(0);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -132,12 +133,17 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     loop: false,
     skipSnaps: false,
   });
-  const [reelsRef, reelsApi] = useEmblaCarousel({
-    align: "center",
-    loop: false,
-    dragFree: false,
-    duration: 25,
-  });
+  const goReel = (dir: number) => {
+    setCurrentReel((i) => Math.min(reelMediaIds.length - 1, Math.max(0, i + dir)));
+  };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") goReel(-1);
+      if (e.key === "ArrowRight") goReel(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -284,29 +290,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       galleryApi.off("reInit", syncActiveImage);
     };
   }, [galleryApi, displayGallery.length]);
-
-  useEffect(() => {
-    if (!reelsApi) return;
-
-    const syncActiveReel = () => setActiveReel(reelsApi.selectedScrollSnap());
-
-    const syncReelsInView = () => {
-      const next = reelsApi.slidesInView();
-      setReelsInView((prev) => {
-        const same = prev.length === next.length && prev.every((v, i) => v === next[i]);
-        return same ? prev : next;
-      });
-    };
-
-    syncActiveReel();
-    reelsApi.on("select", syncActiveReel);
-    reelsApi.on("reInit", syncActiveReel);
-
-    return () => {
-      reelsApi.off("select", syncActiveReel);
-      reelsApi.off("reInit", syncActiveReel);
-    };
-  }, [reelsApi]);
 
   const goToImage = (idx: number) => {
     galleryApi?.scrollTo(idx);
@@ -662,33 +645,82 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 </div>
 
-                {/* Reels Section */}
-                <div className="pt-8 space-y-4 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
-                  <div ref={reelsRef} className="w-full cursor-grab active:cursor-grabbing pb-1">
-                    <div className="flex touch-pan-y items-center">
-                      {["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"].map((wistiaMediaId, reelIdx) => {
-                        const reelActive = reelIdx === activeReel;
-                        return (
+                {/* Reels Section — single video viewer */}
+                <div className="pt-8 border-t border-black/5 mt-8 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
+                  <div className="relative mx-auto flex max-w-[460px] items-center gap-2 px-3 py-4">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Previous reel"
+                      disabled={currentReel === 0}
+                      onClick={() => goReel(-1)}
+                      className="shrink-0 rounded-full border border-black/10 bg-white/70 text-black hover:bg-black hover:text-white disabled:opacity-30"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </Button>
+
+                    <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-[12px] bg-black shadow-lg">
+                      <AnimatePresence mode="wait">
                         <motion.div
-                          key={`${wistiaMediaId}-${reelIdx}`}
-                          className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform h-[391px]`}
-                          animate={{
-                            scale: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.92,
-                            opacity: shouldReduceMotion ? 1 : reelIdx === activeReel ? 1 : 0.65,
-                          }}
-                          transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                          key={currentReel}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="absolute inset-0"
                         >
-                          <div className={`absolute inset-0 ${reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
-                            <wistia-player
-                              media-id={wistiaMediaId}
-                              aspect="0.5625"
-                              style={{ width: "100%", height: "100%", display: "block" }}
-                            />
-                          </div>
+                          <wistia-player
+                            media-id={reelMediaIds[currentReel]}
+                            aspect="0.5625"
+                            autoplay="true"
+                            muted="true"
+                            style={{ width: "100%", height: "100%", display: "block" }}
+                          />
                         </motion.div>
-                        );
-                      })}
+                      </AnimatePresence>
+
+                      <div className="absolute inset-x-2 bottom-2 p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[8px] flex items-center justify-between opacity-80">
+                        <div className="flex min-w-0 flex-col justify-center px-1.5 overflow-hidden">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-white line-clamp-2 leading-tight">{product?.name}</span>
+                          <span className="text-[9px] font-garet font-bold text-white mt-0.5">{selectedBundle?.price}</span>
+                        </div>
+                        <button
+                          disabled={isUnavailable || (selectedBundle?.amount ?? 0) <= 0}
+                          onClick={async () => {
+                            if (!product || !(await verifyOrderable())) return;
+                            addToCart(
+                              { id: getProductNumericId(product), title: `${product.name} (${selectedBundle?.title})`, price: selectedBundle?.price ?? "", image: displayImage },
+                              selectedBundle?.title ?? "",
+                            );
+                          }}
+                          className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2 rounded-[8px] text-[8px] font-bold uppercase tracking-widest transition-colors backdrop-blur-sm"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Next reel"
+                      disabled={currentReel === reelMediaIds.length - 1}
+                      onClick={() => goReel(1)}
+                      className="shrink-0 rounded-full border border-black/10 bg-white/70 text-black hover:bg-black hover:text-white disabled:opacity-30"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-1.5 pb-2">
+                    {reelMediaIds.map((_, i) => (
+                      <button
+                        key={i}
+                        aria-label={`Go to reel ${i + 1}`}
+                        onClick={() => setCurrentReel(i)}
+                        className={`h-1.5 rounded-full transition-all ${i === currentReel ? "w-5 bg-black" : "w-1.5 bg-black/25"}`}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
