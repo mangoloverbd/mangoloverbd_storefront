@@ -22,6 +22,21 @@ function BagIcon({ className }: { className?: string }) {
   );
 }
 
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M22 22L20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function MenuLinesIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -130,7 +145,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="flex h-14 items-center justify-between px-4 md:h-24 md:px-16">
+        <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
               <Link href="/collection"><a className="hover:text-brand-gold transition-colors">Collection</a></Link>
@@ -156,6 +171,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-6 md:gap-10">
+            {/* Search + Cart grouped so the search sits directly left of the cart on mobile */}
+            <div className="flex items-center gap-1">
+            {/* Search Button - Mobile only, left of cart */}
+            <Button
+              variant="ghost"
+              aria-label="Search"
+              className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 hover:bg-transparent [&_svg]:size-5 md:hidden"
+            >
+              <SearchIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
+            </Button>
+
             {/* Cart Button - Mobile & Desktop */}
             <Button
               variant="ghost"
@@ -174,6 +200,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               )}
             </Button>
+            </div>
 
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
               <Link href="/journal"><a className="hover:text-brand-gold transition-colors">Journal</a></Link>
