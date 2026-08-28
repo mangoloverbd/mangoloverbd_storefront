@@ -654,7 +654,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     আমরা ও আমাদের সত্যতা
                   </h2>
                   <div className="relative mx-auto w-full max-w-[380px]">
-                    <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black shadow-lg">
+                    <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={currentReel}
