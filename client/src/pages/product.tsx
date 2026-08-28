@@ -659,7 +659,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       <ChevronLeft className="h-5 w-5" />
                     </Button>
 
-                    <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-[12px] bg-black shadow-lg">
+                    <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-[6px] bg-black shadow-lg">
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={currentReel}
