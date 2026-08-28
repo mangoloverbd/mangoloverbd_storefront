@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, ChevronDown, Phone } from "lucide-react";
+import { ArrowDownRight, Phone } from "lucide-react";
+import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/cart-context";
 import Layout from "@/components/layout";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
 import { createEventId, trackMetaEvent } from "@/lib/meta";
+import { getProductDetailSections } from "@/lib/product-details";
 import { Counter } from "@/components/ui/animated-counter";
 import {
   fetchStorefrontProduct,
@@ -46,21 +48,6 @@ const staticBundles = [
   { id: 1, title: "1 Pair", price: "৳500", amount: 500 },
   { id: 2, title: "2 Pairs", price: "৳850", amount: 850 },
   { id: 3, title: "3 Pairs", price: "৳1350", amount: 1350 },
-];
-
-const featureGroups = [
-  {
-    label: "Core Feature",
-    details: ["Targeted Massage Nodes"],
-  },
-  {
-    label: "Support & Comfort",
-    details: ["Biomechanical Arch Support", "Thick Heel Cup & Cushioning"],
-  },
-  {
-    label: "Fit & Material",
-    details: ["Trimmable to Fit", "Breathable Vents"],
-  },
 ];
 
 // Use the direct catalog image URL. Vercel's image optimizer currently
@@ -134,7 +121,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [orderOpen, setOrderOpen] = useState(false);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(0);
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
-  const [openFeature, setOpenFeature] = useState<string | null>(null);
+
   const [activeImage, setActiveImage] = useState(0);
   const [activeReel, setActiveReel] = useState(0);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
@@ -210,6 +197,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
   const isLoading = !merchantAvailabilityKnown && !cachedProduct;
   const compareAtAmount = Number(product.compare_at_price);
+  const detailSections = getProductDetailSections(product);
+  const [openSection, setOpenSection] = useState(0);
 
   const verifyOrderable = async () => {
     if (isUnavailable) {
@@ -413,7 +402,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
             >
               <div className="flex-grow space-y-6 px-4 pb-10 pt-2 md:space-y-10 md:p-16 xl:p-20">
                 <div className="space-y-4 md:space-y-6">
-                  <h1 className="max-w-full break-words font-sans text-4xl font-semibold leading-tight tracking-tight text-black sm:text-5xl md:text-7xl">
+                  <h1 className="max-w-full break-words font-sans text-2xl font-semibold leading-tight tracking-tight text-black sm:text-3xl md:text-4xl lg:text-[2.75rem]">
                     {product.name}
                   </h1>
 
@@ -544,17 +533,27 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     </a>
                   </div>
 
-                  <div className="rounded-[8px] border border-black/10 bg-white/35 px-4 py-5 md:px-5">
-                    <div className="relative pb-1 pt-5">
-                      <div className="absolute left-[12%] right-[12%] top-8 h-px bg-black/15" />
-                      <div className="relative z-20 grid grid-cols-3 gap-3">
+                  <div className="rounded-[8px] border border-black/10 bg-white/35 px-3 py-3 md:px-4">
+                    <div className="relative pb-1 pt-2">
+                      <div className="absolute left-[16%] right-[16%] top-[18px] h-px bg-black/15" />
+                      <div className="relative z-20 grid grid-cols-3 gap-2">
                         {deliveryTimeline.map((item) => (
                           <div key={item.title} className="flex flex-col items-center text-center">
-                            <span className="mb-3 h-3 w-3 rounded-full border border-brand-gold bg-brand-ivory shadow-[0_0_0_4px_rgba(242,241,240,0.95)]" />
-                            <span className="font-garet text-[11px] font-bold uppercase tracking-[0.12em] text-brand-gold">
+                            <span className="mb-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand-ivory text-brand-gold">
+                              {item.title === "Order Placed" ? (
+                                <ShoppingBag className="h-5 w-5" weight="Filled" />
+                              ) : item.title === "Order Processed" ? (
+                                <ClipboardCheck className="h-5 w-5" weight="Filled" />
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                                  <path fillRule="evenodd" clipRule="evenodd" d="M1.25 5.5C1.25 3.70508 2.70507 2.25 4.5 2.25H12.5C14.2949 2.25 15.75 3.70507 15.75 5.5V5.75H18.5341C19.4165 5.75 20.2173 6.26571 20.5825 7.06894L22.6761 11.675C22.7213 11.7689 22.7476 11.8737 22.7498 11.9844L22.75 12.0017V16.5C22.75 17.7426 21.7426 18.75 20.5 18.75H19.7388C19.7462 18.8323 19.75 18.9157 19.75 19C19.75 20.5188 18.5188 21.75 17 21.75C15.4812 21.75 14.25 20.5188 14.25 19C14.25 18.9157 14.2538 18.8323 14.2612 18.75H9.73879C9.74621 18.8323 9.75 18.9157 9.75 19C9.75 20.5188 8.51878 21.75 7 21.75C5.48122 21.75 4.25 20.5188 4.25 19C4.25 18.9157 4.25379 18.8323 4.26121 18.75H3.5C2.25736 18.75 1.25 17.7426 1.25 16.5V5.5ZM17 17.75C16.3096 17.75 15.75 18.3096 15.75 19C15.75 19.6904 16.3096 20.25 17 20.25C17.6904 20.25 18.25 19.6904 18.25 19C18.25 18.3096 17.6904 17.75 17 17.75ZM5.75 19C5.75 18.3096 6.30964 17.75 7 17.75C7.69036 17.75 8.25 18.3096 8.25 19C8.25 19.6904 7.69036 20.25 7 20.25C6.30964 20.25 5.75 19.6904 5.75 19ZM15.75 11.25H20.8352L19.2169 7.68965C19.0952 7.4219 18.8282 7.25 18.5341 7.25H15.75V11.25Z" fill="currentColor" />
+                                </svg>
+                              )}
+                            </span>
+                            <span className="font-garet text-[10px] font-bold uppercase tracking-[0.1em] text-brand-gold">
                               {item.date}
                             </span>
-                            <span className="mt-2 block text-[8px] font-bold uppercase leading-4 tracking-[0.18em] text-black md:text-[9px] md:tracking-[0.24em]">
+                            <span className="mt-1 block text-[7px] font-bold uppercase leading-3 tracking-[0.16em] text-black md:text-[8px] md:tracking-[0.2em]">
                               {item.title}
                             </span>
                           </div>
@@ -564,73 +563,91 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 </div>
 
-                {/* Product Specifications */}
-                <div className="border border-black/10 bg-white/35 rounded-[8px] p-5 md:p-6">
-                  <div className="mb-5 flex items-center justify-between gap-4 border-b border-black/10 pb-4">
-                    <span className="text-[9px] uppercase tracking-[0.36em] font-bold text-brand-gold">
-                      Details
-                    </span>
-                    <span className="h-px flex-1 bg-black/10" />
-                    <span className="font-garet text-[10px] font-bold uppercase tracking-[0.24em] text-black/35">
-                      Features
+                {/* Product Details — compact, scannable list */}
+                <div className="border border-black/10 bg-white/35 rounded-[8px] p-4 md:p-5">
+                  <div className="mb-5 flex items-baseline gap-2">
+                    <h2
+                      className="text-[15px] font-normal text-black"
+                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                    >
+                      বিস্তারিত
+                    </h2>
+                    <span
+                      className="text-[11px] font-normal text-black/35"
+                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                    >
+                      বৈশিষ্ট্য
                     </span>
                   </div>
-                  <div className="w-full">
-                    {featureGroups.map((item) => {
-                      const isOpen = openFeature === item.label;
 
-                      return (
-                        <div key={item.label} className="border-b border-black/5 last:border-b-0">
+                  <div>
+                    <div
+                      role="tablist"
+                      className="flex gap-1 overflow-x-auto border-b border-black/10"
+                    >
+                      {detailSections.map((item, i) => {
+                        const active = openSection === i;
+                        return (
                           <button
+                            key={item.label}
                             type="button"
-                            aria-expanded={isOpen}
-                            onClick={() => setOpenFeature(isOpen ? null : item.label)}
-                            className="flex w-full items-center justify-between py-4 text-left"
+                            role="tab"
+                            aria-selected={active}
+                            onClick={() => setOpenSection(i)}
+                            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 text-[11px] transition-colors ${
+                              active
+                                ? "border-black text-black"
+                                : "border-transparent text-black/40"
+                            }`}
+                            style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                           >
-                            <span className="text-[8px] uppercase tracking-[0.28em] font-bold text-black/35">
-                              {item.label}
-                            </span>
-                            <motion.span
-                              animate={{ rotate: isOpen ? 180 : 0 }}
-                              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                              className="text-black/35"
-                              aria-hidden="true"
-                            >
-                              <ChevronDown className="h-4 w-4" />
-                            </motion.span>
+                            {item.label}
                           </button>
+                        );
+                      })}
+                    </div>
 
-                          <AnimatePresence initial={false}>
-                            {isOpen && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                                className="overflow-hidden"
-                              >
-                                <motion.div
-                                  initial={{ y: -6 }}
-                                  animate={{ y: 0 }}
-                                  exit={{ y: -6 }}
-                                  transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                                  className="grid gap-2 pb-4 pt-0"
-                                >
-                                  {item.details.map((detail) => (
-                                    <span
-                                      key={detail}
-                                      className="block text-[11px] uppercase tracking-[0.16em] font-medium leading-6 text-black/75 md:text-[12px]"
-                                    >
-                                      {detail}
-                                    </span>
-                                  ))}
-                                </motion.div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      );
-                    })}
+                    <div className="pt-4">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={openSection}
+                          role="tabpanel"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        >
+                          {(() => {
+                            const item = detailSections[openSection];
+                            return (
+                              <div className="space-y-1.5 text-center">
+                                {item.body?.map((paragraph, idx) => (
+                                  <p
+                                    key={idx}
+                                    className="text-[11px] leading-[1.7] tracking-[0.01em] text-black/55"
+                                  >
+                                    {paragraph}
+                                  </p>
+                                ))}
+                                {item.details?.length ? (
+                                  <ul className="space-y-1 text-center">
+                                    {item.details.map((detail) => (
+                                      <li
+                                        key={detail}
+                                        className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.03em] font-medium leading-5 text-black/70"
+                                      >
+                                        <span className="h-1 w-1 shrink-0 rounded-full bg-brand-gold" />
+                                        {detail}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : null}
+                              </div>
+                            );
+                          })()}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
 
