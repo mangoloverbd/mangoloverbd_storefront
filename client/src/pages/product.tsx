@@ -124,7 +124,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [activeReel, setActiveReel] = useState(0);
-  const [reelsInView, setReelsInView] = useState<number[]>([0]);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -300,19 +299,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     };
 
     syncActiveReel();
-    syncReelsInView();
     reelsApi.on("select", syncActiveReel);
-    reelsApi.on("reInit", () => {
-      syncActiveReel();
-      syncReelsInView();
-    });
-    reelsApi.on("scroll", syncReelsInView);
+    reelsApi.on("reInit", syncActiveReel);
 
     return () => {
       reelsApi.off("select", syncActiveReel);
       reelsApi.off("reInit", syncActiveReel);
-      reelsApi.off("reInit", syncReelsInView);
-      reelsApi.off("scroll", syncReelsInView);
     };
   }, [reelsApi]);
 
@@ -681,7 +673,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
                           <div className={`absolute inset-0 ${isWistia && reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
                             {isWistia ? (
-                              reelsInView.includes(reelIdx) ? (
+                              reelIdx === activeReel ? (
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
