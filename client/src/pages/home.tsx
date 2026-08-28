@@ -319,7 +319,7 @@ export default function Home() {
     { label: "Lachcha Semai-লাচ্ছা সেমাই", image: "/categories/lachcha-1.webp" },
     { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1.webp" },
     { label: "Dates-খেজুর", image: "/categories/dates-1.webp" },
-    { label: "Pure Grains-খাঁটি শস্য", image: "/categories/category-default.png" },
+    { label: "Nuts & Seeds-বাদাম ও বীজ", image: "/categories/nuts-1.webp" },
   ];
 
   return (
