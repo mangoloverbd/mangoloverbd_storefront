@@ -646,7 +646,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Reels Section — single video viewer */}
-                <div className="pt-4 mt-4 -mx-4 md:mx-0 overflow-hidden bg-brand-ivory">
+                <div className="pt-4 mt-4 -mx-4 md:mx-0 md:mt-0 md:pt-0 overflow-hidden bg-brand-ivory">
                   <h2
                     className="mb-3 text-center text-[1.4rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
                     style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
