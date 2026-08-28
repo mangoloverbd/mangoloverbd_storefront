@@ -661,44 +661,54 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       {[1, 2, 3].map((idx, reelIdx) => (
                         <div key={idx} className="relative h-[340px] flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group">
                           <div className="absolute inset-0">
-                            <video
-                              autoPlay
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover brightness-95"
-                            >
-                              <source src={`/vid_0${idx}.mp4`} type="video/mp4" />
-                            </video>
+                            {idx === 1 ? (
+                              <wistia-player
+                                media-id="4i954w3zt8"
+                                aspect="0.5625"
+                                style={{ width: "100%", height: "100%", display: "block" }}
+                              />
+                            ) : (
+                              <>
+                                <video
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  preload="metadata"
+                                  className="w-full h-full object-cover brightness-95"
+                                >
+                                  <source src={`/vid_0${idx}.mp4`} type="video/mp4" />
+                                </video>
 
-                            <div className="absolute inset-x-2 bottom-2 p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[8px] flex items-center justify-between opacity-80 transition-all duration-300 group-hover:opacity-100">
-                              <div className="flex min-w-0 flex-col justify-center px-1.5 overflow-hidden">
-                                <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-white line-clamp-2 leading-tight">{product?.name}</span>
-                                <span className="text-[9px] font-garet font-bold text-white mt-0.5">{selectedBundle?.price}</span>
-                              </div>
-                              <button
-                                disabled={isUnavailable || (selectedBundle?.amount ?? 0) <= 0}
-                                onClick={async () => {
-                                  if (!product || !(await verifyOrderable())) {
-                                    return;
-                                  }
+                                <div className="absolute inset-x-2 bottom-2 p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[8px] flex items-center justify-between opacity-80 transition-all duration-300 group-hover:opacity-100">
+                                  <div className="flex min-w-0 flex-col justify-center px-1.5 overflow-hidden">
+                                    <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-white line-clamp-2 leading-tight">{product?.name}</span>
+                                    <span className="text-[9px] font-garet font-bold text-white mt-0.5">{selectedBundle?.price}</span>
+                                  </div>
+                                  <button
+                                    disabled={isUnavailable || (selectedBundle?.amount ?? 0) <= 0}
+                                    onClick={async () => {
+                                      if (!product || !(await verifyOrderable())) {
+                                        return;
+                                      }
 
-                                  addToCart(
-                                    {
-                                      id: getProductNumericId(product),
-                                      title: `${product.name} (${selectedBundle?.title})`,
-                                      price: selectedBundle?.price ?? "",
-                                      image: displayImage,
-                                    },
-                                    selectedBundle?.title ?? "",
-                                  );
-                                }}
-                                className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2 rounded-[8px] text-[8px] font-bold uppercase tracking-widest transition-colors backdrop-blur-sm"
-                              >
-                                Add to Cart
-                              </button>
-                            </div>
+                                      addToCart(
+                                        {
+                                          id: getProductNumericId(product),
+                                          title: `${product.name} (${selectedBundle?.title})`,
+                                          price: selectedBundle?.price ?? "",
+                                          image: displayImage,
+                                        },
+                                        selectedBundle?.title ?? "",
+                                      );
+                                    }}
+                                    className="shrink-0 bg-white/20 hover:bg-white text-white hover:text-black disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2 rounded-[8px] text-[8px] font-bold uppercase tracking-widest transition-colors backdrop-blur-sm"
+                                  >
+                                    Add to Cart
+                                  </button>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       ))}
