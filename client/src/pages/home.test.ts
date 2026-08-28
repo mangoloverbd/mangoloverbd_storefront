@@ -85,7 +85,7 @@ test("renders a full-bleed editorial hero", () => {
   assert.match(homeSource, /className="relative min-h-\[640px\] w-full overflow-hidden bg-\[#FBBB14\] md:min-h-\[760px\]"/);
   // The poster is portrait and carries its own baked-in headline: contain it so
   // no edge type is cropped, and keep the overlay click-through except on the CTA.
-  assert.match(homeSource, /className="h-full w-full object-contain object-center"/);
+  assert.match(homeSource, /className="h-full w-full object-contain object-top md:object-center"/);
   assert.match(homeSource, /pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end/);
   assert.match(homeSource, /pointer-events-auto inline-flex w-fit/);
   assert.match(homeSource, /md:px-7 md:py-3 md:text-base/);
