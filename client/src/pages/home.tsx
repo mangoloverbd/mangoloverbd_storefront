@@ -317,7 +317,7 @@ export default function Home() {
     { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/category-default.png" },
     { label: "Jaggery & Sugar-গুড় ও চিনি", image: "/categories/jaggery-1.webp" },
     { label: "Lachcha Semai-লাচ্ছা সেমাই", image: "/categories/lachcha-1.webp" },
-    { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/category-default.png" },
+    { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1.webp" },
     { label: "Dates-খেজুর", image: "/categories/category-default.png" },
     { label: "Pure Grains-খাঁটি শস্য", image: "/categories/category-default.png" },
   ];
