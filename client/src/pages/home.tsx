@@ -34,6 +34,14 @@ const latestDropProducts = [
 
 const whatsNewProducts = [
   {
+    id: 205,
+    title: "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
+    slug: "black-seed-flower-honey",
+    price: "৳ 700.00 – ৳ 1,400.00",
+    sizeLabel: "Default",
+    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
+  },
+  {
     id: 201,
     title: "Black Blazer Dress",
     slug: "black-blazer-dress",
