@@ -124,6 +124,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [activeReel, setActiveReel] = useState(0);
+  const [reelsInView, setReelsInView] = useState<number[]>([0]);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -136,7 +137,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     align: "center",
     loop: true,
     dragFree: true,
-    duration: 45,
+    duration: 25,
   });
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
@@ -290,13 +291,28 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
     const syncActiveReel = () => setActiveReel(reelsApi.selectedScrollSnap());
 
+    const syncReelsInView = () => {
+      const next = reelsApi.slidesInView();
+      setReelsInView((prev) => {
+        const same = prev.length === next.length && prev.every((v, i) => v === next[i]);
+        return same ? prev : next;
+      });
+    };
+
     syncActiveReel();
+    syncReelsInView();
     reelsApi.on("select", syncActiveReel);
-    reelsApi.on("reInit", syncActiveReel);
+    reelsApi.on("reInit", () => {
+      syncActiveReel();
+      syncReelsInView();
+    });
+    reelsApi.on("scroll", syncReelsInView);
 
     return () => {
       reelsApi.off("select", syncActiveReel);
       reelsApi.off("reInit", syncActiveReel);
+      reelsApi.off("reInit", syncReelsInView);
+      reelsApi.off("scroll", syncReelsInView);
     };
   }, [reelsApi]);
 
@@ -662,14 +678,21 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         const wistiaMediaId = idx === 1 ? "4i954w3zt8" : idx === 2 ? "cynh4qrcls" : idx === 3 ? "6hjeb0mxzy" : null;
                         const isWistia = Boolean(wistiaMediaId);
                         return (
-                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
-                          <div className="absolute inset-0">
+                        <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
+                          <div className={`absolute inset-0 ${isWistia && reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
                             {isWistia ? (
+                              reelsInView.includes(reelIdx) ? (
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
                                 style={{ width: "100%", height: "100%", display: "block" }}
                               />
+                              ) : (
+                                <div
+                                  className="absolute inset-0 bg-cover bg-center"
+                                  style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/swatch)` }}
+                                />
+                              )
                             ) : (
                               <>
                                 <video
