@@ -674,74 +674,82 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       </div>
 
       {/* You May Also Like Section */}
-      <section className="w-full bg-brand-ivory border-t border-black/20 pt-6 pb-16">
+      <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           ref={mayAlsoRef}
           initial="hidden"
           animate={mayAlsoInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
-          className="mx-auto max-w-[1440px] px-4 md:px-16"
+          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
         >
-          <motion.h2
+          <motion.div
             variants={reveal}
             transition={transition}
-            className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black mb-5 md:mb-6"
+            className="mb-7 flex items-start justify-between gap-6 md:mb-12"
           >
-            <span className="font-medium">আমাদের</span>{" "}
-            <span
-              className="relative inline-block"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+            <motion.h2
+              className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black"
             >
-              আরও কিছু পণ্য
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 120 60"
-                preserveAspectRatio="none"
-                className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                style={{ overflow: "visible" }}
+              <span className="font-medium">আমাদের</span>{" "}
+              <span
+                className="relative inline-block"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                <path
-                  d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                  fill="none"
-                  stroke="#FBBB14"
-                  strokeWidth="4.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </motion.h2>
+                আরও কিছু পণ্য
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 120 60"
+                  preserveAspectRatio="none"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
+                  style={{ overflow: "visible" }}
+                >
+                  <path
+                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeWidth="4.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </motion.h2>
+
+            <Link
+              href="/products"
+              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
+            >
+              Discover More
+            </Link>
+          </motion.div>
 
           <motion.div
             transition={{ staggerChildren: 0.08 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-[1px] md:gap-8 bg-black/10 md:bg-transparent"
+            className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4"
           >
             {relatedProducts.map((p) => (
-              <motion.div
+              <motion.article
                 key={p.slug}
                 variants={reveal}
                 transition={transition}
-                className="group flex cursor-pointer flex-col bg-brand-ivory"
+                className="group bg-[#f6f6f6]"
               >
-                <Link href={`/product/${p.slug}`} className="block">
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#f6f6f6]">
+                <Link href={`/product/${p.slug}`} className="block h-full">
+                  <div className="aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
                     <img
                       src={optimizedImage(p.image_url, 500)}
                       alt={p.name ?? ""}
+                      loading="lazy"
                       className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
-                </Link>
-                <Link href={`/product/${p.slug}`} className="block px-3 md:px-0 pt-3 pb-4 md:pt-4 md:pb-6 flex flex-col gap-1 md:gap-1.5 border-t border-black/5">
-                  <h3 className="text-[11px] md:text-lg font-display font-light uppercase tracking-tight leading-tight text-black line-clamp-1">
-                    {p.name}
-                  </h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] md:text-[10px] font-garet font-bold">
-                      {formatProductPrice(p.price)}
-                    </span>
+                  <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
+                    <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
+                      {p.name}
+                    </h3>
+                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{formatProductPrice(p.price)}</p>
                   </div>
                 </Link>
-              </motion.div>
+              </motion.article>
             ))}
           </motion.div>
         </motion.div>
