@@ -312,14 +312,14 @@ export default function Home() {
   }
 
   const categories = [
-    { label: "হোমমেড", image: "/categories/category-default.png" },
-    { label: "মধু", image: "/categories/honey.webp" },
-    { label: "তেল ও ঘি", image: "/categories/category-default.png" },
-    { label: "গুড় ও চিনি", image: "/categories/category-default.png" },
-    { label: "লাচ্ছা সেমাই", image: "/categories/category-default.png" },
-    { label: "ফ্রেশ আম", image: "/categories/category-default.png" },
-    { label: "খেজুর", image: "/categories/category-default.png" },
-    { label: "খাঁটি শস্য", image: "/categories/category-default.png" },
+    { label: "Homemade-হোমমেড", image: "/categories/category-default.png" },
+    { label: "Honey-মধু", image: "/categories/honey.webp" },
+    { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/category-default.png" },
+    { label: "Jaggery & Sugar-গুড় ও চিনি", image: "/categories/category-default.png" },
+    { label: "Lachcha Semai-লাচ্ছা সেমাই", image: "/categories/category-default.png" },
+    { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/category-default.png" },
+    { label: "Dates-খেজুর", image: "/categories/category-default.png" },
+    { label: "Pure Grains-খাঁটি শস্য", image: "/categories/category-default.png" },
   ];
 
   return (
@@ -416,8 +416,9 @@ export default function Home() {
                     className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
-                <span className="mt-3 text-[13px] font-semibold tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                  {label}
+                <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
+                  <span className="block md:inline">{label.split("-")[0]}-</span>
+                  <span className="block md:inline">{label.split("-")[1]}</span>
                 </span>
               </Link>
             ))}
