@@ -135,7 +135,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [reelsRef, reelsApi] = useEmblaCarousel({
     align: "center",
     loop: true,
-    dragFree: true,
+    dragFree: false,
     duration: 25,
   });
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
