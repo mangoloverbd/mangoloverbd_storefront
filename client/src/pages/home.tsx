@@ -404,7 +404,8 @@ export default function Home() {
                 <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
                   {label.includes("-") ? (
                     <>
-                      <span className="block md:inline">{label.split("-")[0]}-</span>
+                      <span className="block md:inline">{label.split("-")[0]}</span>
+                      <span className="hidden md:inline">-</span>
                       <span className="block md:inline">{label.split("-")[1]}</span>
                     </>
                   ) : (
