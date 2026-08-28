@@ -100,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-black/5 bg-brand-ivory/80 backdrop-blur-md transition-all duration-300">
-        <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
+        <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-3 md:px-16">
           <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
             <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
               <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
@@ -130,7 +130,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="flex h-14 items-center justify-between px-4 md:h-24 md:px-16">
+        <div className="flex h-14 items-center justify-between px-3 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
               <Link href="/collection"><a className="hover:text-brand-gold transition-colors">Collection</a></Link>
@@ -288,7 +288,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Luxury Swiss Grid Footer */}
       <footer className="border-t border-black/10 bg-white text-black/70 pt-12 md:pt-24">
         {/* Main Grid Content */}
-        <div className="grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-3 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
             <img
@@ -357,7 +357,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
+        <div className="bg-transparent border-t border-black/10 px-3 sm:px-8 md:px-16 py-8">
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-[9px] uppercase tracking-[0.4em] text-black/40 text-center md:text-left">
               Website designed and developed by <a href="https://api.whatsapp.com/send/?phone=8801301636461" className="text-black font-bold normal-case">Arc Labs Corporation</a> / <span className="tracking-normal normal-case">© 2026 ম্যাংগো লাভার - Mango Lover</span>
