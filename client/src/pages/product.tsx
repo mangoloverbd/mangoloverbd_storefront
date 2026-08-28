@@ -310,9 +310,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const deliveredDate = new Date(processedDate);
   deliveredDate.setDate(processedDate.getDate() + 1);
   const deliveryTimeline = [
-    { title: "Order Placed", date: formatTimelineDate(today) },
-    { title: "Order Processed", date: formatTimelineDate(processedDate) },
-    { title: "Delivered", date: formatTimelineDate(deliveredDate) },
+    { title: "অর্ডার গ্রহণ", date: formatTimelineDate(today) },
+    { title: "প্রসেসিং", date: formatTimelineDate(processedDate) },
+    { title: "ডেলিভারি", date: formatTimelineDate(deliveredDate) },
   ];
 
   const orderBundle: OrderDialogBundle = {
@@ -533,27 +533,30 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     </a>
                   </div>
 
-                  <div className="rounded-[8px] border border-black/10 bg-white/35 px-3 py-3 md:px-4">
+                  <div className="rounded-[8px] border border-black/[0.06] bg-white/20 px-3 py-4 md:px-4">
                     <div className="relative pb-1 pt-2">
-                      <div className="absolute left-[16%] right-[16%] top-[18px] h-px bg-black/15" />
+                      <div className="absolute left-[14%] right-[14%] top-[16px] h-px bg-black/10" />
                       <div className="relative z-20 grid grid-cols-3 gap-2">
                         {deliveryTimeline.map((item) => (
                           <div key={item.title} className="flex flex-col items-center text-center">
-                            <span className="mb-2 flex h-5 w-5 items-center justify-center rounded-full bg-brand-ivory text-brand-gold">
-                              {item.title === "Order Placed" ? (
-                                <ShoppingBag className="h-5 w-5" weight="Filled" />
-                              ) : item.title === "Order Processed" ? (
-                                <ClipboardCheck className="h-5 w-5" weight="Filled" />
+                            <span className="mb-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-ivory text-brand-gold">
+                              {item.title === "অর্ডার গ্রহণ" ? (
+                                <ShoppingBag className="h-4 w-4" weight="Filled" />
+                              ) : item.title === "প্রসেসিং" ? (
+                                <ClipboardCheck className="h-4 w-4" weight="Filled" />
                               ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
                                   <path fillRule="evenodd" clipRule="evenodd" d="M1.25 5.5C1.25 3.70508 2.70507 2.25 4.5 2.25H12.5C14.2949 2.25 15.75 3.70507 15.75 5.5V5.75H18.5341C19.4165 5.75 20.2173 6.26571 20.5825 7.06894L22.6761 11.675C22.7213 11.7689 22.7476 11.8737 22.7498 11.9844L22.75 12.0017V16.5C22.75 17.7426 21.7426 18.75 20.5 18.75H19.7388C19.7462 18.8323 19.75 18.9157 19.75 19C19.75 20.5188 18.5188 21.75 17 21.75C15.4812 21.75 14.25 20.5188 14.25 19C14.25 18.9157 14.2538 18.8323 14.2612 18.75H9.73879C9.74621 18.8323 9.75 18.9157 9.75 19C9.75 20.5188 8.51878 21.75 7 21.75C5.48122 21.75 4.25 20.5188 4.25 19C4.25 18.9157 4.25379 18.8323 4.26121 18.75H3.5C2.25736 18.75 1.25 17.7426 1.25 16.5V5.5ZM17 17.75C16.3096 17.75 15.75 18.3096 15.75 19C15.75 19.6904 16.3096 20.25 17 20.25C17.6904 20.25 18.25 19.6904 18.25 19C18.25 18.3096 17.6904 17.75 17 17.75ZM5.75 19C5.75 18.3096 6.30964 17.75 7 17.75C7.69036 17.75 8.25 18.3096 8.25 19C8.25 19.6904 7.69036 20.25 7 20.25C6.30964 20.25 5.75 19.6904 5.75 19ZM15.75 11.25H20.8352L19.2169 7.68965C19.0952 7.4219 18.8282 7.25 18.5341 7.25H15.75V11.25Z" fill="currentColor" />
                                 </svg>
                               )}
                             </span>
-                            <span className="font-garet text-[10px] font-bold uppercase tracking-[0.1em] text-brand-gold">
+                            <span className="font-garet text-[10px] font-normal tracking-[0.03em] text-black/45">
                               {item.date}
                             </span>
-                            <span className="mt-1 block text-[7px] font-bold uppercase leading-3 tracking-[0.16em] text-black md:text-[8px] md:tracking-[0.2em]">
+                            <span
+                              className="mt-1 block text-[11px] font-normal leading-3 text-black/80"
+                              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                            >
                               {item.title}
                             </span>
                           </div>
