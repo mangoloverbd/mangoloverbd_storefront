@@ -745,7 +745,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 <Link href={`/product/${p.slug}`} className="block h-full">
                   <div className="aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
                     <img
-                      src={optimizedImage(p.image_url, 500)}
+                      src={optimizedImage(p.image_url, 640)}
                       alt={p.name ?? ""}
                       loading="lazy"
                       className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
