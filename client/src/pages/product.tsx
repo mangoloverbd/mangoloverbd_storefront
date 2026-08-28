@@ -13,6 +13,7 @@ import { Counter } from "@/components/ui/animated-counter";
 import {
   fetchStorefrontProduct,
   fetchStorefrontProductInventory,
+  fetchStorefrontProducts,
   findGeneratedStorefrontProduct,
   formatProductPrice,
   formatProductPriceRange,
@@ -133,7 +134,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [activeReel, setActiveReel] = useState(0);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [mayAlsoRef, mayAlsoInView] = useReveal();
   const [galleryRef, galleryApi] = useEmblaCarousel({
     align: "start",
     containScroll: false,
@@ -158,12 +158,20 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
+  const { data: catalogProducts } = useQuery({
+    queryKey: ["merchant-suite-products-listing"],
+    queryFn: fetchStorefrontProducts,
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
+  });
+
   const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug) || staticProduct;
   const product = mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
 
-  const relatedProducts = generatedStorefrontProducts
+  const relatedSource =
+    catalogProducts && catalogProducts.length ? catalogProducts : generatedStorefrontProducts;
+  const relatedProducts = relatedSource
     .filter((p) => p.slug !== product?.slug)
-    .slice(0, 6);
+    .slice(0, 8);
   const bundles = (() => {
     if (slug === "stepprs-massage-insoles") return staticBundles;
     const variants = product?.variants?.filter((variant) => {
@@ -677,9 +685,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       {/* You May Also Like Section */}
       <section className="w-full bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
-          ref={mayAlsoRef}
           initial="hidden"
-          animate={mayAlsoInView ? "visible" : "hidden"}
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ staggerChildren: 0.12 }}
           className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
         >
