@@ -38,10 +38,38 @@ function MenuLinesIcon({ className }: { className?: string }) {
   );
 }
 
+const DHAKA_TIME_ZONE = "Asia/Dhaka";
+const SECONDS_PER_DAY = 24 * 60 * 60;
+
+const pad = (value: number) => value.toString().padStart(2, "0");
+
+// Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
+// clock and the sale countdown both follow the shop's own day.
+function dhakaClock(now: Date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: DHAKA_TIME_ZONE,
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(now);
+  const value = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+  return { hours: value("hour"), minutes: value("minute"), seconds: value("second") };
+}
+
+// The sale rolls over at midnight Bangladesh time, so there is no hardcoded end
+// date here to go stale. Swap this for a dashboard-driven deadline if the sale
+// ever needs a fixed one.
+function saleCountdown({ hours, minutes, seconds }: ReturnType<typeof dhakaClock>) {
+  const remaining = SECONDS_PER_DAY - (hours * 3600 + minutes * 60 + seconds);
+  return `${pad(Math.floor(remaining / 3600))}:${pad(Math.floor((remaining % 3600) / 60))}:${pad(remaining % 60)}`;
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
   const [time, setTime] = useState('');
+  const [countdown, setCountdown] = useState('');
   const { setIsOpen: setCartOpen, itemCount } = useCart();
 
   useEffect(() => {
@@ -56,15 +84,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [isOpen]);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      setTime(`${hours}:${minutes}`);
+    const tick = () => {
+      const clock = dhakaClock(new Date());
+      setTime(`${pad(clock.hours)}:${pad(clock.minutes)}`);
+      setCountdown(saleCountdown(clock));
     };
 
-    updateTime();
-    const intervalId = setInterval(updateTime, 1000);
+    tick();
+    const intervalId = setInterval(tick, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -73,27 +100,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b border-black/5 bg-brand-ivory/80 backdrop-blur-md transition-all duration-300">
-        <div className="bg-black border-b border-white/10 px-4 md:px-16">
-          <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center md:justify-between">
-            <div className="hidden md:flex items-center gap-4 text-[9px] uppercase tracking-[0.45em] font-bold text-white/45">
-              <span className="normal-case">Stepprs Dispatch</span>
-              <span className="h-px w-10 bg-white/15" />
-              <span>SS26</span>
+        <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
+          <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
+            <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
+              <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
+              <span>Mango season</span>
             </div>
-            <div className="relative flex h-full min-w-0 flex-1 items-center justify-center overflow-hidden md:flex-none md:min-w-[480px]">
-              <motion.p
-                initial={{ opacity: 0, y: "-20%" }}
-                animate={{ opacity: 1, y: "-50%" }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-x-0 top-1/2 text-center text-[8px] uppercase tracking-[0.18em] md:text-[9px] md:tracking-[0.5em] font-medium text-white/65"
-              >
-                Free delivery over ৳2500
-              </motion.p>
-            </div>
-            <div className="hidden md:flex items-center gap-4 text-[9px] uppercase tracking-[0.45em] font-bold text-white/45">
-              <span>Dhaka</span>
-              <span className="h-px w-10 bg-white/15" />
-              <span>{time} BST</span>
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="flex min-w-0 items-center gap-2 text-[8px] font-bold uppercase tracking-[0.12em] md:gap-4 md:text-[9px] md:tracking-[0.24em]"
+            >
+              <span className="whitespace-nowrap">Free delivery over ৳2500</span>
+              <span className="h-3 w-px shrink-0 bg-[#163B33]/25" />
+              <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
+                <span className="hidden md:inline">Sale&nbsp;</span>ends in
+                <span className="rounded-[3px] bg-[#163B33] px-1.5 py-0.5 tabular-nums tracking-[0.08em] text-[#FBBB14]">
+                  {countdown}
+                </span>
+              </span>
+            </motion.div>
+            <div className="hidden items-center gap-2 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
+              <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#163B33]/60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#163B33]" />
+              </span>
+              <span>Dhaka {time}</span>
             </div>
           </div>
         </div>
