@@ -413,28 +413,34 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   ) : null}
                 </div>
 
-                <div className="space-y-3 md:space-y-4">
-                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60 md:pb-2">
-                    Select Bundle
+                <div className="space-y-2.5 md:space-y-3">
+                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                    Select Size
                   </span>
-                  <div className="grid grid-cols-3 gap-2 md:pt-3">
-                    {bundles.map((bundle, idx) => (
-                      <button
-                        key={bundle.id}
-                        type="button"
-                        onClick={() => setSelectedBundleIdx(idx)}
-                        className={`relative flex flex-col items-center justify-center rounded-[8px] border px-1 py-1.5 text-center transition-all md:px-3 md:py-2.5 ${
-                          selectedBundleIdx === idx
-                            ? "border-black bg-black text-white"
-                            : "border-black/20 bg-transparent text-black hover:border-black/50"
-                        }`}
-                      >
-                        <span className="mb-1 block text-[11px] font-bold uppercase tracking-widest">
-                          {bundle.title}
-                        </span>
-                        <span className="block text-[13px] font-garet">{bundle.price}</span>
-                      </button>
-                    ))}
+                  <div className="grid grid-cols-2 gap-2">
+                    {bundles.map((bundle, idx) => {
+                      const selected = selectedBundleIdx === idx;
+                      return (
+                        <button
+                          key={bundle.id}
+                          type="button"
+                          onClick={() => setSelectedBundleIdx(idx)}
+                          aria-pressed={selected}
+                          className={`flex flex-col items-center justify-center rounded-[6px] border px-3 py-1.5 text-center transition-all duration-200 ${
+                            selected
+                              ? "border-black bg-black text-white"
+                              : "border-black/15 bg-white text-black hover:border-black/40"
+                          }`}
+                        >
+                          <span className="text-[11px] font-medium tracking-[0.04em]">
+                            {bundle.title}
+                          </span>
+                          <span className="mt-0.5 text-[11px] font-light font-garet">
+                            {bundle.price}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
