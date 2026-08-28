@@ -11,21 +11,35 @@ import ProductPage from "@/pages/product";
 import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 function PageTransition({ children }: { children: ReactNode }) {
   const isPresent = useIsPresent();
+  const ref = useRef<HTMLDivElement>(null);
+  const [exitStyle, setExitStyle] = useState<CSSProperties | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    if (!isPresent && ref.current) {
+      const r = ref.current.getBoundingClientRect();
+      setExitStyle({
+        position: "fixed",
+        top: r.top,
+        left: r.left,
+        width: r.width,
+        zIndex: 50,
+        opacity: 1,
+      });
+    }
+  }, [isPresent]);
+
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      style={
-        isPresent
-          ? undefined
-          : { position: "fixed", inset: 0, zIndex: 50, background: "#FAFAF8" }
-      }
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      style={isPresent ? { zIndex: 60 } : exitStyle}
     >
       {children}
     </motion.div>
