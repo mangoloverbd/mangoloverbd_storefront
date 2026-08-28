@@ -6,6 +6,37 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
+import mangoLoverLogo from "@assets/mango-lover-logo.avif";
+
+function BagIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 5000 5000"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="m3712.8 3701.7c0 133.5-111.3 244.8-244.8 244.8h-1958.3c-133.5 0-244.8-111.3-244.8-244.8v-1758c0-111.3 111.3-222.5 244.8-222.5h1980.5c133.5 0 244.8 111.3 244.8 244.8v1735.8l-22.2-0.1zm-1223.9-2648.2c267 0 467.3 200.3 511.8 445.1h-1023.7c44.6-244.8 244.8-445.1 511.9-445.1zm979.1 445.1h-244.8c-44.5-378.3-356.1-667.6-734.4-667.6s-689.9 289.3-734.4 667.6h-244.8c-267 0-467.3 200.3-467.3 467.3v1758c0 244.8 200.3 445.1 467.3 445.1h1980.5c244.8 0 467.3-200.3 467.3-467.3v-1758c-22.1-244.8-222.3-445.1-489.4-445.1z" />
+    </svg>
+  );
+}
+
+function MenuLinesIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path fillRule="evenodd" clipRule="evenodd" d="M20.75 7C20.75 7.41421 20.4142 7.75 20 7.75L4 7.75C3.58579 7.75 3.25 7.41421 3.25 7C3.25 6.58579 3.58579 6.25 4 6.25L20 6.25C20.4142 6.25 20.75 6.58579 20.75 7Z" />
+      <path fillRule="evenodd" clipRule="evenodd" d="M20.75 12C20.75 12.4142 20.4142 12.75 20 12.75L4 12.75C3.58579 12.75 3.25 12.4142 3.25 12C3.25 11.5858 3.58579 11.25 4 11.25L20 11.25C20.4142 11.25 20.75 11.5858 20.75 12Z" />
+      <path fillRule="evenodd" clipRule="evenodd" d="M20.75 17C20.75 17.4142 20.4142 17.75 20 17.75L4 17.75C3.58579 17.75 3.25 17.4142 3.25 17C3.25 16.5858 3.58579 16.25 4 16.25L20 16.25C20.4142 16.25 20.75 16.5858 20.75 17Z" />
+    </svg>
+  );
+}
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,21 +104,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/atelier"><a className="hover:text-brand-gold transition-colors">Atelier</a></Link>
             </div>
             <div className="md:hidden">
-              <Button variant="ghost" size="icon" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 md:h-12" onClick={() => setIsOpen(true)}>
-                <span className="text-[9px] uppercase tracking-[0.24em] font-bold opacity-70 transition-opacity group-hover:opacity-100">Menu</span>
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 [&_svg]:size-7 md:h-12" onClick={() => setIsOpen(true)}>
+                <MenuLinesIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               </Button>
             </div>
           </div>
 
           <div className="flex items-center justify-center">
             <Link href="/">
-              <a className="flex flex-col items-center text-black">
-                <span className="font-display italic text-xl font-medium normal-case tracking-[0.06em] text-black md:text-3xl md:tracking-[0.08em]">
-                  House of Dhaka
-                </span>
-                <span className="mt-0.5 text-[7px] uppercase tracking-[0.35em] font-bold text-black/45 md:mt-1 md:text-[8px] md:tracking-[0.45em]">
-                  Bangladesh
-                </span>
+              <a className="flex items-center text-black">
+                <img
+                  src={mangoLoverLogo}
+                  alt="Mango Lover"
+                  className="h-7 w-auto md:h-11"
+                />
               </a>
             </Link>
           </div>
@@ -97,9 +127,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               onClick={() => setCartOpen(true)}
-              className="group relative flex h-9 items-center justify-center rounded-[8px] px-2 hover:bg-transparent md:h-12 md:px-3"
+              className="group relative flex h-9 items-center justify-center rounded-[8px] px-2 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
             >
-              <span className="text-[9px] uppercase tracking-[0.24em] font-bold opacity-70 transition-opacity group-hover:opacity-100 md:text-[10px] md:tracking-[0.3em]">
+              <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100 md:hidden" />
+              {/* Icon on mobile, wordmark on desktop — the label stays in the
+                  accessibility tree at both sizes. */}
+              <span className="sr-only text-[10px] uppercase tracking-[0.3em] font-bold opacity-70 transition-opacity group-hover:opacity-100 md:not-sr-only">
                 Cart
               </span>
               {itemCount > 0 && (
@@ -263,8 +296,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Massive Logo Section */}
           <div className="border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden relative group cursor-default">
-            <h2 className="text-[18vw] md:text-[25vw] font-sans font-extrabold normal-case tracking-tighter leading-none md:leading-[0.7] text-center text-black/20 select-none transition-all duration-1000 md:group-hover:text-brand-gold/40 md:group-hover:tracking-normal">
-            House of Dhaka
+            <h2 className="text-[9vw] md:text-[12vw] font-sans font-extrabold normal-case tracking-tighter leading-none md:leading-[0.7] text-center text-black/20 select-none transition-all duration-1000 md:group-hover:text-brand-gold/40 md:group-hover:tracking-normal">
+            ম্যাংগো লাভার - Mango Lover
           </h2>
         </div>
 
@@ -272,7 +305,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-[9px] uppercase tracking-[0.4em] text-black/40 text-center md:text-left">
-              Website by <a href="https://api.whatsapp.com/send/?phone=8801733670129" className="text-black font-bold">Arc Technology Corporation</a> / © 2026 House of Dhaka
+              Website by <a href="https://api.whatsapp.com/send/?phone=8801733670129" className="text-black font-bold">Arc Technology Corporation</a> / © 2026 ম্যাংগো লাভার - Mango Lover
             </div>
             <div className="flex gap-8 text-[9px] uppercase tracking-[0.4em] text-black/40">
               <div className="flex items-center gap-2"><Globe className="w-3 h-3" /> Dhaka</div>

@@ -290,13 +290,13 @@ export default function Home() {
         <div className="w-full px-0">
           <div
             ref={heroRef}
-            className="relative min-h-[640px] w-full overflow-hidden bg-black md:min-h-[760px]"
+            className="relative min-h-[640px] w-full overflow-hidden bg-[#FBBB14] md:min-h-[760px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
-                src="/hero1.webp"
-                alt="Latest Fashion Drop"
-                className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
+                src="/hero-mango-lover.webp"
+                alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
+                className="h-full w-full object-contain object-center"
               />
             </Link>
 
@@ -305,27 +305,12 @@ export default function Home() {
               initial="hidden"
               animate={heroInView ? "visible" : "hidden"}
               transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as const, staggerChildren: 0.08, delayChildren: 0.1 }}
-              className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 pb-10 text-center text-white md:items-center md:justify-center md:text-center md:px-16 md:pb-0"
+              className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end px-6 pb-8 text-center md:px-16 md:pb-12"
             >
-              <motion.p
-                variants={reveal}
-                className="mb-6 text-xs font-medium uppercase tracking-[0.36em] md:mb-7 md:text-base md:tracking-[0.36em]"
-              >
-                SS26 STATEMENT PIECES
-              </motion.p>
-              <motion.h1
-                variants={reveal}
-                className="max-w-[760px] text-[clamp(2.6rem,11vw,4rem)] font-bold leading-[0.9] tracking-[-0.06em] md:text-[clamp(4rem,5vw,7rem)] md:leading-[0.88] md:tracking-[-0.08em]"
-              >
-                Bold by<br />
-                <span className="font-display italic tracking-[0.55em] text-[1.15em] ml-1">
-                  design
-                </span>
-              </motion.h1>
               <motion.div variants={reveal}>
                 <Link
                   href="/products"
-                  className="mt-6 inline-flex w-fit items-center justify-center rounded-[4px] border-2 border-white px-5 py-2.5 text-xs font-medium uppercase tracking-[0.28em] text-white transition-colors hover:bg-white hover:text-black md:mt-10 md:px-7 md:py-3 md:text-base"
+                  className="pointer-events-auto inline-flex w-fit items-center justify-center rounded-[4px] border-2 border-[#163B33] bg-[#FBBB14]/80 px-5 py-2.5 text-xs font-medium uppercase tracking-[0.28em] text-[#163B33] backdrop-blur-sm transition-colors hover:bg-[#163B33] hover:text-[#FBBB14] md:px-7 md:py-3 md:text-base"
                 >
                   DISCOVER MORE
                 </Link>

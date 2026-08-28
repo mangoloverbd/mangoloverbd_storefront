@@ -74,21 +74,24 @@ test("uses the new public images for Just arrived products", () => {
   assert.match(justArrivedSource, /title: "Cocoa Brown Trouser",[\s\S]*?image: "\/new4\.webp"/);
 });
 
-test("uses the new public hero image", () => {
-  assert.match(homeSource, /src="\/hero1\.webp"/);
+test("uses the Mango Lover hero poster", () => {
+  assert.match(homeSource, /src="\/hero-mango-lover\.webp"/);
+  assert.doesNotMatch(homeSource, /hero1\.webp/);
 });
 
 test("renders a full-bleed editorial hero", () => {
   assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
   assert.match(homeSource, /className="w-full px-0"/);
-  assert.match(homeSource, /className="relative min-h-\[640px\] w-full overflow-hidden bg-black md:min-h-\[760px\]"/);
-  assert.match(homeSource, /md:items-center md:justify-center md:text-center/);
-  assert.match(homeSource, /md:text-base md:tracking-\[0\.36em\]/);
-  assert.match(homeSource, /md:text-\[clamp\(4rem,5vw,7rem\)\]/);
-  assert.match(homeSource, /md:px-12 md:py-5 md:text-base/);
-  assert.match(homeSource, /SS26 STATEMENT PIECES/);
-  assert.match(homeSource, /Bold by<br \/>\n\s+<TypingEffect/);
+  assert.match(homeSource, /className="relative min-h-\[640px\] w-full overflow-hidden bg-\[#FBBB14\] md:min-h-\[760px\]"/);
+  // The poster is portrait and carries its own baked-in headline: contain it so
+  // no edge type is cropped, and keep the overlay click-through except on the CTA.
+  assert.match(homeSource, /className="h-full w-full object-contain object-center"/);
+  assert.match(homeSource, /pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end/);
+  assert.match(homeSource, /pointer-events-auto inline-flex w-fit/);
+  assert.match(homeSource, /md:px-7 md:py-3 md:text-base/);
   assert.match(homeSource, /DISCOVER MORE/);
+  assert.doesNotMatch(homeSource, /SS26 STATEMENT PIECES/);
+  assert.doesNotMatch(homeSource, /Bold by/);
   assert.doesNotMatch(homeSource, /Shop now/);
   assert.doesNotMatch(homeSource, /Discover New Arrival/);
 });
