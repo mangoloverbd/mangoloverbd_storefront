@@ -673,18 +673,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         <div key={idx} className={`relative flex-[0_0_220px] mx-2 rounded-[8px] overflow-hidden bg-black group will-change-transform ${isWistia ? "h-[391px]" : "h-[340px]"}`}>
                           <div className={`absolute inset-0 ${isWistia && reelIdx !== activeReel ? "pointer-events-none" : ""}`}>
                             {isWistia ? (
-                              reelIdx === activeReel ? (
                               <wistia-player
                                 media-id={wistiaMediaId}
                                 aspect="0.5625"
                                 style={{ width: "100%", height: "100%", display: "block" }}
                               />
-                              ) : (
-                                <div
-                                  className="absolute inset-0 bg-cover bg-center"
-                                  style={{ backgroundImage: `url(https://fast.wistia.com/embed/medias/${wistiaMediaId}/swatch)` }}
-                                />
-                              )
                             ) : (
                               <>
                                 <video
