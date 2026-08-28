@@ -1,5 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,7 +11,26 @@ import ProductPage from "@/pages/product";
 import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+
+function PageTransition({ children }: { children: ReactNode }) {
+  const isPresent = useIsPresent();
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      style={
+        isPresent
+          ? undefined
+          : { position: "fixed", inset: 0, zIndex: 50, background: "#FAFAF8" }
+      }
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function Router() {
   const [location] = useLocation();
@@ -111,42 +130,34 @@ function Router() {
   }, [location]);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       <Switch location={location} key={location}>
         <Route path="/">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
+          <PageTransition>
             <Home />
-          </motion.div>
+          </PageTransition>
         </Route>
-        <Route path="/products" component={ProductsPage} />
-        <Route path="/booking" component={BookingPage} />
+        <Route path="/products">
+          <PageTransition>
+            <ProductsPage />
+          </PageTransition>
+        </Route>
+        <Route path="/booking">
+          <PageTransition>
+            <BookingPage />
+          </PageTransition>
+        </Route>
         <Route path="/product/:id">
           {(params) => (
-            <motion.div
-              key={params.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
+            <PageTransition key={params.id}>
               <ProductPage params={params} />
-            </motion.div>
+            </PageTransition>
           )}
         </Route>
         <Route>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
+          <PageTransition>
             <NotFound />
-          </motion.div>
+          </PageTransition>
         </Route>
       </Switch>
     </AnimatePresence>
