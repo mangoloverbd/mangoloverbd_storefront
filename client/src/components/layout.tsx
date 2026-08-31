@@ -394,7 +394,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <img
               src={mangoLoverLogo}
               alt="Mango Lover"
-              className="h-16 md:h-24 w-auto opacity-20 md:opacity-25 transition-all duration-1000 md:group-hover:opacity-40"
+              className="h-16 md:h-24 w-auto opacity-60 md:opacity-70 transition-all duration-1000 md:group-hover:opacity-90"
             />
         </div>
 
