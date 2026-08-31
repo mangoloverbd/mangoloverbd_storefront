@@ -133,7 +133,19 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     loop: false,
     skipSnaps: false,
   });
+  const [reelRef, reelApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "trimSnaps",
+    duration: 35,
+    loop: false,
+    skipSnaps: false,
+  });
   const goReel = (dir: number) => {
+    if (reelApi) {
+      if (dir < 0) reelApi.scrollPrev();
+      if (dir > 0) reelApi.scrollNext();
+      return;
+    }
     setCurrentReel((i) => Math.min(reelMediaIds.length - 1, Math.max(0, i + dir)));
   };
   useEffect(() => {
@@ -143,7 +155,18 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [reelApi]);
+  useEffect(() => {
+    if (!reelApi) return;
+    const syncActiveReel = () => setCurrentReel(reelApi.selectedScrollSnap());
+    syncActiveReel();
+    reelApi.on("select", syncActiveReel);
+    reelApi.on("reInit", syncActiveReel);
+    return () => {
+      reelApi.off("select", syncActiveReel);
+      reelApi.off("reInit", syncActiveReel);
+    };
+  }, [reelApi]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -500,7 +523,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div className="grid grid-cols-2 gap-3">
                     <a
                       href="tel:+8801301636461"
-                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white px-2 text-[11px] font-medium tracking-[0.02em] text-black/70 transition-all hover:border-black/40 hover:text-black"
+                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#f26b4f] px-2 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#d9573d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f26b4f]/40"
                     >
                       <Phone className="h-4 w-4 stroke-[1.5px]" />
                       ফোনে অর্ডার
@@ -511,14 +534,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white px-2 text-[11px] font-medium tracking-[0.02em] text-black/70 transition-all hover:border-black/40 hover:text-black"
+                      className="group flex h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#25d366] px-2 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"
                     >
                       <img
                         src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
                         alt="Whatsapp"
                         width={16}
                         height={16}
-                        className="h-4 w-4"
+                        className="h-4 w-4 brightness-0 invert"
                       />
                       হোয়াটসএপ-এ অর্ডার
                     </a>
@@ -526,27 +549,27 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
                   <div className="rounded-[8px] border border-black/[0.06] bg-white/20 px-3 py-1.5 md:px-3">
                     <div className="relative pb-0.5 pt-1.5">
-                      <div className="absolute left-[14%] right-[14%] top-[16px] h-px bg-black/10" />
+                       <div className="absolute left-[14%] right-[14%] top-[18px] h-px bg-black/10" />
                       <div className="relative z-20 grid grid-cols-3 gap-2">
                         {deliveryTimeline.map((item) => (
                           <div key={item.title} className="flex flex-col items-center text-center">
-                            <span className="mb-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-ivory text-black">
+                             <span className="mb-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-ivory text-black">
                               {item.title === "অর্ডার গ্রহণ" ? (
-                                <ShoppingBag className="h-4 w-4" weight="Filled" />
+                                 <ShoppingBag className="h-5 w-5" weight="Filled" />
                               ) : item.title === "প্রসেসিং" ? (
-                                <ClipboardCheck className="h-4 w-4" weight="Filled" />
+                                 <ClipboardCheck className="h-5 w-5" weight="Filled" />
                               ) : (
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
                                   <path fillRule="evenodd" clipRule="evenodd" d="M1.25 5.5C1.25 3.70508 2.70507 2.25 4.5 2.25H12.5C14.2949 2.25 15.75 3.70507 15.75 5.5V5.75H18.5341C19.4165 5.75 20.2173 6.26571 20.5825 7.06894L22.6761 11.675C22.7213 11.7689 22.7476 11.8737 22.7498 11.9844L22.75 12.0017V16.5C22.75 17.7426 21.7426 18.75 20.5 18.75H19.7388C19.7462 18.8323 19.75 18.9157 19.75 19C19.75 20.5188 18.5188 21.75 17 21.75C15.4812 21.75 14.25 20.5188 14.25 19C14.25 18.9157 14.2538 18.8323 14.2612 18.75H9.73879C9.74621 18.8323 9.75 18.9157 9.75 19C9.75 20.5188 8.51878 21.75 7 21.75C5.48122 21.75 4.25 20.5188 4.25 19C4.25 18.9157 4.25379 18.8323 4.26121 18.75H3.5C2.25736 18.75 1.25 17.7426 1.25 16.5V5.5ZM17 17.75C16.3096 17.75 15.75 18.3096 15.75 19C15.75 19.6904 16.3096 20.25 17 20.25C17.6904 20.25 18.25 19.6904 18.25 19C18.25 18.3096 17.6904 17.75 17 17.75ZM5.75 19C5.75 18.3096 6.30964 17.75 7 17.75C7.69036 17.75 8.25 18.3096 8.25 19C8.25 19.6904 7.69036 20.25 7 20.25C6.30964 20.25 5.75 19.6904 5.75 19ZM15.75 11.25H20.8352L19.2169 7.68965C19.0952 7.4219 18.8282 7.25 18.5341 7.25H15.75V11.25Z" fill="currentColor" />
                                 </svg>
                               )}
                             </span>
-                            <span className="font-garet text-[10px] font-normal tracking-[0.03em] text-black/45">
+                             <span className="font-garet text-[11px] font-normal tracking-[0.03em] text-black/45">
                               {item.date}
                             </span>
                             <span
-                              className="mt-1 block text-[11px] font-normal leading-3 text-black/80"
-                              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                               className="mt-1 block text-[14px] font-normal leading-4 text-black/80"
+                               style={{ fontFamily: "'KaiumSimanto', serif" }}
                             >
                               {item.title}
                             </span>
@@ -558,19 +581,34 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                 </div>
 
                 {/* Product Details — compact, scannable list */}
-                <div className="border border-black/10 bg-white/35 rounded-[8px] p-4 md:p-5">
-                  <div className="mb-5 flex items-baseline gap-2">
+                 <div className="border border-black/10 bg-white/35 rounded-[8px] p-5 md:p-6">
+                   <div className="mb-6 flex items-baseline gap-2">
                     <h2
-                      className="text-[15px] font-normal text-black"
-                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                       className="text-[19px] font-normal text-black"
+                       style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                     >
                       বিস্তারিত
                     </h2>
                     <span
-                      className="text-[11px] font-normal text-black/35"
+                      className="relative inline-block text-[19px] font-normal text-black/65"
                       style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                     >
                       বৈশিষ্ট্য
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 120 60"
+                        preserveAspectRatio="none"
+                        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
+                        style={{ overflow: "visible" }}
+                      >
+                        <path
+                          d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                          fill="none"
+                          stroke="#FBBB14"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                        />
+                      </svg>
                     </span>
                   </div>
 
@@ -588,12 +626,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             role="tab"
                             aria-selected={active}
                             onClick={() => setOpenSection(i)}
-                            className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-2.5 text-[13px] transition-colors md:text-[15px] ${
+                             className={`shrink-0 whitespace-nowrap border-b-2 px-3 py-3 text-[15px] transition-colors md:text-[17px] ${
                               active
                                 ? "border-black text-black"
                                 : "border-transparent text-black/40"
                             }`}
-                            style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                             style={{ fontFamily: "'KaiumSimanto', serif" }}
                           >
                             {item.label}
                           </button>
@@ -618,7 +656,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 {item.body?.map((paragraph, idx) => (
                                   <p
                                     key={idx}
-                                    className="text-[11px] leading-[1.7] tracking-[0.01em] text-black/55"
+                                     className="text-[13px] leading-[1.7] tracking-[0.01em] text-black/55"
                                   >
                                     {paragraph}
                                   </p>
@@ -628,7 +666,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                     {item.details.map((detail) => (
                                       <li
                                         key={detail}
-                                        className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.03em] font-medium leading-5 text-black/70"
+                                         className="flex items-center justify-center gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
                                       >
                                         <span className="h-1 w-1 shrink-0 rounded-full bg-brand-gold" />
                                         {detail}
@@ -645,56 +683,53 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 </div>
 
-                {/* Reels Section — single video viewer */}
-                <div className="pt-4 mt-4 md:mt-0 md:pt-0 overflow-hidden bg-brand-ivory">
+                {/* Reels Section — smooth horizontal carousel */}
+                <div className="-mx-4 pt-4 mt-4 overflow-hidden bg-brand-ivory md:mx-0 md:mt-0 md:pt-0">
                   <h2
                     className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
-                    style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                     style={{ fontFamily: "'KaiumSimanto', serif" }}
                   >
                     আমরা ও আমাদের সত্যতা
                   </h2>
-                  <div className="relative mx-auto w-full max-w-[380px]">
-                    <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={currentReel}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="absolute inset-0"
-                        >
-                          <wistia-player
-                            media-id={reelMediaIds[currentReel]}
-                            aspect="0.5625"
-                            autoplay="true"
-                            style={{ width: "100%", height: "100%", display: "block" }}
-                          />
-                        </motion.div>
-                      </AnimatePresence>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Previous reel"
-                        disabled={currentReel === 0}
-                        onClick={() => goReel(-1)}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Next reel"
-                        disabled={currentReel === reelMediaIds.length - 1}
-                        onClick={() => goReel(1)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </Button>
+                  <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
+                    <div ref={reelRef} className="overflow-hidden touch-pan-x">
+                      <div className="flex snap-x snap-mandatory gap-3 px-0 md:gap-6 md:px-6">
+                        {reelMediaIds.map((mediaId, i) => (
+                          <div key={mediaId} className="min-w-0 shrink-0 basis-[60vw] snap-center md:basis-[240px]">
+                            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
+                              <wistia-player
+                                media-id={mediaId}
+                                aspect="0.5625"
+                                autoplay={i === currentReel ? "true" : "false"}
+                                style={{ width: "100%", height: "100%", display: "block" }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Previous reel"
+                      disabled={currentReel === 0}
+                      onClick={() => goReel(-1)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Next reel"
+                      disabled={currentReel === reelMediaIds.length - 1}
+                      onClick={() => goReel(1)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </Button>
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
@@ -702,7 +737,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       <button
                         key={i}
                         aria-label={`Go to reel ${i + 1}`}
-                        onClick={() => setCurrentReel(i)}
+                        onClick={() => {
+                          if (reelApi) {
+                            reelApi.scrollTo(i);
+                          } else {
+                            setCurrentReel(i);
+                          }
+                        }}
                         className={`h-1.5 rounded-full transition-all ${i === currentReel ? "w-5 bg-black" : "w-1.5 bg-black/25"}`}
                       />
                     ))}
@@ -732,7 +773,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
               <span className="font-medium">আমাদের</span>{" "}
               <span
                 className="relative inline-block"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                 style={{ fontFamily: "'KaiumSimanto', serif" }}
               >
                 আরও কিছু পণ্য
                 <svg
