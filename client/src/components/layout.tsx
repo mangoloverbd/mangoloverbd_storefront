@@ -390,10 +390,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Massive Logo Section */}
-          <div className="relative z-10 border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden group cursor-default">
-            <h2 className="text-[9vw] md:text-[12vw] font-sans font-extrabold normal-case tracking-tighter leading-none md:leading-[0.7] text-center text-black/20 select-none transition-all duration-1000 md:group-hover:text-brand-gold/40 md:group-hover:tracking-normal">
-            ম্যাংগো লাভার - Mango Lover
-          </h2>
+          <div className="relative z-10 border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden group cursor-default flex justify-center">
+            <img
+              src={mangoLoverLogo}
+              alt="Mango Lover"
+              className="h-16 md:h-24 w-auto opacity-20 md:opacity-25 transition-all duration-1000 md:group-hover:opacity-40"
+            />
         </div>
 
         {/* Bottom Bar */}
