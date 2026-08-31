@@ -601,13 +601,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                  <div className="border border-black/10 bg-white/35 rounded-[8px] p-5 md:p-6">
                    <div className="mb-6 flex items-baseline gap-2">
                     <h2
-                       className="text-[19px] font-normal text-black"
+                       className="text-[23px] font-normal text-black"
                        style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                     >
                       বিস্তারিত
                     </h2>
                     <span
-                      className="relative inline-block text-[19px] font-normal text-black/65"
+                      className="relative inline-block text-[23px] font-normal text-black/65"
                       style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                     >
                       বৈশিষ্ট্য
