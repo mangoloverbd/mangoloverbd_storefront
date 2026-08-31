@@ -833,7 +833,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
               <span className="font-medium">আমাদের</span>{" "}
               <span
                 className="relative inline-block"
-                 style={{ fontFamily: "'KaiumSimanto', serif" }}
+                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
                 আরও কিছু পণ্য
                 <svg
