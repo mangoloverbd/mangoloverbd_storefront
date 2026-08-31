@@ -730,10 +730,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     </span>
                   </h2>
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
-                    <div ref={reelRef} className="overflow-hidden [touch-action:pan-x_pan-y] overscroll-x-contain">
-                      <div className="flex snap-x snap-mandatory gap-0 px-0 md:px-6">
+                    <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
+                      <div className="flex gap-0 px-0 md:px-6">
                         {reelMediaUrls.map((mediaUrl, i) => (
-                          <div key={mediaUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] snap-center md:mr-6 md:basis-[240px]">
+                          <div key={mediaUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               <video
                                 src={mediaUrl}
