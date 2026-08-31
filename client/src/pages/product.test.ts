@@ -52,15 +52,23 @@ test("highlights the বৈশিষ্ট্য label with the existing yellow 
 test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel/);
   assert.match(productSource, /ref=\{reelRef\}/);
-  assert.match(productSource, /align: "start"/);
+  assert.match(productSource, /align: "center"/);
+  assert.match(productSource, /loop: true/);
   assert.match(productSource, /-mx-4[^"`]*md:mx-0/);
-  assert.match(productSource, /gap-3 px-0 md:gap-6 md:px-6/);
+  assert.match(productSource, /gap-0 px-0 md:px-6/);
+  assert.match(productSource, /mr-3[^"`]*md:mr-6/);
   assert.match(productSource, /max-w-none md:max-w-\[480px\]/);
   assert.match(productSource, /basis-\[60vw\][^"`]*md:basis-\[240px\]/);
-  assert.match(productSource, /autoplay=\{i === currentReel \? "true" : "false"\}/);
+  assert.match(productSource, /reelEmbedUrls = \[/);
+  assert.match(productSource, /player\.cloudinary\.com\/embed/);
+  assert.match(productSource, /player%5Bshow_logo%5D=false/);
+  assert.match(productSource, /player%5Baspect_ratio%5D=9%3A16/);
+  assert.match(productSource, /snapsave-app_1C33w5xnV7_hd/);
+  assert.match(productSource, /snapsave-app_1700766014578997_hd/);
   assert.match(productSource, /snap-center/);
   assert.match(productSource, /touch-pan-x/);
+  assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
   assert.match(productSource, /reelApi\.scrollPrev\(\)/);
   assert.match(productSource, /reelApi\.scrollNext\(\)/);
-  assert.doesNotMatch(productSource, /Preview of reel/);
+  assert.doesNotMatch(productSource, /wistia-player/);
 });

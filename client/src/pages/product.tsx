@@ -123,7 +123,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
 
   const [activeImage, setActiveImage] = useState(0);
-  const reelMediaIds = ["4i954w3zt8", "cynh4qrcls", "6hjeb0mxzy"];
+  const reelEmbedUrls = [
+    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw",
+    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1C33w5xnV7_hd",
+    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1700766014578997_hd",
+  ];
   const [currentReel, setCurrentReel] = useState(0);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -134,10 +138,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     skipSnaps: false,
   });
   const [reelRef, reelApi] = useEmblaCarousel({
-    align: "start",
-    containScroll: "trimSnaps",
-    duration: 35,
-    loop: false,
+    align: "center",
+    containScroll: false,
+    duration: 25,
+    loop: true,
     skipSnaps: false,
   });
   const goReel = (dir: number) => {
@@ -146,7 +150,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (dir > 0) reelApi.scrollNext();
       return;
     }
-    setCurrentReel((i) => Math.min(reelMediaIds.length - 1, Math.max(0, i + dir)));
+    setCurrentReel((i) => Math.min(reelEmbedUrls.length - 1, Math.max(0, i + dir)));
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -693,15 +697,22 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </h2>
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden touch-pan-x">
-                      <div className="flex snap-x snap-mandatory gap-3 px-0 md:gap-6 md:px-6">
-                        {reelMediaIds.map((mediaId, i) => (
-                          <div key={mediaId} className="min-w-0 shrink-0 basis-[60vw] snap-center md:basis-[240px]">
-                            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
-                              <wistia-player
-                                media-id={mediaId}
-                                aspect="0.5625"
-                                autoplay={i === currentReel ? "true" : "false"}
-                                style={{ width: "100%", height: "100%", display: "block" }}
+                      <div className="flex snap-x snap-mandatory gap-0 px-0 md:px-6">
+                        {reelEmbedUrls.map((embedUrl, i) => (
+                          <div key={embedUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] snap-center md:mr-6 md:basis-[240px]">
+                            <div
+                              className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black"
+                            >
+                              <iframe
+                                src={`${embedUrl}&player%5Bshow_logo%5D=false&player%5Baspect_ratio%5D=9%3A16&player%5Bcrop_mode%5D=pad&player%5Bcrop_pad_color%5D=%23000000`}
+                                title={`Mango Lover BD reel ${i + 1}`}
+                                width="640"
+                                height="360"
+                                loading="lazy"
+                                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                                allowFullScreen
+                                frameBorder="0"
+                                style={{ height: "100%", width: "100%", display: "block" }}
                               />
                             </div>
                           </div>
@@ -713,9 +724,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       variant="ghost"
                       size="icon"
                       aria-label="Previous reel"
-                      disabled={currentReel === 0}
                       onClick={() => goReel(-1)}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                      className="absolute left-2 top-1/2 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 md:flex"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </Button>
@@ -724,16 +734,15 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       variant="ghost"
                       size="icon"
                       aria-label="Next reel"
-                      disabled={currentReel === reelMediaIds.length - 1}
                       onClick={() => goReel(1)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 disabled:opacity-20"
+                      className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 md:flex"
                     >
                       <ChevronRight className="h-5 w-5" />
                     </Button>
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {reelMediaIds.map((_, i) => (
+                    {reelEmbedUrls.map((_, i) => (
                       <button
                         key={i}
                         aria-label={`Go to reel ${i + 1}`}
