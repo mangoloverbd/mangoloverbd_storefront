@@ -54,6 +54,7 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /ref=\{reelRef\}/);
   assert.match(productSource, /align: "center"/);
   assert.match(productSource, /loop: true/);
+  assert.match(productSource, /duration: 35/);
   assert.match(productSource, /-mx-4[^"`]*md:mx-0/);
   assert.match(productSource, /gap-0 px-0 md:px-6/);
   assert.match(productSource, /mr-3[^"`]*md:mr-6/);

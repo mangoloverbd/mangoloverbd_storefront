@@ -142,7 +142,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [reelRef, reelApi] = useEmblaCarousel({
     align: "center",
     containScroll: false,
-    duration: 25,
+    duration: 35,
     loop: true,
     skipSnaps: false,
   });
