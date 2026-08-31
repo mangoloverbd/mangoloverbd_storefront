@@ -316,7 +316,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <footer className="relative border-t border-black/10 text-black/70 pt-12 md:pt-24 overflow-hidden">
         {/* Background image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15 md:opacity-40"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 md:opacity-40"
           style={{ backgroundImage: "url('/footer-bg.webp')" }}
         />
         {/* White overlay for text readability */}
