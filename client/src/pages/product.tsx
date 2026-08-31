@@ -179,6 +179,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (i !== currentReel) {
         video.pause();
         video.currentTime = 0;
+        video.load();
       }
     });
     setPlayingReel(null);
