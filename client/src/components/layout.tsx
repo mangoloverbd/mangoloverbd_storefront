@@ -314,10 +314,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Luxury Swiss Grid Footer */}
       <footer className="relative border-t border-black/10 text-black/70 pt-12 md:pt-24 overflow-hidden">
-        {/* Background image */}
+        {/* Background image — desktop */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 md:opacity-40"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 md:opacity-40 hidden md:block"
           style={{ backgroundImage: "url('/footer-bg.webp')" }}
+        />
+        {/* Background image — mobile */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 md:opacity-40 md:hidden"
+          style={{ backgroundImage: "url('/footer-bg-mobile.webp')" }}
         />
         {/* White overlay for text readability */}
         <div className="absolute inset-0 bg-white/60" />
