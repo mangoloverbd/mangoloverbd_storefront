@@ -706,7 +706,28 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
                      style={{ fontFamily: "'KaiumSimanto', serif" }}
                   >
-                    আমরা ও আমাদের সত্যতা
+                    আমরা ও আমাদের{" "}
+                    <span
+                      className="relative inline-block"
+                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                    >
+                      সত্যতা
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 120 60"
+                        preserveAspectRatio="none"
+                        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
+                        style={{ overflow: "visible" }}
+                      >
+                        <path
+                          d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                          fill="none"
+                          stroke="#FBBB14"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </span>
                   </h2>
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden [touch-action:pan-x_pan-y] overscroll-x-contain">
