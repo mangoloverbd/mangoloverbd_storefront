@@ -321,7 +321,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
         {/* Background image — mobile */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 md:opacity-40 md:hidden"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35 md:opacity-40 md:hidden"
           style={{ backgroundImage: "url('/footer-bg-mobile.webp')" }}
         />
         {/* White overlay for text readability */}
