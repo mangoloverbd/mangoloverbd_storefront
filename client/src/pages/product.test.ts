@@ -60,18 +60,20 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /mr-3[^"`]*md:mr-6/);
   assert.match(productSource, /max-w-none md:max-w-\[480px\]/);
   assert.match(productSource, /basis-\[60vw\][^"`]*md:basis-\[240px\]/);
-  assert.match(productSource, /reelMediaUrls = \[/);
+  assert.match(productSource, /REEL_MEDIA = \[/);
   assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
   assert.match(productSource, /<video/);
-  assert.match(productSource, /controls/);
-  assert.match(productSource, /preload=\{i === currentReel \|\| i === \(currentReel \+ 1\) % reelMediaUrls\.length \? "auto" : "metadata"\}/);
+  assert.match(productSource, /controls=\{activeReelVideo === i\}/);
+  // Only the active slide mounts a <video>, and it never preloads until played, so a
+  // mobile drag moves one cheap layer instead of three decoding video layers.
+  assert.match(productSource, /\{i === currentReel \? \(\s*<video/);
+  assert.match(productSource, /preload="none"/);
   assert.doesNotMatch(productSource, /autoPlay=/);
-  assert.match(productSource, /poster=/);
-  assert.match(productSource, /so_1,f_auto,q_auto/);
+  assert.match(productSource, /so_1,w_480,f_auto,q_auto/);
   assert.match(productSource, /Play className/);
-  assert.match(productSource, /reelVideoRefs/);
-  assert.match(productSource, /video\.currentTime = 0/);
-  assert.match(productSource, /src=\{mediaUrl\.replace[\s\S]*?pointer-events-none/);
+  assert.match(productSource, /activeReelVideoRef/);
+  assert.match(productSource, /src=\{poster\}[\s\S]*?pointer-events-none/);
+  assert.match(productSource, /loading="lazy"/);
   assert.doesNotMatch(productSource, /video\.load\(\)/);
   assert.match(productSource, /will-change-transform/);
   assert.match(productSource, /video\.muted = false/);
