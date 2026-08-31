@@ -123,12 +123,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
 
   const [activeImage, setActiveImage] = useState(0);
-  const reelEmbedUrls = [
-    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw",
-    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1C33w5xnV7_hd",
-    "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1700766014578997_hd",
+  const reelMediaUrls = [
+    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw.mp4",
+    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1C33w5xnV7_hd.mp4",
+    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
   ];
   const [currentReel, setCurrentReel] = useState(0);
+  const reelVideoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -150,7 +151,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (dir > 0) reelApi.scrollNext();
       return;
     }
-    setCurrentReel((i) => Math.min(reelEmbedUrls.length - 1, Math.max(0, i + dir)));
+    setCurrentReel((i) => Math.min(reelMediaUrls.length - 1, Math.max(0, i + dir)));
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -171,6 +172,24 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       reelApi.off("reInit", syncActiveReel);
     };
   }, [reelApi]);
+  useEffect(() => {
+    reelVideoRefs.current.forEach((video, i) => {
+      if (!video) return;
+      if (i !== currentReel) {
+        video.pause();
+        video.currentTime = 0;
+        video.muted = true;
+      }
+    });
+
+    const activeVideo = reelVideoRefs.current[currentReel];
+    if (!activeVideo) return;
+    activeVideo.muted = false;
+    void activeVideo.play().catch(() => {
+      activeVideo.muted = true;
+      void activeVideo.play().catch(() => undefined);
+    });
+  }, [currentReel]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -698,21 +717,25 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden touch-pan-x">
                       <div className="flex snap-x snap-mandatory gap-0 px-0 md:px-6">
-                        {reelEmbedUrls.map((embedUrl, i) => (
-                          <div key={embedUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] snap-center md:mr-6 md:basis-[240px]">
-                            <div
-                              className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black"
-                            >
-                              <iframe
-                                src={`${embedUrl}&player%5Bshow_logo%5D=false&player%5Baspect_ratio%5D=9%3A16&player%5Bcrop_mode%5D=pad&player%5Bcrop_pad_color%5D=%23000000`}
+                        {reelMediaUrls.map((mediaUrl, i) => (
+                          <div key={mediaUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] snap-center md:mr-6 md:basis-[240px]">
+                            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
+                              <video
+                                src={mediaUrl}
                                 title={`Mango Lover BD reel ${i + 1}`}
-                                width="640"
-                                height="360"
-                                loading="lazy"
-                                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                                allowFullScreen
-                                frameBorder="0"
-                                style={{ height: "100%", width: "100%", display: "block" }}
+                                controls
+                                muted={i !== currentReel}
+                                playsInline
+                                preload={
+                                  i === currentReel || i === (currentReel + 1) % reelMediaUrls.length
+                                    ? "auto"
+                                    : "none"
+                                }
+                                autoPlay={i === currentReel}
+                                ref={(video) => {
+                                  reelVideoRefs.current[i] = video;
+                                }}
+                                className="h-full w-full object-contain bg-black"
                               />
                             </div>
                           </div>
@@ -742,7 +765,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {reelEmbedUrls.map((_, i) => (
+                    {reelMediaUrls.map((_, i) => (
                       <button
                         key={i}
                         aria-label={`Go to reel ${i + 1}`}
