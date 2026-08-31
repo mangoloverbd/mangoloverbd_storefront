@@ -716,11 +716,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               <video
                                 src={mediaUrl}
-                                poster={mediaUrl.replace("/f_auto,q_auto/", "/so_0,f_auto,q_auto/").replace(".mp4", ".jpg")}
+                                poster={mediaUrl.replace("/f_auto,q_auto/", "/so_1,f_auto,q_auto/").replace(".mp4", ".jpg")}
                                 title={`Mango Lover BD reel ${i + 1}`}
                                 controls
                                 playsInline
-                                preload="none"
+                                preload={i === currentReel || i === (currentReel + 1) % reelMediaUrls.length ? "auto" : "metadata"}
                                 onPlay={() => setPlayingReel(i)}
                                 onPause={() => setPlayingReel((active) => (active === i ? null : active))}
                                 ref={(video) => {

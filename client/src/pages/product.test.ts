@@ -63,9 +63,10 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
   assert.match(productSource, /<video/);
   assert.match(productSource, /controls/);
-  assert.match(productSource, /preload="none"/);
+  assert.match(productSource, /preload=\{i === currentReel \|\| i === \(currentReel \+ 1\) % reelMediaUrls\.length \? "auto" : "metadata"\}/);
   assert.doesNotMatch(productSource, /autoPlay=/);
   assert.match(productSource, /poster=/);
+  assert.match(productSource, /so_1,f_auto,q_auto/);
   assert.match(productSource, /Play className/);
   assert.match(productSource, /reelVideoRefs/);
   assert.match(productSource, /video\.currentTime = 0/);
