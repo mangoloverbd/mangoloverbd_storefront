@@ -63,10 +63,13 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
   assert.match(productSource, /<video/);
   assert.match(productSource, /controls/);
-  assert.match(productSource, /i === currentReel \|\| i === \(currentReel \+ 1\) % reelMediaUrls\.length/);
+  assert.match(productSource, /preload="none"/);
+  assert.doesNotMatch(productSource, /autoPlay=/);
+  assert.match(productSource, /poster=/);
+  assert.match(productSource, /Play className/);
   assert.match(productSource, /reelVideoRefs/);
   assert.match(productSource, /video\.currentTime = 0/);
-  assert.match(productSource, /activeVideo\.muted = false/);
+  assert.match(productSource, /video\.muted = false/);
   assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
   assert.doesNotMatch(productSource, /pointer-events-none md:pointer-events-auto/);
   assert.match(productSource, /snapsave-app_1C33w5xnV7_hd/);

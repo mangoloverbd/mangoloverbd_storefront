@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -129,6 +129,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
   ];
   const [currentReel, setCurrentReel] = useState(0);
+  const [playingReel, setPlayingReel] = useState<number | null>(null);
   const reelVideoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -178,17 +179,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (i !== currentReel) {
         video.pause();
         video.currentTime = 0;
-        video.muted = true;
       }
     });
-
-    const activeVideo = reelVideoRefs.current[currentReel];
-    if (!activeVideo) return;
-    activeVideo.muted = false;
-    void activeVideo.play().catch(() => {
-      activeVideo.muted = true;
-      void activeVideo.play().catch(() => undefined);
-    });
+    setPlayingReel(null);
   }, [currentReel]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
@@ -722,21 +715,34 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               <video
                                 src={mediaUrl}
+                                poster={mediaUrl.replace("/f_auto,q_auto/", "/so_0,f_auto,q_auto/").replace(".mp4", ".jpg")}
                                 title={`Mango Lover BD reel ${i + 1}`}
                                 controls
-                                muted={i !== currentReel}
                                 playsInline
-                                preload={
-                                  i === currentReel || i === (currentReel + 1) % reelMediaUrls.length
-                                    ? "auto"
-                                    : "none"
-                                }
-                                autoPlay={i === currentReel}
+                                preload="none"
+                                onPlay={() => setPlayingReel(i)}
+                                onPause={() => setPlayingReel((active) => (active === i ? null : active))}
                                 ref={(video) => {
                                   reelVideoRefs.current[i] = video;
                                 }}
                                 className="h-full w-full object-contain bg-black"
                               />
+                              {playingReel !== i ? (
+                                <button
+                                  type="button"
+                                  aria-label={`Play reel ${i + 1}`}
+                                  onClick={() => {
+                                    const video = reelVideoRefs.current[i];
+                                    if (!video) return;
+                                    video.muted = false;
+                                    setPlayingReel(i);
+                                    void video.play().catch(() => setPlayingReel(null));
+                                  }}
+                                  className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                >
+                                  <Play className="ml-1 h-6 w-6 fill-current" />
+                                </button>
+                              ) : null}
                             </div>
                           </div>
                         ))}
