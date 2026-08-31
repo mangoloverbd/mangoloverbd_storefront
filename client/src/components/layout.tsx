@@ -361,8 +361,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-8">
             <div className="space-y-8">
               <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Information</span>
-              <ul className="space-y-3 text-[10px] uppercase tracking-widest font-medium text-black/60">
-                {["About us", "Contact us", "Company Information", "Mango Lover Stories", "Terms & Conditions", "Privacy Policy", "Careers", "Refund & Exchange"].map((label) => (
+              <ul className="space-y-3 text-[11px] font-medium text-black/60" style={{ fontFamily: "'KaiumSimanto', serif" }}>
+                {["আমাদের সম্পর্কে", "যোগাযোগ", "কোম্পানির তথ্য", "ম্যাংগো লাভারের গল্প", "শর্তাবলী", "গোপনীয়তা নীতি", "ক্যারিয়ার", "রিফান্ড ও এক্সচেঞ্জ"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
               </ul>
@@ -370,8 +370,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="space-y-8">
               <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Shop By</span>
-              <ul className="space-y-3 text-[10px] uppercase tracking-widest font-medium text-black/60">
-                {["Oil & Ghee", "Honey", "Dates", "Spices", "Nuts & Seeds", "Beverage", "Home-Made Foods"].map((label) => (
+              <ul className="space-y-3 text-[11px] font-medium text-black/60" style={{ fontFamily: "'KaiumSimanto', serif" }}>
+                {["তেল ও ঘি", "মধু", "খেজুর", "মসলা", "বাদাম ও বীজ", "পানীয়", "ঘরোয়া খাবার"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
               </ul>
@@ -379,8 +379,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="space-y-8">
               <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Support</span>
-              <ul className="space-y-3 text-[10px] uppercase tracking-widest font-medium text-black/60">
-                {["Support Center", "How to Order", "Order Tracking", "Payment & Shipping", "Frequently Asked Questions", "Consumer Policy"].map((label) => (
+              <ul className="space-y-3 text-[11px] font-medium text-black/60" style={{ fontFamily: "'KaiumSimanto', serif" }}>
+                {["সহায়তা কেন্দ্র", "কিভাবে অর্ডার করবেন", "অর্ডার ট্র্যাকিং", "পেমেন্ট ও শিপিং", "সচরাচর জিজ্ঞাসা", "ভোক্তা নীতি"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
               </ul>
