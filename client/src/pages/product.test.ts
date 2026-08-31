@@ -71,7 +71,9 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /Play className/);
   assert.match(productSource, /reelVideoRefs/);
   assert.match(productSource, /video\.currentTime = 0/);
-  assert.match(productSource, /video\.load\(\)/);
+  assert.match(productSource, /src=\{mediaUrl\.replace[\s\S]*?pointer-events-none/);
+  assert.doesNotMatch(productSource, /video\.load\(\)/);
+  assert.match(productSource, /will-change-transform/);
   assert.match(productSource, /video\.muted = false/);
   assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
   assert.doesNotMatch(productSource, /pointer-events-none md:pointer-events-auto/);

@@ -179,7 +179,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (i !== currentReel) {
         video.pause();
         video.currentTime = 0;
-        video.load();
       }
     });
     setPlayingReel(null);
@@ -731,7 +730,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </h2>
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
-                      <div className="flex gap-0 px-0 md:px-6">
+                      <div className="flex will-change-transform gap-0 px-0 md:px-6">
                         {reelMediaUrls.map((mediaUrl, i) => (
                           <div key={mediaUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
@@ -750,6 +749,14 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 className="h-full w-full object-contain bg-black"
                               />
                               {playingReel !== i ? (
+                                <img
+                                  src={mediaUrl.replace("/f_auto,q_auto/", "/so_1,f_auto,q_auto/").replace(".mp4", ".jpg")}
+                                  alt=""
+                                  aria-hidden="true"
+                                  className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                />
+                              ) : null}
+                              {playingReel !== i ? (
                                 <button
                                   type="button"
                                   aria-label={`Play reel ${i + 1}`}
@@ -760,7 +767,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                     setPlayingReel(i);
                                     void video.play().catch(() => setPlayingReel(null));
                                   }}
-                                  className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                                 >
                                   <Play className="ml-1 h-6 w-6 fill-current" />
                                 </button>
