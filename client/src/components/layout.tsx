@@ -324,6 +324,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35 md:opacity-40 md:hidden"
           style={{ backgroundImage: "url('/footer-bg-mobile.webp')" }}
         />
+        {/* Foggy gradient on left for mobile */}
+        <div
+          className="absolute inset-0 md:hidden"
+          style={{ background: "linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 25%, rgba(255,255,255,0.2) 50%, transparent 70%)" }}
+        />
         {/* White overlay for text readability */}
         <div className="absolute inset-0 bg-white/60" />
 
