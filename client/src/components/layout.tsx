@@ -316,11 +316,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <footer className="relative border-t border-black/10 text-black/70 pt-12 md:pt-24 overflow-hidden">
         {/* Background image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
           style={{ backgroundImage: "url('/footer-bg.webp')" }}
         />
         {/* White overlay for text readability */}
-        <div className="absolute inset-0 bg-white/80" />
+        <div className="absolute inset-0 bg-white/60" />
 
         {/* Main Grid Content */}
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
