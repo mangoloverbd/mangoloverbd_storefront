@@ -313,9 +313,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Luxury Swiss Grid Footer */}
-      <footer className="border-t border-black/10 bg-white text-black/70 pt-12 md:pt-24">
+      <footer className="relative border-t border-black/10 text-black/70 pt-12 md:pt-24 overflow-hidden">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+          style={{ backgroundImage: "url('/footer-bg.webp')" }}
+        />
+        {/* White overlay for text readability */}
+        <div className="absolute inset-0 bg-white/80" />
+
         {/* Main Grid Content */}
-        <div className="grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 gap-16 mb-8 md:mb-24">
           {/* Brand Col */}
           <div className="md:col-span-4 space-y-8">
             <img
@@ -377,14 +385,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Massive Logo Section */}
-          <div className="border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden relative group cursor-default">
+          <div className="relative z-10 border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden group cursor-default">
             <h2 className="text-[9vw] md:text-[12vw] font-sans font-extrabold normal-case tracking-tighter leading-none md:leading-[0.7] text-center text-black/20 select-none transition-all duration-1000 md:group-hover:text-brand-gold/40 md:group-hover:tracking-normal">
             ম্যাংগো লাভার - Mango Lover
           </h2>
         </div>
 
         {/* Bottom Bar */}
-        <div className="bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
+        <div className="relative z-10 bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-[9px] uppercase tracking-[0.4em] text-black/40 text-center md:text-left">
               Website designed and developed by <a href="https://api.whatsapp.com/send/?phone=8801301636461" className="text-black font-bold normal-case">Arc Labs Corporation</a> / <span className="tracking-normal normal-case">© 2026 ম্যাংগো লাভার - Mango Lover</span>
