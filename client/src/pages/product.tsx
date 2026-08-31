@@ -115,6 +115,17 @@ function ProductSkeleton() {
   );
 }
 
+// Poster stills are derived once at module load, and requested at a small width so
+// phones download a thumbnail rather than a full-size frame extraction.
+const REEL_MEDIA = [
+  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw.mp4",
+  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1C33w5xnV7_hd.mp4",
+  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
+].map((src) => ({
+  src,
+  poster: src.replace("/f_auto,q_auto/", "/so_1,w_480,f_auto,q_auto/").replace(".mp4", ".jpg"),
+}));
+
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
   const { addToCart } = useCart();
@@ -123,14 +134,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
 
   const [activeImage, setActiveImage] = useState(0);
-  const reelMediaUrls = [
-    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw.mp4",
-    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1C33w5xnV7_hd.mp4",
-    "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
-  ];
   const [currentReel, setCurrentReel] = useState(0);
-  const [playingReel, setPlayingReel] = useState<number | null>(null);
-  const reelVideoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  // Only one <video> is ever mounted. Mounting all three attaches three hardware
+  // decoders to layers that Embla re-transforms every frame, which is what makes the
+  // horizontal drag stutter on real phones but not on a desktop localhost.
+  const [activeReelVideo, setActiveReelVideo] = useState<number | null>(null);
+  const activeReelVideoRef = useRef<HTMLVideoElement | null>(null);
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -152,7 +161,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (dir > 0) reelApi.scrollNext();
       return;
     }
-    setCurrentReel((i) => Math.min(reelMediaUrls.length - 1, Math.max(0, i + dir)));
+    setCurrentReel((i) => Math.min(REEL_MEDIA.length - 1, Math.max(0, i + dir)));
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -165,8 +174,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   useEffect(() => {
     if (!reelApi) return;
     const pauseReelsDuringDrag = () => {
-      reelVideoRefs.current.forEach((video) => video?.pause());
-      setPlayingReel(null);
+      activeReelVideoRef.current?.pause();
     };
     reelApi.on("pointerDown", pauseReelsDuringDrag);
     return () => {
@@ -185,14 +193,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     };
   }, [reelApi]);
   useEffect(() => {
-    reelVideoRefs.current.forEach((video, i) => {
-      if (!video) return;
-      if (i !== currentReel) {
-        video.pause();
-        video.currentTime = 0;
-      }
-    });
-    setPlayingReel(null);
+    // Leaving a slide tears its <video> down so no decoder stays attached to an
+    // off-screen slide while the track is being dragged.
+    setActiveReelVideo((active) => (active === null || active === currentReel ? active : null));
   }, [currentReel]);
   const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
@@ -742,43 +745,50 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
                       <div className="flex will-change-transform gap-0 px-0 md:px-6">
-                        {reelMediaUrls.map((mediaUrl, i) => (
-                          <div key={mediaUrl} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
+                        {REEL_MEDIA.map(({ src, poster }, i) => (
+                          <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
-                              <video
-                                src={mediaUrl}
-                                poster={mediaUrl.replace("/f_auto,q_auto/", "/so_1,f_auto,q_auto/").replace(".mp4", ".jpg")}
-                                title={`Mango Lover BD reel ${i + 1}`}
-                                controls
-                                playsInline
-                                preload={i === currentReel || i === (currentReel + 1) % reelMediaUrls.length ? "auto" : "metadata"}
-                                onPlay={() => setPlayingReel(i)}
-                                onPause={() => setPlayingReel((active) => (active === i ? null : active))}
-                                ref={(video) => {
-                                  reelVideoRefs.current[i] = video;
-                                }}
-                                className="h-full w-full object-contain bg-black"
-                              />
-                              {playingReel !== i ? (
+                              {i === currentReel ? (
+                                <video
+                                  src={src}
+                                  title={`Mango Lover BD reel ${i + 1}`}
+                                  controls={activeReelVideo === i}
+                                  playsInline
+                                  preload="none"
+                                  onPlay={() => setActiveReelVideo(i)}
+                                  onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                  ref={(video) => {
+                                    activeReelVideoRef.current = video;
+                                  }}
+                                  className="h-full w-full object-contain bg-black"
+                                />
+                              ) : null}
+                              {activeReelVideo !== i ? (
                                 <img
-                                  src={mediaUrl.replace("/f_auto,q_auto/", "/so_1,f_auto,q_auto/").replace(".mp4", ".jpg")}
+                                  src={poster}
                                   alt=""
                                   aria-hidden="true"
+                                  loading="lazy"
+                                  decoding="async"
                                   className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
                                 />
                               ) : null}
-                              {playingReel !== i ? (
+                              {activeReelVideo !== i ? (
                                 <button
                                   type="button"
                                   aria-label={`Play reel ${i + 1}`}
                                   onClick={() => {
-                                    const video = reelVideoRefs.current[i];
+                                    if (i !== currentReel) {
+                                      reelApi?.scrollTo(i);
+                                      return;
+                                    }
+                                    const video = activeReelVideoRef.current;
                                     if (!video) return;
                                     video.muted = false;
-                                    setPlayingReel(i);
-                                    void video.play().catch(() => setPlayingReel(null));
+                                    setActiveReelVideo(i);
+                                    void video.play().catch(() => setActiveReelVideo(null));
                                   }}
-                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                                 >
                                   <Play className="ml-1 h-6 w-6 fill-current" />
                                 </button>
@@ -811,7 +821,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {reelMediaUrls.map((_, i) => (
+                    {REEL_MEDIA.map((_, i) => (
                       <button
                         key={i}
                         aria-label={`Go to reel ${i + 1}`}
