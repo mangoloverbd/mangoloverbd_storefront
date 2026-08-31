@@ -535,10 +535,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           setOrderOpen(true);
                         }
                       }}
-                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#FBBB14] px-2 text-[10px] font-bold uppercase tracking-[0.4em] text-black transition-all hover:bg-[#e5a80f] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="group flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#FBBB14] px-2 text-[10px] font-bold text-black transition-all hover:bg-[#e5a80f] disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Buy it Now
-                      <ArrowDownRight className="h-5 w-5 stroke-[1px] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                      ক্যাশ অন ডেলিভারিতে অর্ডার করুন
                     </Button>
                   </div>
 
