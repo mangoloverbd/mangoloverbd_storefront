@@ -164,6 +164,17 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [reelApi]);
   useEffect(() => {
     if (!reelApi) return;
+    const pauseReelsDuringDrag = () => {
+      reelVideoRefs.current.forEach((video) => video?.pause());
+      setPlayingReel(null);
+    };
+    reelApi.on("pointerDown", pauseReelsDuringDrag);
+    return () => {
+      reelApi.off("pointerDown", pauseReelsDuringDrag);
+    };
+  }, [reelApi]);
+  useEffect(() => {
+    if (!reelApi) return;
     const syncActiveReel = () => setCurrentReel(reelApi.selectedScrollSnap());
     syncActiveReel();
     reelApi.on("select", syncActiveReel);

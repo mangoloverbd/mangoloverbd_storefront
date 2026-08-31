@@ -84,5 +84,6 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
   assert.match(productSource, /reelApi\.scrollPrev\(\)/);
   assert.match(productSource, /reelApi\.scrollNext\(\)/);
+  assert.match(productSource, /reelApi\.on\("pointerDown", pauseReelsDuringDrag\)/);
   assert.doesNotMatch(productSource, /wistia-player/);
 });
