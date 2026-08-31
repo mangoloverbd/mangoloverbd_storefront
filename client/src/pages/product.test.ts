@@ -75,7 +75,7 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /snapsave-app_1C33w5xnV7_hd/);
   assert.match(productSource, /snapsave-app_1700766014578997_hd/);
   assert.match(productSource, /snap-center/);
-  assert.match(productSource, /touch-pan-x/);
+  assert.match(productSource, /\[touch-action:pan-x_pan-y\]/);
   assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
   assert.match(productSource, /reelApi\.scrollPrev\(\)/);
   assert.match(productSource, /reelApi\.scrollNext\(\)/);
