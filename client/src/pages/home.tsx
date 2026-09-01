@@ -160,11 +160,11 @@ export default function Home() {
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-9 bg-gradient-to-r from-[#f6f6f6]/75 to-transparent md:hidden"
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-gradient-to-r from-[#f6f6f6]/65 to-transparent md:hidden"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-9 bg-gradient-to-l from-[#f6f6f6]/75 to-transparent md:hidden"
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-gradient-to-l from-[#f6f6f6]/65 to-transparent md:hidden"
             />
 
 

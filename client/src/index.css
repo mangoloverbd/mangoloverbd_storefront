@@ -51,8 +51,13 @@
     @apply border-border;
   }
 
+  html,
   body {
-    @apply font-sans antialiased bg-white text-foreground;
+    background-color: #FBBB14;
+  }
+
+  body {
+    @apply font-sans antialiased text-foreground;
   }
 }
 

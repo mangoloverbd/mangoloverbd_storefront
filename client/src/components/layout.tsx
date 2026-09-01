@@ -146,7 +146,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full bg-white/10 backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
+      <nav className="sticky top-0 z-50 w-full bg-white backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
