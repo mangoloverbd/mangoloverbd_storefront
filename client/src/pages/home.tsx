@@ -345,6 +345,11 @@ export default function Home() {
                 className="h-full w-full object-cover object-top md:object-cover md:object-top"
               />
             </Link>
+            {/* Foggy gradient bottom blend */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-32 md:h-48 pointer-events-none"
+              style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
+            />
 
 
           </div>
