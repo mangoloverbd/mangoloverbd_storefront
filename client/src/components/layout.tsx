@@ -353,10 +353,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </p>
             <div className="flex gap-6 items-center">
               <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
-                <img src="https://cdn.reicon.dev/logos/facebook/original.svg" alt="Facebook" width={24} height={24} className="w-6 h-6" />
+                <img src="https://cdn.reicon.dev/logos/facebook/original.svg" alt="Facebook" width={20} height={20} className="w-5 h-5" />
               </a>
               <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
-                <img src="https://cdn.reicon.dev/logos/instagram/original.svg" alt="Instagram" width={24} height={24} className="w-6 h-6" />
+                <img src="https://cdn.reicon.dev/logos/instagram/original.svg" alt="Instagram" width={20} height={20} className="w-5 h-5" />
               </a>
               <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:opacity-80 transition-opacity">
                 <img src="https://cdn.reicon.dev/logos/youtube/original.svg" alt="Youtube" width={24} height={24} className="w-6 h-6" />
