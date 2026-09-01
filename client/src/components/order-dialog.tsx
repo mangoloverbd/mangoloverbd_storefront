@@ -373,7 +373,7 @@ export default function OrderDialog({
                   </label>
 
                   <div className="grid gap-2">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
+                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Delivery Charge - ডেলিভারি চার্জ
                       </span>
                     {qualifiesForFreeDelivery ? (
@@ -475,7 +475,7 @@ export default function OrderDialog({
 
                   <Button
                     disabled={orderSubmitting}
-                    className="h-14 w-full rounded-[8px] bg-black text-white text-[10px] font-bold hover:bg-brand-gold transition-all disabled:cursor-not-allowed disabled:opacity-60"
+                    className="h-14 w-full rounded-[8px] bg-[#FBBB14] text-black text-[13px] font-bold hover:bg-[#e5a80f] transition-all disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
                   </Button>
