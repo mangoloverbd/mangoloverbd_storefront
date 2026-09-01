@@ -342,7 +342,7 @@ export default function Home() {
               <img
                 src="/hero-mango-lover.webp"
                 alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
-                className="h-full w-full object-cover object-top md:object-cover md:object-top"
+                className="h-full w-full object-cover object-center md:object-cover md:object-top"
               />
             </Link>
 
