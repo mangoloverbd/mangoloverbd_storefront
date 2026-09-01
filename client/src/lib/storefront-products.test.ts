@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, setCachedStorefrontProduct } from "./storefront-products.ts";
+import { findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
+
+test("matches product names without case sensitivity", () => {
+  const products = [
+    { name: "Raw Mango", slug: "raw-mango" },
+    { name: "Silk Scarf", slug: "silk-scarf" },
+  ];
+
+  assert.deepEqual(searchStorefrontProducts(products, "mAnGo").map((product) => product.slug), ["raw-mango"]);
+});
 
 test("uses the first product image before falling back to image_url", () => {
   assert.equal(

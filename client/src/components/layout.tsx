@@ -1,13 +1,15 @@
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
 import { Box as ReiconBox, MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
+import { fetchStorefrontProducts, getProductImage, searchStorefrontProducts } from "@/lib/storefront-products";
 
 function BagIcon({ className }: { className?: string }) {
   return (
@@ -92,10 +94,26 @@ function saleCountdown({ hours, minutes, seconds }: ReturnType<typeof dhakaClock
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [time, setTime] = useState('');
   const [countdown, setCountdown] = useState('');
   const { setIsOpen: setCartOpen, itemCount } = useCart();
+  const { data: searchableProducts = [] } = useQuery({
+    queryKey: ["merchant-suite-products-listing"],
+    queryFn: fetchStorefrontProducts,
+    enabled: isSearchOpen,
+  });
+
+  const openSearch = () => setIsSearchOpen(true);
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    setLocation(query ? `/products?search=${encodeURIComponent(query)}` : "/products");
+    setIsSearchOpen(false);
+  };
+  const suggestions = searchStorefrontProducts(searchableProducts, searchQuery).slice(0, 5);
 
   useEffect(() => {
     if (isOpen) {
@@ -187,6 +205,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Search Button - Mobile only, left of cart */}
             <Button
               variant="ghost"
+              onClick={openSearch}
               aria-label="Search"
               className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 hover:bg-transparent [&_svg]:size-5 md:hidden"
             >
@@ -260,19 +279,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           <BagIcon className="!h-8 !w-8" />
           {itemCount > 0 && (
-            <span className="absolute right-3 top-2 h-2 w-2 rounded-full bg-[#163B33]" aria-label={`${itemCount} items in cart`} />
+            <span className="absolute right-3 top-2 h-1.5 w-1.5 rounded-full bg-[#163B33]" aria-label={`${itemCount} items in cart`} />
           )}
           <span className="sr-only">Cart</span>
         </Button>
-        <Link href="/products">
-          <a
-            aria-label="Search products"
-            className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-black/55 transition-colors hover:text-black"
-          >
+        <button type="button" aria-label="Search products" onClick={openSearch} className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-black/55 transition-colors hover:text-black">
             <SearchIcon className="h-5 w-5" />
             <span>Search</span>
-          </a>
-        </Link>
+        </button>
         <Button
           variant="ghost"
           aria-label="Open menu"
@@ -283,6 +297,66 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <span>Menu</span>
         </Button>
       </nav>
+
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSearchOpen(false)}
+            className="fixed inset-0 z-[100] flex items-start justify-center bg-black/15 px-4 pt-[12vh] backdrop-blur-md md:pt-[16vh]"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: -18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              onClick={(event) => event.stopPropagation()}
+              className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/60 bg-white/55 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-2xl backdrop-saturate-150"
+            >
+              <form onSubmit={submitSearch} className="flex items-center gap-3 rounded-xl border border-black/10 bg-white/45 px-4 py-3">
+                <SearchIcon className="h-5 w-5 shrink-0 text-black/60" />
+                <input autoFocus value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search products" aria-label="Search products" className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-black/40" />
+                <button type="button" onClick={() => setIsSearchOpen(false)} aria-label="Close search" className="rounded-full p-1 text-black/50 transition-colors hover:bg-black/5 hover:text-black">
+                  <X size={19} strokeWidth={1.5} />
+                </button>
+              </form>
+              <div className="px-2 pb-2 pt-5">
+                <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.3em] text-black/45">
+                  {searchQuery ? "Suggestions" : "Popular searches"}
+                </p>
+                <div className="space-y-1">
+                  {suggestions.length > 0 ? suggestions.map((product) => (
+                    <button
+                      key={product.slug}
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery(product.name);
+                        setLocation(`/products?search=${encodeURIComponent(product.name)}`);
+                        setIsSearchOpen(false);
+                      }}
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm text-black/75 transition-colors hover:bg-white/60 hover:text-black"
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-black/5">
+                          {getProductImage(product) ? (
+                            <img src={getProductImage(product)} alt="" className="h-full w-full object-cover" />
+                          ) : null}
+                        </span>
+                        <span className="truncate">{product.name}</span>
+                      </span>
+                      <ArrowUpRight size={15} strokeWidth={1.5} className="ml-3 shrink-0 text-black/35" />
+                    </button>
+                  )) : (
+                    <p className="px-3 py-2 text-sm text-black/45">No matching products.</p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence initial={true}>
         {isOpen && (

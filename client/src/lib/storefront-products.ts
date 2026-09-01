@@ -79,6 +79,13 @@ export function hasPublishedProducts(products: StorefrontProduct[]) {
   return products.length > 0;
 }
 
+export function searchStorefrontProducts(products: StorefrontProduct[], query: string) {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+
+  if (!normalizedQuery) return products;
+  return products.filter((product) => product.name.toLocaleLowerCase().includes(normalizedQuery));
+}
+
 export function findGeneratedStorefrontProduct(products: StorefrontProduct[], slug: string) {
   return products.find((product) => product.slug === slug) || null;
 }

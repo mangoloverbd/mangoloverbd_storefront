@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout";
+import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
   fetchStorefrontProductInventory,
@@ -9,6 +10,7 @@ import {
   formatProductPrice,
   formatProductPriceRange,
   mergeInventory,
+  searchStorefrontProducts,
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
@@ -73,11 +75,14 @@ function ProductCard({ product, index }: { product: StorefrontProduct; index: nu
 }
 
 export default function ProductsPage() {
+  const [location] = useLocation();
+  const searchQuery = new URLSearchParams(location.split("?")[1] ?? "").get("search") ?? "";
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
+  const filteredProducts = products ? searchStorefrontProducts(products, searchQuery) : products;
 
   return (
     <Layout>
@@ -104,15 +109,15 @@ export default function ProductsPage() {
           </div>
         )}
 
-        {products && products.length === 0 && (
+        {filteredProducts && filteredProducts.length === 0 && (
           <div className="border border-black/10 bg-white px-6 py-10 text-center">
-            <p className="text-sm uppercase tracking-[0.2em] text-black/60">No products published yet.</p>
+            <p className="text-sm uppercase tracking-[0.2em] text-black/60">{searchQuery ? `No products found for "${searchQuery}".` : "No products published yet."}</p>
           </div>
         )}
 
-        {products && products.length > 0 && (
+        {filteredProducts && filteredProducts.length > 0 && (
           <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
-            {products.map((product: StorefrontProduct, index: number) => (
+            {filteredProducts.map((product: StorefrontProduct, index: number) => (
               <ProductCard key={product.slug} product={product} index={index} />
             ))}
           </div>
