@@ -538,7 +538,7 @@ export default function Home() {
                 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white"
                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                বিশেষ সংগ্রহ
+                খাঁটি ঘি
               </motion.h2>
               <motion.p
                 variants={reveal}
@@ -546,15 +546,15 @@ export default function Home() {
                 className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base"
                 style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                আপনার দৈনিক পোশাককে নতুন করে সাজানো যত্নশীলভাবে বাছাই করা পণ্যসমূহ
+                উন্নত মানের দুধ থেকে তৈরি, সমৃদ্ধ স্বাদ ও সুগন্ধের খাঁটি ঘি
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
                   href="/products"
-                  className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
+                  className="border-b-2 border-white pb-1 text-[11px] font-medium text-white transition-opacity hover:opacity-60 md:text-base"
                   style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                 >
-                  সব পণ্য দেখুন
+                  এখনই কিনুন
                 </Link>
               </motion.div>
             </div>
