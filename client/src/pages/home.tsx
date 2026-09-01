@@ -122,7 +122,7 @@ export default function Home() {
   }, []);
 
   const categories = [
-    { label: "Homemade-হোমমেড", image: "/categories/homemade-2.webp" },
+    { label: "Homemade-হোমমেড", image: "/categories/homemade-3.webp" },
     { label: "Honey-মধু", image: "/categories/honey-4.webp" },
     { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-1.webp" },
     { label: "Jaggery-গুড়", image: "/categories/jaggery-1.webp" },
@@ -205,20 +205,18 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
-            {categories.map(({ label, image }) => {
-              const isHomemade = label.startsWith("Homemade");
-              return (
+            {categories.map(({ label, image }) => (
               <Link
                 key={label}
                 href="/products"
                 className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
               >
-                <div className={`aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px] ${isHomemade ? "bg-[#f5f5f5]" : ""}`}>
+                <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
                   <img
                     src={image}
                     alt={label}
                     loading="lazy"
-                    className={`h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${isHomemade ? "mix-blend-multiply" : ""}`}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
                 <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
@@ -233,8 +231,7 @@ export default function Home() {
                   )}
                 </span>
               </Link>
-              );
-            })}
+            ))}
           </motion.div>
         </div>
       </section>
