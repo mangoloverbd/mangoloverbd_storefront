@@ -308,10 +308,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 z-[100] flex items-start justify-center bg-black/15 px-4 pt-[12vh] backdrop-blur-md md:pt-[16vh]"
           >
             <motion.div
-              initial={{ opacity: 0, y: -18, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: -28, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -18, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 360, damping: 28, mass: 0.7 }}
               onClick={(event) => event.stopPropagation()}
               className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/60 bg-white/55 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.2)] backdrop-blur-2xl backdrop-saturate-150"
             >
