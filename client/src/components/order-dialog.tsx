@@ -335,7 +335,7 @@ export default function OrderDialog({
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <label className="space-y-2">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
+                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Name - নাম
                       </span>
                       <input
