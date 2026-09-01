@@ -366,7 +366,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-8">
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তথ্য</span>
-              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'AlinurAtithi', serif" }}>
+              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'HasanMeghaloy', serif" }}>
                 {["আমাদের সম্পর্কে", "যোগাযোগ", "কোম্পানির তথ্য", "ম্যাংগো লাভারের গল্প", "শর্তাবলী", "গোপনীয়তা নীতি", "ক্যারিয়ার", "রিফান্ড ও এক্সচেঞ্জ"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
@@ -375,7 +375,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>কেনুন</span>
-              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'AlinurAtithi', serif" }}>
+              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'HasanMeghaloy', serif" }}>
                 {["তেল ও ঘি", "মধু", "খেজুর", "মসলা", "বাদাম ও বীজ", "পানীয়", "ঘরোয়া খাবার"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
@@ -384,7 +384,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>সহায়তা</span>
-              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'AlinurAtithi', serif" }}>
+              <ul className="space-y-3 text-[15px] md:text-[13px] font-medium text-black" style={{ fontFamily: "'HasanMeghaloy', serif" }}>
                 {["সহায়তা কেন্দ্র", "কিভাবে অর্ডার করবেন", "অর্ডার ট্র্যাকিং", "পেমেন্ট ও শিপিং", "সচরাচর জিজ্ঞাসা", "ভোক্তা নীতি"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
