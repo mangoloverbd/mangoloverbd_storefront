@@ -124,7 +124,7 @@ export default function Home() {
   const categories = [
     { label: "Homemade-হোমমেড", image: "/categories/homemade-3.webp" },
     { label: "Honey-মধু", image: "/categories/honey-4.webp" },
-    { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-1.webp" },
+    { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-2.webp" },
     { label: "Jaggery-গুড়", image: "/categories/jaggery-1.webp" },
     { label: "Semai-সেমাই", image: "/categories/lachcha-1.webp" },
     { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1.webp" },
