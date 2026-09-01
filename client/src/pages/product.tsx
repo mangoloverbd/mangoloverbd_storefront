@@ -379,56 +379,58 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       <div className="min-h-screen bg-brand-ivory">
           <div className="grid grid-cols-1 lg:grid-cols-12">
             <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
-              {/* Mobile: carousel + centered thumbnails */}
+              {/* Mobile: carousel with vertical thumbnails on left inside image */}
               <div className="md:hidden">
                 <div className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-[#f6f6f6]">
                   {displayGallery.length ? (
-                    <div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
-                      <div className="flex h-full touch-pan-y">
-                        {displayGallery.map((url, idx) => (
-                          <div key={url} className="relative h-full min-w-0 flex-[0_0_100%] overflow-hidden">
-                            <motion.img
-                              src={url}
-                              alt={product.name}
-                              width={1080}
-                              height={1080}
-                              draggable={false}
-                              initial={false}
-                              animate={shouldReduceMotion ? { opacity: 1, scale: 1 } : {
-                                opacity: activeImage === idx ? 1 : 0.55,
-                                scale: activeImage === idx ? 1 : 0.96,
-                              }}
-                              whileHover={shouldReduceMotion ? undefined : { scale: activeImage === idx ? 1.035 : 0.98 }}
-                              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                              className="absolute inset-0 h-full w-full select-none object-cover object-center"
-                            />
-                          </div>
-                        ))}
+                    <>
+                      <div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
+                        <div className="flex h-full touch-pan-y">
+                          {displayGallery.map((url, idx) => (
+                            <div key={url} className="relative h-full min-w-0 flex-[0_0_100%] overflow-hidden">
+                              <motion.img
+                                src={url}
+                                alt={product.name}
+                                width={1080}
+                                height={1080}
+                                draggable={false}
+                                initial={false}
+                                animate={shouldReduceMotion ? { opacity: 1, scale: 1 } : {
+                                  opacity: activeImage === idx ? 1 : 0.55,
+                                  scale: activeImage === idx ? 1 : 0.96,
+                                }}
+                                whileHover={shouldReduceMotion ? undefined : { scale: activeImage === idx ? 1.035 : 0.98 }}
+                                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                                className="absolute inset-0 h-full w-full select-none object-cover object-center"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                      {displayGallery.length > 1 ? (
+                        <div className="absolute left-2 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-2">
+                          {displayGallery.map((url, idx) => (
+                            <button
+                              key={url}
+                              type="button"
+                              onClick={() => goToImage(idx)}
+                              aria-label={`Go to product image ${idx + 1}`}
+                              className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[6px] border-2 bg-white shadow-md transition-all ${
+                                activeImage === idx ? "border-black opacity-100" : "border-white/70 opacity-70 hover:opacity-100"
+                              }`}
+                            >
+                              <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+                    </>
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
                       No image
                     </div>
                   )}
                 </div>
-                {displayGallery.length > 1 ? (
-                  <div className={`mx-auto mt-3 flex max-w-[1080px] gap-2 overflow-x-auto pb-2 ${displayGallery.length <= 4 ? "justify-center" : "justify-start"}`}>
-                    {displayGallery.map((url, idx) => (
-                      <button
-                        key={url}
-                        type="button"
-                        onClick={() => goToImage(idx)}
-                        aria-label={`Go to product image ${idx + 1}`}
-                        className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[6px] border-2 transition-all ${
-                          activeImage === idx ? "border-black" : "border-transparent opacity-60 hover:opacity-100"
-                        }`}
-                      >
-                        <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
               </div>
 
               {/* Desktop: Pinterest style — first image big, rest in 2-col grid */}
