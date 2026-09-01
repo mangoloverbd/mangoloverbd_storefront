@@ -139,13 +139,13 @@ export default function Home() {
         <div className="w-full px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/920] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
                 src="/hero-mango-lover.webp?v=2"
                 alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
-                className="h-full w-full object-cover object-bottom md:hidden"
+                className="h-full w-full object-cover object-top md:hidden"
               />
               <img
                 src="/hero-desktop.webp"
