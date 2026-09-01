@@ -136,10 +136,10 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="w-full px-0">
+        <div className="w-full px-4 md:px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative aspect-[940/1000] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -157,6 +157,14 @@ export default function Home() {
             <div
               className="absolute bottom-0 left-0 right-0 h-32 md:h-48 pointer-events-none"
               style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#f6f6f6] to-transparent md:hidden"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#f6f6f6] to-transparent md:hidden"
             />
 
 
