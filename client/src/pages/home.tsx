@@ -342,7 +342,12 @@ export default function Home() {
               <img
                 src="/hero-mango-lover.webp?v=2"
                 alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
-                className="h-full w-full object-cover object-top md:object-cover md:object-top"
+                className="h-full w-full object-cover object-top md:hidden"
+              />
+              <img
+                src="/hero-desktop.webp"
+                alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
+                className="hidden md:block h-full w-full object-cover object-top"
               />
             </Link>
             {/* Foggy gradient bottom blend */}
