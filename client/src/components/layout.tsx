@@ -114,12 +114,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-transparent backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md md:border-b md:border-black/5 transition-all duration-300">
-        <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
-          <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
-            <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
-              <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
+      {/* Announcement Bar */}
+      <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
+        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
+          <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
+            <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
               <span>Mango season</span>
             </div>
             <motion.div
@@ -146,6 +145,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
+      </div>
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 w-full bg-transparent backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md md:border-b md:border-black/5 transition-all duration-300">
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
