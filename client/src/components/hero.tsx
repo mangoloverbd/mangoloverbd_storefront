@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 const HERO_IMAGES = [
   {
-    src: "/hero_mobile_no_makeup.png",
+    src: "/hero_mobile_no_makeup.webp",
     alt: "",
     fit: "cover",
   },
