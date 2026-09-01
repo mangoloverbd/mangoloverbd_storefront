@@ -347,8 +347,8 @@ export default function Home() {
             </Link>
             {/* Foggy gradient bottom blend */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-48 md:h-64 pointer-events-none"
-              style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 30%, rgba(246,246,246,0.7) 55%, transparent 100%)" }}
+              className="absolute bottom-0 left-0 right-0 h-32 md:h-48 pointer-events-none"
+              style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
             />
 
 
