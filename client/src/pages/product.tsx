@@ -660,7 +660,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 ? "border-black text-black"
                                 : "border-transparent text-black/40"
                             }`}
-                             style={{ fontFamily: "'KaiumSimanto', serif" }}
+                  style={{ fontFamily: "'ShohidAbuSayed', serif" }}
                           >
                             {item.label}
                           </button>
