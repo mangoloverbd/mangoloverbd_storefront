@@ -551,7 +551,7 @@ export default function Home() {
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
                   href="/products"
-                  className="border-b-2 border-white pb-1 text-[14px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
+                  className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
                   style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                 >
                   এখনই কিনুন
