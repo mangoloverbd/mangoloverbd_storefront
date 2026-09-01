@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { ArrowUpRight, Instagram, Twitter, Mail, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -399,13 +400,40 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Massive Logo Section */}
-          <div className="relative z-10 border-t border-black/10 px-3 pt-10 pb-5 md:px-0 md:pt-12 md:pb-2 overflow-hidden group cursor-default flex justify-center">
-            <img
-              src={mangoLoverLogo}
-              alt="Mango Lover"
-              className="h-16 md:h-24 w-auto opacity-60 md:opacity-70 transition-all duration-1000 md:group-hover:opacity-90"
-            />
+        {/* Decorative Divider + Brand Name + Trust Badges */}
+        <div className="relative z-10 px-4 md:px-16 pt-10 pb-6 md:pt-12 md:pb-8">
+          {/* Gold Divider */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px w-16 bg-[#FBBB14]/40" />
+            <div className="w-2 h-2 rotate-45 bg-[#FBBB14]/50" />
+            <div className="h-px w-16 bg-[#FBBB14]/40" />
+          </div>
+          {/* Bengali Brand Name */}
+          <p
+            className="text-center text-[22px] md:text-[26px] font-bold text-black/50 mb-8 tracking-wide"
+            style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+          >
+            ম্যাংগো লাভার
+          </p>
+          {/* Trust Badges */}
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+            {[
+              { icon: MoneyReceive, label: "ক্যাশ অন ডেলিভারি" },
+              { icon: TruckFast, label: "দ্রুত ডেলিভারি" },
+              { icon: ShieldTick, label: "নিরাপদ পেমেন্ট" },
+              { icon: CheckCircle, label: "মান নিশ্চিত" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2">
+                <Icon size={22} color="#FBBB14" weight="light" />
+                <span
+                  className="text-[11px] md:text-[12px] text-black/50 font-medium"
+                  style={{ fontFamily: "'ShohidAbuSayed', serif" }}
+                >
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Bar */}
