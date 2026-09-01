@@ -427,7 +427,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Icon size={22} color="#FBBB14" weight="light" />
                 <span
                   className="text-[11px] md:text-[12px] text-black/50 font-medium"
-                  style={{ fontFamily: "'ShohidAbuSayed', serif" }}
+                  style={{ fontFamily: "'KaiumSimanto', serif" }}
                 >
                   {label}
                 </span>
