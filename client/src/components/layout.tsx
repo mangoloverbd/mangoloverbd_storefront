@@ -115,7 +115,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md md:border-b md:border-black/5 transition-all duration-300">
+      <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-transparent backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md md:border-b md:border-black/5 transition-all duration-300">
         <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
           <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
             <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
