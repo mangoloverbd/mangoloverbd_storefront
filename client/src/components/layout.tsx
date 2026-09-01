@@ -324,7 +324,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Background image — mobile */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35 md:opacity-40 md:hidden"
-          style={{ backgroundImage: "url('/footer-bg-mobile.webp')" }}
+          style={{ backgroundImage: "url('/footer-bg-mobile-v2.webp')" }}
         />
         {/* Foggy gradient on left for mobile */}
         <div
@@ -373,7 +373,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-8">
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তথ্য</span>
-              <ul className="space-y-3 text-[17px] md:text-[15px] font-bold text-black" style={{ fontFamily: "'ShohidAbuSayed', serif" }}>
+              <ul className="space-y-3 text-[15px] md:text-[15px] font-bold text-black" style={{ fontFamily: "'ShohidAbuSayed', serif" }}>
                 {["আমাদের সম্পর্কে", "যোগাযোগ", "কোম্পানির তথ্য", "ম্যাংগো লাভারের গল্প", "শর্তাবলী", "গোপনীয়তা নীতি", "ক্যারিয়ার", "রিফান্ড ও এক্সচেঞ্জ"].map((label) => (
                   <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
                 ))}
