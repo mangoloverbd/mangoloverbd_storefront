@@ -228,8 +228,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Mobile bottom navigation */}
-      <nav
+      <motion.nav
         aria-label="Mobile navigation"
+        layoutId="mobile-bottom-navigation"
+        initial={false}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/40 bg-white/20 px-2 text-black shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_0_rgba(255,255,255,0.18)] backdrop-blur-2xl backdrop-saturate-150 md:hidden"
       >
         <Link href="/">
@@ -282,7 +285,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <MenuLinesIcon className="!h-5 !w-5 scale-125 opacity-70" />
           <span>Menu</span>
         </Button>
-      </nav>
+      </motion.nav>
 
       <AnimatePresence initial={true}>
         {isOpen && (
