@@ -552,8 +552,9 @@ export default function Home() {
                 <Link
                   href="/products"
                   className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
+                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                 >
-                  EXPLORE THE EDIT
+                  সব পণ্য দেখুন
                 </Link>
               </motion.div>
             </div>
