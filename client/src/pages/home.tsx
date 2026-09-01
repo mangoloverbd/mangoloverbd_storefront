@@ -340,7 +340,7 @@ export default function Home() {
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
-                src="/hero-mango-lover.webp"
+                src="/hero-mango-lover.webp?v=2"
                 alt="ম্যাংগো লাভার — বাংলার সেরা সকল মৌসুমি আম, সরাসরি বাগান থেকে আপনার ঘরে"
                 className="h-full w-full object-cover object-top md:object-cover md:object-top"
               />
