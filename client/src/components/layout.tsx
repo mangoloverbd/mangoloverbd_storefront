@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, Globe, Clock, House, Package, ShieldCheck, ShoppingBag, X } from "lucide-react";
 import { MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect } from "react";
 
@@ -218,6 +218,63 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
+      {/* Mobile bottom navigation */}
+      <nav
+        aria-label="Mobile navigation"
+        className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/25 bg-neutral-500/40 px-2 text-white shadow-2xl backdrop-blur-xl md:hidden"
+      >
+        <Link href="/">
+          <a
+            aria-label="Home"
+            aria-current={location === "/" ? "page" : undefined}
+            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/" ? "text-white" : "text-white/60"}`}
+          >
+            <House size={20} strokeWidth={1.8} fill={location === "/" ? "currentColor" : "none"} />
+            <span>Home</span>
+          </a>
+        </Link>
+        <Link href="/products">
+          <a
+            aria-label="Products"
+            aria-current={location === "/products" ? "page" : undefined}
+            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/products" ? "text-white" : "text-white/60"}`}
+          >
+            <Package size={20} strokeWidth={1.8} />
+            <span>Products</span>
+          </a>
+        </Link>
+        <Button
+          variant="ghost"
+          aria-label={`Cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
+          onClick={() => setCartOpen(true)}
+          className="relative flex h-12 w-16 flex-col items-center justify-center rounded-full bg-[#C8F45A] p-0 text-black shadow-none hover:bg-[#C8F45A]"
+        >
+          <BagIcon className="!h-8 !w-8" />
+          {itemCount > 0 && (
+            <span className="absolute right-3 top-2 h-2 w-2 rounded-full bg-[#163B33]" aria-label={`${itemCount} items in cart`} />
+          )}
+          <span className="sr-only">Cart</span>
+        </Button>
+        <Link href="/products">
+          <a
+            aria-label="Search products"
+            className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/60 transition-colors hover:text-white"
+          >
+            <SearchIcon className="h-5 w-5" />
+            <span>Search</span>
+          </a>
+        </Link>
+        <Button
+          variant="ghost"
+          aria-label="Open menu"
+          onClick={() => setIsOpen(true)}
+          className="flex min-w-[52px] flex-col items-center gap-1 rounded-none p-0 text-[9px] font-medium tracking-[0.04em] text-white/60 shadow-none transition-colors hover:bg-transparent hover:text-white"
+        >
+          <MenuLinesIcon className="h-5 w-5 opacity-70" />
+          <span>Menu</span>
+        </Button>
+      </nav>
+
       <AnimatePresence initial={true}>
         {isOpen && (
           <motion.div
@@ -300,7 +357,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <CartDrawer />
 
       {/* Main Content with Transition */}
-      <main className="flex-grow overflow-hidden bg-brand-ivory">
+      <main className="flex-grow overflow-hidden bg-brand-ivory pb-20 md:pb-0">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location}
