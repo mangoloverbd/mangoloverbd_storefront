@@ -579,7 +579,7 @@ export default function Home() {
               className="w-full object-cover md:hidden"
             />
             <img
-              src="/pexels-ekrulila-26316180_1.jpg"
+              src="/essentials-bg.webp"
               alt="Daily essentials"
               loading="lazy"
               className="hidden md:block w-full object-cover"
