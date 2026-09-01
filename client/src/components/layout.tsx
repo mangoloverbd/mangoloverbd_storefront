@@ -445,9 +445,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Bottom Bar */}
         <div className="relative z-10 bg-transparent border-t border-black/10 px-4 sm:px-8 md:px-16 py-8">
-          <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-[9px] uppercase tracking-[0.4em] text-black/40 text-center md:text-left">
-              Website designed and developed by <a href="https://api.whatsapp.com/send/?phone=8801301636461" className="text-black font-bold normal-case">Arc Labs Corporation</a> / <span className="tracking-normal normal-case">© 2026 ম্যাংগো লাভার - Mango Lover</span>
+          <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-6">
+            <div className="text-center md:text-left">
+              <a
+                href="https://api.whatsapp.com/send/?phone=8801733670129"
+                className="group inline-flex items-center gap-2 text-black transition-colors hover:text-[#163B33]"
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#FBBB14] transition-transform duration-300 group-hover:scale-125" />
+                <span className="text-[7px] font-medium uppercase tracking-[0.28em] text-black/40">
+                  Designed &amp; Developed by
+                </span>
+                <span
+                  className="max-md:-translate-y-0.5 text-[14px] font-bold tracking-[0.12em] underline decoration-[#FBBB14] decoration-2 underline-offset-4 md:text-[13px]"
+                  style={{ fontFamily: "'Garet', 'Space Grotesk', 'Inter', sans-serif" }}
+                >
+                  Arc Labs Corporation
+                </span>
+              </a>
+              <span className="mt-2 block text-[8px] tracking-normal text-black/40">
+                © 2026 ম্যাংগো লাভার - Mango Lover
+              </span>
             </div>
             <div className="flex gap-8 text-[9px] uppercase tracking-[0.4em] text-black/40">
               <div className="flex items-center gap-2"><Globe className="w-3 h-3" /> Dhaka, Bangladesh</div>
