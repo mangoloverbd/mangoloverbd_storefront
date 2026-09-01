@@ -408,30 +408,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       </div>
                     </div>
 
-                    {displayGallery.length > 1 ? (
-                      <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center gap-2 md:bottom-8">
-                        {displayGallery.map((url, idx) => (
-                          <motion.button
-                            key={url}
-                            type="button"
-                            onClick={() => goToImage(idx)}
-                            className="relative h-3 w-8 overflow-hidden"
-                            aria-label={`Go to product image ${idx + 1}`}
-                          >
-                            <span className="absolute left-0 top-1/2 h-[2px] w-full -translate-y-1/2 bg-black/20" />
-                            <motion.span
-                              className="absolute left-0 top-1/2 h-[2px] w-full origin-left -translate-y-1/2 bg-black"
-                              initial={false}
-                              animate={{
-                                opacity: activeImage === idx ? 1 : 0,
-                                scaleX: activeImage === idx ? 1 : 0.2,
-                              }}
-                              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                            />
-                          </motion.button>
-                        ))}
-                      </div>
-                    ) : null}
                   </>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
@@ -439,6 +415,23 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 )}
               </div>
+              {displayGallery.length > 1 ? (
+                <div className={`mx-auto mt-3 flex max-w-[1080px] gap-2 overflow-x-auto pb-2 md:mt-4 md:gap-3 ${displayGallery.length <= 4 ? "justify-center md:justify-start" : "justify-start"}`}>
+                  {displayGallery.map((url, idx) => (
+                    <button
+                      key={url}
+                      type="button"
+                      onClick={() => goToImage(idx)}
+                      aria-label={`Go to product image ${idx + 1}`}
+                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[6px] border-2 transition-all md:h-20 md:w-20 ${
+                        activeImage === idx ? "border-black" : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <div
