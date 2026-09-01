@@ -596,9 +596,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                              <span className="font-garet text-[11px] font-normal tracking-[0.03em] text-black/45">
                               {item.date}
                             </span>
-                            <span
+                             <span
                                className="mt-1 block text-[14px] font-normal leading-4 text-black/80"
-                 style={{ fontFamily: "'ShohidAbuSayed', serif" }}
+                 style={{ fontFamily: "'KaiumSimanto', serif" }}
                             >
                               {item.title}
                             </span>
