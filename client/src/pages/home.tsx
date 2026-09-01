@@ -240,7 +240,7 @@ export default function Home() {
       <section className="w-full overflow-hidden bg-[#f6f6f6] py-10 md:py-16">
         <motion.div
           ref={whatsNewRef}
-          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
+          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
           initial="hidden"
           animate={whatsNewInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
@@ -248,16 +248,16 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="flex items-center justify-between gap-4"
+            className="flex items-center justify-between gap-2 overflow-hidden"
           >
-            <div className="flex items-center gap-3 md:gap-6">
-              <span className="text-[13px] font-medium text-black md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
-              <span className="text-[13px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
-              <span className="text-[13px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar md:gap-6">
+              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
+              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
+              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
             </div>
             <Link
               href="/products"
-              className="shrink-0 border-b-2 border-black pb-1 text-[14px] font-medium text-black transition-opacity hover:opacity-60 md:text-[16px]"
+              className="shrink-0 whitespace-nowrap border-b-2 border-black pb-1 text-[12px] font-medium text-black transition-opacity hover:opacity-60 md:text-[16px]"
               style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
               এখনই কিনুন
@@ -315,11 +315,11 @@ export default function Home() {
                             )}
                           </div>
 
-                          <div className="pb-2 pt-5 text-black md:pt-7">
-                            <h3 className="text-lg font-medium uppercase leading-tight tracking-[0.08em] md:min-h-[2.4em] md:text-2xl">
+                          <div className="pb-2 pt-3 text-black md:pt-7">
+                            <h3 className="line-clamp-2 text-[13px] font-medium uppercase leading-tight tracking-[0.06em] md:min-h-[2.4em] md:text-2xl md:tracking-[0.08em]">
                               {product.name}
                             </h3>
-                            <p className="mt-3 text-xl font-normal tracking-[0.01em] text-black md:text-2xl">
+                            <p className="mt-2 text-[15px] font-normal tracking-[0.01em] text-black md:mt-3 md:text-2xl">
                               {formatProductPriceRange(product)}
                             </p>
                           </div>
@@ -386,7 +386,7 @@ export default function Home() {
                         key={product.id || product.slug}
                         variants={reveal}
                         transition={transition}
-                        className="group"
+                        className="group min-w-0"
                       >
                         <Link href={`/product/${product.slug}`} className="block h-full">
                           <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
