@@ -530,15 +530,17 @@ export default function Home() {
                 variants={reveal}
                 transition={transition}
                 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                The Curated Edit
+                বিশেষ সংগ্রহ
               </motion.h2>
               <motion.p
                 variants={reveal}
                 transition={transition}
                 className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                Thoughtfully selected pieces to redefine your everyday wardrobe
+                আপনার দৈনিক পোশাককে নতুন করে সাজানো যত্নশীলভাবে বাছাই করা পণ্যসমূহ
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
