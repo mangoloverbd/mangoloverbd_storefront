@@ -332,7 +332,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Foggy gradient on bottom for mobile */}
         <div
           className="absolute inset-0 md:hidden"
-          style={{ background: "linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 20%, rgba(255,255,255,0.2) 45%, transparent 65%)" }}
+          style={{ background: "linear-gradient(to top, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 15%, transparent 40%)" }}
         />
         {/* White overlay for text readability */}
         <div className="absolute inset-0 bg-white/60" />
