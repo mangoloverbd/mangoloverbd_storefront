@@ -245,24 +245,35 @@ export default function Home() {
           animate={whatsNewInView ? "visible" : "hidden"}
           transition={{ staggerChildren: 0.12 }}
         >
-          <motion.p
+          <motion.div
             variants={reveal}
             transition={transition}
-            className="text-center text-sm font-bold uppercase tracking-[0.55em] text-black md:text-2xl"
+            className="flex items-center justify-between gap-4"
           >
-            WHAT'S NEW
-          </motion.p>
+            <div className="flex items-center gap-3 md:gap-6">
+              <span className="text-[13px] font-medium text-black md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
+              <span className="text-[13px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
+              <span className="text-[13px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
+            </div>
+            <Link
+              href="/products"
+              className="shrink-0 border-b-2 border-black pb-1 text-[14px] font-medium text-black transition-opacity hover:opacity-60 md:text-[16px]"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+            >
+              এখনই কিনুন
+            </Link>
+          </motion.div>
 
           <motion.div
             ref={whatsNewGridRef}
             transition={{ staggerChildren: 0.08 }}
-            className="no-scrollbar mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:mt-16 md:grid md:grid-cols-4 md:overflow-visible"
+            className="mt-8 grid grid-cols-2 gap-3 md:mt-12 md:grid-cols-4 md:gap-4"
           >
             {isCatalogLoading
               ? Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
-                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#ededed] motion-reduce:animate-none md:min-w-0"
+                    className="aspect-[3/4] animate-pulse bg-[#ededed] motion-reduce:animate-none"
                     aria-hidden="true"
                   />
                 ))
@@ -375,7 +386,7 @@ export default function Home() {
                         key={product.id || product.slug}
                         variants={reveal}
                         transition={transition}
-                        className="group bg-[#f6f6f6]"
+                        className="group"
                       >
                         <Link href={`/product/${product.slug}`} className="block h-full">
                           <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
