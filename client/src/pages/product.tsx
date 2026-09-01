@@ -379,11 +379,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       <div className="min-h-screen bg-brand-ivory">
           <div className="grid grid-cols-1 lg:grid-cols-12">
             <div className="lg:col-span-7 bg-brand-ivory p-[10px] md:p-16 xl:p-20">
-              <div
-                className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-[#f6f6f6]"
-              >
-                {displayGallery.length ? (
-                  <>
+              {/* Mobile: carousel + centered thumbnails */}
+              <div className="md:hidden">
+                <div className="relative mx-auto aspect-square w-full max-w-[1080px] overflow-hidden rounded-[8px] bg-[#f6f6f6]">
+                  {displayGallery.length ? (
                     <div ref={galleryRef} className="h-full cursor-grab overflow-hidden active:cursor-grabbing">
                       <div className="flex h-full touch-pan-y">
                         {displayGallery.map((url, idx) => (
@@ -407,31 +406,67 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         ))}
                       </div>
                     </div>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
+                      No image
+                    </div>
+                  )}
+                </div>
+                {displayGallery.length > 1 ? (
+                  <div className={`mx-auto mt-3 flex max-w-[1080px] gap-2 overflow-x-auto pb-2 ${displayGallery.length <= 4 ? "justify-center" : "justify-start"}`}>
+                    {displayGallery.map((url, idx) => (
+                      <button
+                        key={url}
+                        type="button"
+                        onClick={() => goToImage(idx)}
+                        aria-label={`Go to product image ${idx + 1}`}
+                        className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[6px] border-2 transition-all ${
+                          activeImage === idx ? "border-black" : "border-transparent opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
 
+              {/* Desktop: Pinterest style — first image big, rest in 2-col grid */}
+              <div className="hidden md:block mx-auto max-w-[1080px]">
+                {displayGallery.length ? (
+                  <>
+                    <div className="overflow-hidden rounded-[8px] bg-[#f6f6f6]">
+                      <img
+                        src={displayGallery[0]}
+                        alt={product.name}
+                        width={1080}
+                        height={1080}
+                        className="h-auto w-full object-cover object-center"
+                      />
+                    </div>
+                    {displayGallery.length > 1 ? (
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        {displayGallery.slice(1).map((url, idx) => (
+                          <div key={url} className="overflow-hidden rounded-[8px] bg-[#f6f6f6]">
+                            <img
+                              src={url}
+                              alt={`${product.name} ${idx + 2}`}
+                              width={540}
+                              height={540}
+                              loading="lazy"
+                              className="h-auto w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
+                  <div className="flex aspect-square w-full items-center justify-center rounded-[8px] bg-[#f6f6f6] text-[10px] font-bold uppercase tracking-[0.35em] text-black/25">
                     No image
                   </div>
                 )}
               </div>
-              {displayGallery.length > 1 ? (
-                <div className={`mx-auto mt-3 flex max-w-[1080px] gap-2 overflow-x-auto pb-2 md:mt-4 md:gap-3 ${displayGallery.length <= 4 ? "justify-center md:justify-start" : "justify-start"}`}>
-                  {displayGallery.map((url, idx) => (
-                    <button
-                      key={url}
-                      type="button"
-                      onClick={() => goToImage(idx)}
-                      aria-label={`Go to product image ${idx + 1}`}
-                      className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-[6px] border-2 transition-all md:h-20 md:w-20 ${
-                        activeImage === idx ? "border-black" : "border-transparent opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </div>
 
             <div
