@@ -415,7 +415,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                               type="button"
                               onClick={() => goToImage(idx)}
                               aria-label={`Go to product image ${idx + 1}`}
-                              className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-[6px] border-2 bg-white shadow-md transition-all ${
+                              className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-[6px] border-2 bg-white shadow-md transition-all ${
                                 activeImage === idx ? "border-black opacity-100" : "border-white/70 opacity-70 hover:opacity-100"
                               }`}
                             >
