@@ -346,7 +346,7 @@ export default function OrderDialog({
                       />
                     </label>
                     <label className="space-y-2">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
+                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Phone - ফোন
                       </span>
                       <input
@@ -360,7 +360,7 @@ export default function OrderDialog({
                   </div>
 
                   <label className="block space-y-2">
-                      <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
+                      <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Address - ঠিকানা
                       </span>
                     <textarea
@@ -414,7 +414,7 @@ export default function OrderDialog({
                   </div>
 
                   <div className="grid gap-2">
-                    <span className="text-[10px] md:text-[11px] font-semibold text-black/60">
+                    <span className="text-[13px] md:text-[14px] font-semibold text-black">
                       Payment Method - পেমেন্ট পদ্ধতি
                     </span>
                     <div className="grid gap-2">
