@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Instagram, Facebook, Youtube, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
 import { MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect } from "react";
 
@@ -351,15 +351,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <p className="text-[13px] font-bold leading-[2] text-black/60 md:max-w-md">
               সাধ্যের মধ্যে সেরা মানের পন্য আপনার ও আপনার পরিবারের জন্য, যা আমরা পাঠাই একদম মাঠ পর্যায় থেকে, তাই পাচ্ছেন সাশ্রয়ী দামে সেরা মানের পন্যের নিশ্চয়তা।
             </p>
-            <div className="flex gap-6">
-              <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                <Facebook className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+            <div className="flex gap-6 items-center">
+              <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
+                <img src="https://cdn.reicon.dev/logos/facebook/original.svg" alt="Facebook" width={24} height={24} className="w-6 h-6" />
               </a>
-              <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <Instagram className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
+                <img src="https://cdn.reicon.dev/logos/instagram/original.svg" alt="Instagram" width={24} height={24} className="w-6 h-6" />
               </a>
-              <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                <Youtube className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:opacity-80 transition-opacity">
+                <img src="https://cdn.reicon.dev/logos/youtube/original.svg" alt="Youtube" width={24} height={24} className="w-6 h-6" />
               </a>
             </div>
             <div className="space-y-6 pt-2">
