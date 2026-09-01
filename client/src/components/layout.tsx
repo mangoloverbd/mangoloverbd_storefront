@@ -113,7 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
+    <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Announcement Bar */}
       <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
         <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
@@ -146,7 +146,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 w-full bg-transparent backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md md:border-b md:border-black/5 transition-all duration-300">
+      <nav className="sticky top-0 z-50 w-full bg-white/10 backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
@@ -300,7 +300,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <CartDrawer />
 
       {/* Main Content with Transition */}
-      <main className="flex-grow overflow-hidden">
+      <main className="flex-grow overflow-hidden bg-brand-ivory">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={location}
