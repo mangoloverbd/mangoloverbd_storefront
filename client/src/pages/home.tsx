@@ -139,7 +139,7 @@ export default function Home() {
         <div className="w-full px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/880] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative aspect-[940/920] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
