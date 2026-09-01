@@ -250,14 +250,16 @@ export default function Home() {
             transition={transition}
             className="flex items-center justify-between gap-2 overflow-hidden"
           >
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar md:gap-6">
-              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
-              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
-              <span className="shrink-0 whitespace-nowrap text-[12px] font-medium text-black/60 md:text-[15px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar md:gap-3">
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/40 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>|</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/60 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/40 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>|</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/60 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
             </div>
             <Link
               href="/products"
-              className="shrink-0 whitespace-nowrap border-b-2 border-black pb-1 text-[12px] font-medium text-black transition-opacity hover:opacity-60 md:text-[16px]"
+              className="shrink-0 whitespace-nowrap border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
               style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
               এখনই কিনুন
@@ -267,13 +269,13 @@ export default function Home() {
           <motion.div
             ref={whatsNewGridRef}
             transition={{ staggerChildren: 0.08 }}
-            className="mt-8 grid grid-cols-2 gap-3 md:mt-12 md:grid-cols-4 md:gap-4"
+            className="mt-8 grid grid-cols-2 gap-2 md:mt-12 md:gap-4 lg:grid-cols-4"
           >
             {isCatalogLoading
               ? Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
-                    className="aspect-[3/4] animate-pulse bg-[#ededed] motion-reduce:animate-none"
+                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
                     aria-hidden="true"
                   />
                 ))
@@ -292,10 +294,10 @@ export default function Home() {
                         key={product.id || product.slug}
                         variants={reveal}
                         transition={transition}
-                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
+                        className="group min-w-0"
                       >
                         <Link href={`/product/${product.slug}`} className="block h-full">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
                             {image ? (
                               <img
                                 src={image}
@@ -315,11 +317,11 @@ export default function Home() {
                             )}
                           </div>
 
-                          <div className="pb-2 pt-3 text-black md:pt-7">
-                            <h3 className="line-clamp-2 text-[13px] font-medium uppercase leading-tight tracking-[0.06em] md:min-h-[2.4em] md:text-2xl md:tracking-[0.08em]">
+                          <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
+                            <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
                               {product.name}
                             </h3>
-                            <p className="mt-2 text-[15px] font-normal tracking-[0.01em] text-black md:mt-3 md:text-2xl">
+                            <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">
                               {formatProductPriceRange(product)}
                             </p>
                           </div>
