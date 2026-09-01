@@ -1,168 +1,14 @@
 import Layout from "@/components/layout";
-import { useCart } from "@/contexts/cart-context";
+import {
+  fetchStorefrontProducts,
+  formatProductPriceRange,
+  getProductImage,
+  STOREFRONT_POLL_INTERVAL_MS,
+} from "@/lib/storefront-products";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import type { MouseEvent } from "react";
 import { Link } from "wouter";
-
-const latestDropProducts = [
-  {
-    title: "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
-    slug: "black-seed-flower-honey",
-    price: "৳ 700.00 – ৳ 1,400.00",
-    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
-  },
-  {
-    title: "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
-    slug: "sundarbans-natural-honey",
-    price: "৳ 750.00 – ৳ 1,400.00",
-    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Clean White",
-    slug: "linen-baggy-trouser-clean-white",
-    price: "৳ 799.00",
-    image: "/new1.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Earthy Olive",
-    slug: "linen-baggy-trouser-earthy-olive",
-    price: "৳ 799.00",
-    image: "/new2.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Black",
-    slug: "linen-baggy-trouser-black",
-    price: "৳ 799.00",
-    image: "/new3.webp",
-  },
-  {
-    title: "Linen Baggy Trouser - Cocoa Brown",
-    slug: "linen-baggy-trouser-cocoa-brown",
-    price: "৳ 799.00",
-    image: "/new4.webp",
-  },
-];
-
-const whatsNewProducts = [
-  {
-    id: 205,
-    title: "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
-    slug: "black-seed-flower-honey",
-    price: "৳ 700.00 – ৳ 1,400.00",
-    sizeLabel: "Default",
-    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
-  },
-  {
-    id: 206,
-    title: "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
-    slug: "sundarbans-natural-honey",
-    price: "৳ 750.00 – ৳ 1,400.00",
-    sizeLabel: "Default",
-    image: "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
-  },
-  {
-    id: 201,
-    title: "Black Blazer Dress",
-    slug: "black-blazer-dress",
-    price: "৳ 1,690.00",
-    sizeLabel: "Default",
-    image: "/new1.webp",
-  },
-  {
-    id: 202,
-    title: "Black High Leggings",
-    slug: "black-high-leggings",
-    price: "৳ 990.00",
-    sizeLabel: "Default",
-    image: "/new2.webp",
-  },
-  {
-    id: 203,
-    title: "Clean White Trouser",
-    slug: "clean-white-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    image: "/new3.webp",
-  },
-  {
-    id: 204,
-    title: "Cocoa Brown Trouser",
-    slug: "cocoa-brown-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    image: "/new4.webp",
-  },
-];
-
-const justArrivedProducts = [
-  {
-    id: 101,
-    title: "Black Blazer Dress",
-    slug: "black-blazer-dress",
-    price: "৳ 1,690.00",
-    sizeLabel: "Default",
-    sizes: 5,
-    image: "/new1.webp",
-  },
-  {
-    id: 102,
-    title: "Black High Leggings",
-    slug: "black-high-leggings",
-    price: "৳ 990.00",
-    sizeLabel: "Default",
-    sizes: 4,
-    image: "/new2.webp",
-  },
-  {
-    id: 103,
-    title: "Clean White Trouser",
-    slug: "clean-white-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    sizes: 5,
-    image: "/new3.webp",
-  },
-  {
-    id: 104,
-    title: "Cocoa Brown Trouser",
-    slug: "cocoa-brown-trouser",
-    price: "৳ 799.00",
-    sizeLabel: "Default",
-    sizes: 3,
-    image: "/new4.webp",
-  },
-];
-
-const specialProducts = [
-  {
-    id: 301,
-    title: "Top 10",
-    slug: "cocoa-brown-trouser",
-    count: "10",
-    price: "৳ 1,290.00",
-    sizeLabel: "Default",
-    image: "/new4.webp",
-  },
-  {
-    id: 302,
-    title: "Accessories",
-    slug: "clean-white-trouser",
-    count: "12",
-    price: "৳ 890.00",
-    sizeLabel: "Default",
-    image: "/pexels-ekrulila-26316180_1.jpg",
-  },
-  {
-    id: 303,
-    title: "Bottoms",
-    slug: "black-high-leggings",
-    count: "08",
-    price: "৳ 1,190.00",
-    sizeLabel: "Default",
-    image: "/new3.webp",
-  },
-];
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -195,7 +41,15 @@ function useReveal() {
 }
 
 export default function Home() {
-  const { addToCart } = useCart();
+  const {
+    data: catalogProducts = [],
+    isError: isCatalogError,
+    isLoading: isCatalogLoading,
+  } = useQuery({
+    queryKey: ["merchant-suite-products-listing"],
+    queryFn: fetchStorefrontProducts,
+    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
+  });
 
   const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -266,57 +120,6 @@ export default function Home() {
     }
     return () => cleanups.forEach((fn) => fn());
   }, []);
-
-  function quickAddJustArrived(
-    event: MouseEvent<HTMLButtonElement>,
-    product: (typeof justArrivedProducts)[number],
-  ) {
-    event.preventDefault();
-    event.stopPropagation();
-    addToCart(
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-      },
-      product.sizeLabel,
-    );
-  }
-
-  function quickAddSpecial(
-    event: MouseEvent<HTMLButtonElement>,
-    product: (typeof specialProducts)[number],
-  ) {
-    event.preventDefault();
-    event.stopPropagation();
-    addToCart(
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-      },
-      product.sizeLabel,
-    );
-  }
-
-  function quickAddWhatsNew(
-    event: MouseEvent<HTMLButtonElement>,
-    product: (typeof whatsNewProducts)[number],
-  ) {
-    event.preventDefault();
-    event.stopPropagation();
-    addToCart(
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image,
-      },
-      product.sizeLabel,
-    );
-  }
 
   const categories = [
     { label: "Homemade-হোমমেড", image: "/categories/category-default.png" },
@@ -451,57 +254,68 @@ export default function Home() {
           </motion.p>
 
           <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mt-9 grid grid-cols-3 gap-2 text-center text-[clamp(2rem,5vw,2.6rem)] font-bold leading-none tracking-[-0.04em] md:mt-14 md:flex md:justify-center md:gap-12"
-          >
-            <span className="text-black">Jackets</span>
-            <span className="text-black/25">Hoodies</span>
-            <span className="text-black/25">T-Shirt</span>
-          </motion.div>
-
-          <motion.div
             ref={whatsNewGridRef}
             transition={{ staggerChildren: 0.08 }}
             className="no-scrollbar mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:mt-16 md:grid md:grid-cols-4 md:overflow-visible"
           >
-            {whatsNewProducts.map((product, index) => (
-              <motion.article
-                key={product.title}
-                variants={reveal}
-                transition={transition}
-                className="group min-w-[78vw] snap-start snap-always md:min-w-0"
-              >
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
-                  <Link href={`/product/${product.slug}`} className="block h-full">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </Link>
-                  <span className="absolute left-5 top-5 bg-neutral-500/60 text-xs font-bold uppercase tracking-[0.35em] text-white backdrop-blur-md md:left-6 md:top-6 md:text-lg">
-                    LAST FEW
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={`Quick add ${product.title} from What's New to cart`}
-                    onClick={(event) => quickAddWhatsNew(event, product)}
-                      className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black text-2xl font-extralight leading-none text-white shadow-xl shadow-black/20 transition-transform duration-300 hover:scale-105 md:bottom-5 md:right-5 md:h-12 md:w-12 md:text-3xl"
-                    >
-                      +
-                  </button>
-                </div>
+            {isCatalogLoading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#ededed] motion-reduce:animate-none md:min-w-0"
+                    aria-hidden="true"
+                  />
+                ))
+              : isCatalogError && catalogProducts.length === 0
+                ? (
+                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
+                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
+                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
+                    </div>
+                  )
+                : catalogProducts.slice(0, 6).map((product) => {
+                    const image = getProductImage(product);
 
-                <Link href={`/product/${product.slug}`} className="block pb-2 pt-5 text-black md:pt-7">
-                  <h3 className="text-lg font-medium uppercase leading-tight tracking-[0.08em] md:min-h-[2.4em] md:text-2xl">
-                    {product.title}
-                  </h3>
-                  <p className="mt-3 text-xl font-normal tracking-[0.01em] text-black md:text-2xl">{product.price}</p>
-                </Link>
-              </motion.article>
-            ))}
+                    return (
+                      <motion.article
+                        key={product.id || product.slug}
+                        variants={reveal}
+                        transition={transition}
+                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
+                      >
+                        <Link href={`/product/${product.slug}`} className="block h-full">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#ededed]">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={product.name}
+                                loading="lazy"
+                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+                                No image
+                              </div>
+                            )}
+                            {product.available === false && (
+                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+                                Sold out
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="pb-2 pt-5 text-black md:pt-7">
+                            <h3 className="text-lg font-medium uppercase leading-tight tracking-[0.08em] md:min-h-[2.4em] md:text-2xl">
+                              {product.name}
+                            </h3>
+                            <p className="mt-3 text-xl font-normal tracking-[0.01em] text-black md:text-2xl">
+                              {formatProductPriceRange(product)}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.article>
+                    );
+                  })}
           </motion.div>
         </motion.div>
       </section>
@@ -538,31 +352,63 @@ export default function Home() {
             transition={{ staggerChildren: 0.08 }}
             className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4"
           >
-            {latestDropProducts.map((product, index) => (
-              <motion.article
-                key={product.title}
-                variants={reveal}
-                transition={transition}
-                className="group bg-[#f6f6f6]"
-              >
-                <Link href={`/product/${product.slug}`} className="block h-full">
-                  <div className="aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
-                    <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
-                      {product.title}
-                    </h3>
-                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{product.price}</p>
-                  </div>
-                </Link>
-              </motion.article>
-            ))}
+            {isCatalogLoading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
+                    aria-hidden="true"
+                  />
+                ))
+              : isCatalogError && catalogProducts.length === 0
+                ? (
+                    <div className="col-span-full border border-black/10 bg-white px-6 py-10 text-center">
+                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
+                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
+                    </div>
+                  )
+                : catalogProducts.slice(0, 4).map((product) => {
+                    const image = getProductImage(product);
+
+                    return (
+                      <motion.article
+                        key={product.id || product.slug}
+                        variants={reveal}
+                        transition={transition}
+                        className="group bg-[#f6f6f6]"
+                      >
+                        <Link href={`/product/${product.slug}`} className="block h-full">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={product.name}
+                                loading="lazy"
+                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+                                No image
+                              </div>
+                            )}
+                            {product.available === false && (
+                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+                                Sold out
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
+                            <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
+                              {product.name}
+                            </h3>
+                            <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">
+                              {formatProductPriceRange(product)}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.article>
+                    );
+                  })}
           </motion.div>
         </motion.div>
       </section>
@@ -600,45 +446,64 @@ export default function Home() {
             transition={{ staggerChildren: 0.08 }}
             className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:grid md:grid-cols-4 md:gap-4 md:overflow-visible"
           >
-            {justArrivedProducts.map((product, index) => (
-              <motion.article
-                key={product.title}
-                variants={reveal}
-                transition={transition}
-                className="group min-w-[78vw] snap-start snap-always md:min-w-0"
-              >
-                <div className="h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
-                    <Link href={`/product/${product.slug}`} className="block h-full">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                    </Link>
-                    <button
-                      type="button"
-                      aria-label={`Quick add ${product.title} to cart`}
-                      onClick={(event) => quickAddJustArrived(event, product)}
-                      className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black text-2xl font-extralight leading-none text-white shadow-xl shadow-black/20 transition-transform duration-300 hover:scale-105 md:bottom-5 md:right-5 md:h-12 md:w-12 md:text-3xl"
-                    >
-                      +
-                    </button>
-                  </div>
+            {isCatalogLoading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
+                    aria-hidden="true"
+                  />
+                ))
+              : isCatalogError && catalogProducts.length === 0
+                ? (
+                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
+                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
+                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
+                    </div>
+                  )
+                : catalogProducts.slice(0, 4).map((product) => {
+                    const image = getProductImage(product);
 
-                  <Link href={`/product/${product.slug}`} className="block px-0 pb-2 pt-5 text-black md:pt-7">
-                    <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-xl md:tracking-[0.08em]">
-                      {product.title}
-                    </h3>
-                    <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">{product.price}</p>
-                    <p className="mt-8 text-lg font-normal tracking-[0.01em] text-black/45 md:text-2xl">
-                      Available in {product.sizes} size
-                    </p>
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
+                    return (
+                      <motion.article
+                        key={product.id || product.slug}
+                        variants={reveal}
+                        transition={transition}
+                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
+                      >
+                        <Link href={`/product/${product.slug}`} className="block h-full">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={product.name}
+                                loading="lazy"
+                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+                                No image
+                              </div>
+                            )}
+                            {product.available === false && (
+                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+                                Sold out
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="px-0 pb-2 pt-5 text-black md:pt-7">
+                            <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-xl md:tracking-[0.08em]">
+                              {product.name}
+                            </h3>
+                            <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">
+                              {formatProductPriceRange(product)}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.article>
+                    );
+                  })}
           </motion.div>
         </motion.div>
       </section>
@@ -654,7 +519,7 @@ export default function Home() {
         >
           <div className="relative w-full overflow-hidden">
             <img
-              src="/pexels-alessandra-shalbe-859114866-20446138_1.webp"
+              src="/curated-edit-bg.webp"
               alt="Editorial collection"
               loading="lazy"
               className="w-full object-cover"
@@ -761,35 +626,64 @@ export default function Home() {
           <motion.div
             className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:grid md:grid-cols-3 md:gap-4 md:overflow-visible"
           >
-            {specialProducts.map((product) => (
-              <motion.article
-                key={product.title}
-                variants={reveal}
-                transition={transition}
-                className="group min-w-[78vw] snap-start snap-always md:min-w-0"
-              >
-                <div className="h-full">
-                  <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
-                    <Link href={`/product/${product.slug}`} className="block h-full">
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </Link>
-                  </div>
-                  <Link href={`/product/${product.slug}`} className="block px-0 pb-2 pt-5 text-center text-black md:pt-7">
-                    <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:text-xl md:tracking-[0.08em]">
-                      {product.title}
-                      <sup className="ml-0.5 text-xs font-medium tracking-[0.1em] text-black/50 align-super md:text-sm">
-                        {product.count}
-                      </sup>
-                    </h3>
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
+            {isCatalogLoading
+              ? Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
+                    aria-hidden="true"
+                  />
+                ))
+              : isCatalogError && catalogProducts.length === 0
+                ? (
+                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
+                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
+                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
+                    </div>
+                  )
+                : catalogProducts.slice(0, 3).map((product) => {
+                    const image = getProductImage(product);
+
+                    return (
+                      <motion.article
+                        key={product.id || product.slug}
+                        variants={reveal}
+                        transition={transition}
+                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
+                      >
+                        <Link href={`/product/${product.slug}`} className="block h-full">
+                          <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={product.name}
+                                loading="lazy"
+                                className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+                                No image
+                              </div>
+                            )}
+                            {product.available === false && (
+                              <span className="absolute left-4 top-4 bg-neutral-500/70 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] text-white">
+                                Sold out
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="px-0 pb-2 pt-5 text-center text-black md:pt-7">
+                            <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:text-xl md:tracking-[0.08em]">
+                              {product.name}
+                            </h3>
+                            <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">
+                              {formatProductPriceRange(product)}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.article>
+                    );
+                  })}
           </motion.div>
         </motion.div>
       </section>
