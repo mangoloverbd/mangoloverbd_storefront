@@ -519,10 +519,16 @@ export default function Home() {
         >
           <div className="relative w-full overflow-hidden">
             <img
+              src="/curated-edit-bg-mobile.webp"
+              alt="Editorial collection"
+              loading="lazy"
+              className="w-full object-cover md:hidden"
+            />
+            <img
               src="/curated-edit-bg.webp"
               alt="Editorial collection"
               loading="lazy"
-              className="w-full object-cover"
+              className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/35" />
             <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
