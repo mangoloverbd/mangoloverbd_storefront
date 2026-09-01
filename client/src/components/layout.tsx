@@ -410,7 +410,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           {/* Bengali Brand Name */}
           <p
-            className="text-center text-[32px] md:text-[42px] font-bold text-black/50 mb-8 tracking-wide"
+            className="text-center text-[54px] md:text-[58px] font-bold text-[#FBBB14] mb-8 tracking-wide"
             style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
           >
             ম্যাংগো লাভার
