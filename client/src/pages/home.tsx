@@ -252,9 +252,9 @@ export default function Home() {
           >
             <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar md:gap-3">
               <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>বাদাম ও বীজ</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/40 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>|</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-light text-black/30 md:text-[22px]">|</span>
               <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/60 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>তেল ও ঘি</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/40 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>|</span>
+              <span className="shrink-0 whitespace-nowrap text-[21px] font-light text-black/30 md:text-[22px]">|</span>
               <span className="shrink-0 whitespace-nowrap text-[21px] font-medium text-black/60 md:text-[22px]" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>মধু</span>
             </div>
             <Link
