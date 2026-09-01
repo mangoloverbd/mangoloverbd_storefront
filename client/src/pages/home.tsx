@@ -573,10 +573,16 @@ export default function Home() {
         >
           <div className="relative w-full overflow-hidden">
             <img
+              src="/essentials-bg-mobile.webp"
+              alt="Daily essentials"
+              loading="lazy"
+              className="w-full object-cover md:hidden"
+            />
+            <img
               src="/pexels-ekrulila-26316180_1.jpg"
               alt="Daily essentials"
               loading="lazy"
-              className="w-full object-cover"
+              className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
