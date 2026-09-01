@@ -598,7 +598,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             </span>
                             <span
                                className="mt-1 block text-[14px] font-normal leading-4 text-black/80"
-                 style={{ fontFamily: "'KaiumSimanto', serif" }}
+                 style={{ fontFamily: "'ShohidAbuSayed', serif" }}
                             >
                               {item.title}
                             </span>
@@ -660,7 +660,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 ? "border-black text-black"
                                 : "border-transparent text-black/40"
                             }`}
-                  style={{ fontFamily: "'ShohidAbuSayed', serif" }}
+                 style={{ fontFamily: "'KaiumSimanto', serif" }}
                           >
                             {item.label}
                           </button>
