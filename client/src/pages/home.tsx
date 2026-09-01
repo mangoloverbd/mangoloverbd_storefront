@@ -139,7 +139,7 @@ export default function Home() {
         <div className="w-full px-4 md:px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/1000] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -160,11 +160,11 @@ export default function Home() {
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#f6f6f6] to-transparent md:hidden"
+              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-9 bg-gradient-to-r from-[#f6f6f6]/75 to-transparent md:hidden"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#f6f6f6] to-transparent md:hidden"
+              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-9 bg-gradient-to-l from-[#f6f6f6]/75 to-transparent md:hidden"
             />
 
 
