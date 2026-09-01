@@ -12,7 +12,6 @@ test("renders a Just arrived section after Latest Drop", () => {
   assert.notEqual(justArrivedIndex, -1);
   assert.ok(justArrivedIndex > latestDropIndex);
   assert.match(homeSource, /VIEW ALL/);
-  assert.match(homeSource, /Available in \{product\.sizes\} size/);
   assert.match(homeSource, /text-\[clamp\(2rem,5vw,2\.6rem\)\]/);
   assert.match(homeSource, /flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden \[touch-action:pan-x_pan-y\] overscroll-x-contain md:grid md:grid-cols-4 md:gap-4 md:overflow-visible/);
 });
@@ -28,16 +27,6 @@ test("renders a What's New section after the hero", () => {
   assert.ok(whatsNewIndex > heroIndex);
   assert.ok(whatsNewIndex < latestDropIndex);
   assert.match(homeSource, /WHAT'S NEW/);
-  assert.match(homeSource, /Jackets/);
-  assert.match(homeSource, /Hoodies/);
-  assert.match(homeSource, /T-Shirt/);
-  assert.match(homeSource, /LAST FEW/);
-  assert.match(homeSource, /const whatsNewProducts = \[/);
-  assert.match(homeSource, /image: "\/new1\.webp"/);
-  assert.match(homeSource, /image: "\/new2\.webp"/);
-  assert.match(homeSource, /image: "\/new3\.webp"/);
-  assert.match(homeSource, /image: "\/new4\.webp"/);
-  assert.match(homeSource, /Quick add \$\{product\.title\} from What's New to cart/);
 });
 
 test("styles Latest Drop header like the Just arrived header", () => {
@@ -50,28 +39,41 @@ test("styles Latest Drop header like the Just arrived header", () => {
   assert.equal(discoverMoreLink, true);
 });
 
-test("quick add button adds Just arrived products to cart without navigating", () => {
-  assert.match(homeSource, /import \{ useCart \} from "@\/contexts\/cart-context";/);
-  assert.match(homeSource, /const \{ addToCart \} = useCart\(\);/);
-  assert.match(homeSource, /function quickAddJustArrived/);
-  assert.match(homeSource, /event\.preventDefault\(\);/);
-  assert.match(homeSource, /event\.stopPropagation\(\);/);
-  assert.match(homeSource, /addToCart\(/);
-  assert.match(homeSource, /type="button"/);
-  assert.match(homeSource, /aria-label=\{`Quick add \$\{product\.title\} to cart`\}/);
-  assert.match(homeSource, /h-10 w-10.*rounded-full.*md:h-12 md:w-12/);
-});
-
-test("uses the new public images for Just arrived products", () => {
+test("loads every homepage product section from the public catalog", () => {
+  const whatsNewSource = homeSource.slice(
+    homeSource.indexOf("What's New Section"),
+    homeSource.indexOf("Latest Drop Section"),
+  );
+  const latestDropSource = homeSource.slice(
+    homeSource.indexOf("Latest Drop Section"),
+    homeSource.indexOf("Just Arrived Section"),
+  );
   const justArrivedSource = homeSource.slice(
-    homeSource.indexOf("const justArrivedProducts"),
-    homeSource.indexOf("export default function Home"),
+    homeSource.indexOf("Just Arrived Section"),
+    homeSource.indexOf("Editorial Section"),
+  );
+  const specialSource = homeSource.slice(
+    homeSource.indexOf("Special Collections Section"),
   );
 
-  assert.match(justArrivedSource, /title: "Black Blazer Dress",[\s\S]*?image: "\/new1\.webp"/);
-  assert.match(justArrivedSource, /title: "Black High Leggings",[\s\S]*?image: "\/new2\.webp"/);
-  assert.match(justArrivedSource, /title: "Clean White Trouser",[\s\S]*?image: "\/new3\.webp"/);
-  assert.match(justArrivedSource, /title: "Cocoa Brown Trouser",[\s\S]*?image: "\/new4\.webp"/);
+  assert.match(homeSource, /import \{ useQuery \} from "@tanstack\/react-query";/);
+  assert.match(homeSource, /fetchStorefrontProducts,/);
+  assert.match(homeSource, /formatProductPriceRange,/);
+  assert.match(homeSource, /getProductImage,/);
+  assert.match(homeSource, /STOREFRONT_POLL_INTERVAL_MS,/);
+  assert.match(homeSource, /data: catalogProducts = \[\]/);
+  assert.match(homeSource, /queryKey: \["merchant-suite-products-listing"\],/);
+  assert.match(homeSource, /queryFn: fetchStorefrontProducts,/);
+  assert.match(homeSource, /refetchInterval: STOREFRONT_POLL_INTERVAL_MS,/);
+  assert.doesNotMatch(homeSource, /const whatsNewProducts = \[/);
+  assert.doesNotMatch(homeSource, /const justArrivedProducts = \[/);
+  assert.doesNotMatch(homeSource, /const specialProducts = \[/);
+  assert.doesNotMatch(homeSource, /useCart/);
+  assert.doesNotMatch(homeSource, /Quick add/);
+  assert.match(whatsNewSource, /catalogProducts\.slice\(0, 6\)\.map/);
+  assert.match(latestDropSource, /catalogProducts\.slice\(0, 4\)\.map/);
+  assert.match(justArrivedSource, /catalogProducts\.slice\(0, 4\)\.map/);
+  assert.match(specialSource, /catalogProducts\.slice\(0, 3\)\.map/);
 });
 
 test("uses the Mango Lover hero poster", () => {

@@ -2,6 +2,176 @@ import type { StorefrontProduct } from "./storefront-products";
 
 export const generatedStorefrontProducts: StorefrontProduct[] = [
   {
+    "id": "0c13208f-6a0b-4080-ace3-e5d73c94df44",
+    "name": "চিয়া সিড | Chia Seed",
+    "slug": "chia-seed",
+    "description": "পুষ্টিগুণে ভরপুর ১০০% চিয়া সিড, যা ফাইবার, প্রোটিন, ওমেগা-৩ ও প্রয়োজনীয় মিনারেলের উৎস। দই, ওটস, স্মুদি বা পানীয়ের সঙ্গে সহজেই উপভোগ করা যায়।",
+    "url": null,
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/960.webp",
+    "images": [
+      {
+        "id": "a8419ca6-ee0b-4ea8-b93c-10685699295f",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/960.webp"
+        },
+        "alt_text": "চিয়া সিড | Chia Seed",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "a0723a0f-8da2-47ea-b231-ae1105b24e1d",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/32946473-127c-4ee8-b17d-81576090adcd/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/32946473-127c-4ee8-b17d-81576090adcd/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/32946473-127c-4ee8-b17d-81576090adcd/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/32946473-127c-4ee8-b17d-81576090adcd/960.webp"
+        },
+        "alt_text": "চিয়া সিড | Chia Seed",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "e17efe3c-7d8f-45cb-991a-15c62441efdc",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/c64f9f4b-7f89-47a7-a52f-ae1b92e393b2/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/c64f9f4b-7f89-47a7-a52f-ae1b92e393b2/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/c64f9f4b-7f89-47a7-a52f-ae1b92e393b2/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/c64f9f4b-7f89-47a7-a52f-ae1b92e393b2/960.webp"
+        },
+        "alt_text": "চিয়া সিড | Chia Seed",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "22a72f68-3d58-4bec-8cc0-2789e112ad70",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/960.webp"
+        },
+        "alt_text": "চিয়া সিড | Chia Seed",
+        "sort_order": 3,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/4c0919f3-6ff2-414a-90a4-d826ce5ec1f8/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/32946473-127c-4ee8-b17d-81576090adcd/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/c64f9f4b-7f89-47a7-a52f-ae1b92e393b2/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/960.webp"
+    ],
+    "price": 460,
+    "compare_at_price": null,
+    "available": true,
+    "variants": [
+      {
+        "id": "f4ac2bc0-9c89-4e40-bdd9-46278c808d67",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 460,
+        "available": true
+      },
+      {
+        "id": "ea3a65b4-066c-4b40-80c2-01564c0c26ef",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 900,
+        "available": true
+      }
+    ]
+  },
+  {
+    "id": "1310beee-5b37-4b54-931f-c94103a8567c",
+    "name": "খাঁটি ঘি | Pure Ghee",
+    "slug": "pure-ghee",
+    "description": "উন্নত মানের দুধ থেকে তৈরি খাঁটি ঘি, যার স্বতন্ত্র সুগন্ধ, সমৃদ্ধ স্বাদ ও মসৃণ টেক্সচার ভাত, খিচুড়ি, পোলাও, রুটি ও মিষ্টান্নে যোগ করে দারুণ স্বাদ।",
+    "url": null,
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/960.webp",
+    "images": [
+      {
+        "id": "37ca0465-d958-480d-b5dd-19af22b784d6",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/960.webp"
+        },
+        "alt_text": "খাঁটি ঘি | Pure Ghee",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "e915153d-4d1b-44bc-b3e0-8a169bb073b3",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/095345cb-4d9c-4367-a316-ce3bbc6abdaa/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/095345cb-4d9c-4367-a316-ce3bbc6abdaa/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/095345cb-4d9c-4367-a316-ce3bbc6abdaa/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/095345cb-4d9c-4367-a316-ce3bbc6abdaa/960.webp"
+        },
+        "alt_text": "খাঁটি ঘি | Pure Ghee",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "dd60c1b3-b48f-42aa-86d0-19bdef063b7a",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/1f143dae-1342-4302-85f0-40ca37e2b283/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/1f143dae-1342-4302-85f0-40ca37e2b283/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/1f143dae-1342-4302-85f0-40ca37e2b283/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/1f143dae-1342-4302-85f0-40ca37e2b283/960.webp"
+        },
+        "alt_text": "খাঁটি ঘি | Pure Ghee",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "55635066-58e4-4be4-b5e7-3ffbabf8c40f",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/960.webp"
+        },
+        "alt_text": "খাঁটি ঘি | Pure Ghee",
+        "sort_order": 3,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/2422c3a6-5e5d-4924-921d-684af321cff9/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/095345cb-4d9c-4367-a316-ce3bbc6abdaa/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/1f143dae-1342-4302-85f0-40ca37e2b283/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/960.webp"
+    ],
+    "price": 850,
+    "compare_at_price": null,
+    "available": true,
+    "variants": [
+      {
+        "id": "9acd9651-155f-44ab-86bd-f3a978b10035",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 850,
+        "available": true
+      },
+      {
+        "id": "e29a06b3-a32b-4f54-81f1-c37f439c1e2d",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 1600,
+        "available": true
+      }
+    ]
+  },
+  {
     "id": "4d3a76b0-89e7-4601-96e5-86a3b971791c",
     "name": "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
     "slug": "sundarbans-natural-honey",
