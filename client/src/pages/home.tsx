@@ -590,22 +590,25 @@ export default function Home() {
                 variants={reveal}
                 transition={transition}
                 className="text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                Daily Essentials
+                কালোজিরা মিক্সড
               </motion.h2>
               <motion.p
                 variants={reveal}
                 transition={transition}
                 className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base"
+                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
               >
-                Minimal staples crafted for comfort and timeless style
+                প্রাকৃতিক কালোজিরার গুণে তৈরি, অনন্য স্বাদ ও পুষ্টিগুণে ভরপুর স্বাস্থ্যকর মিশ্রণ
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
                   href="/products"
-                  className="border-b-2 border-white pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-60 md:text-base md:tracking-[0.24em]"
+                  className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
+                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                 >
-                  SHOP ESSENTIALS
+                  এখনই কিনুন
                 </Link>
               </motion.div>
             </div>
