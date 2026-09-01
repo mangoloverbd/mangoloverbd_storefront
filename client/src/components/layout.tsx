@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Instagram, Twitter, Mail, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, Instagram, Facebook, Youtube, Menu, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
 import { MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect } from "react";
 
@@ -352,9 +352,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               সাধ্যের মধ্যে সেরা মানের পন্য আপনার ও আপনার পরিবারের জন্য, যা আমরা পাঠাই একদম মাঠ পর্যায় থেকে, তাই পাচ্ছেন সাশ্রয়ী দামে সেরা মানের পন্যের নিশ্চয়তা।
             </p>
             <div className="flex gap-6">
-              <Instagram className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
-              <Twitter className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
-              <Mail className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <Facebook className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              </a>
+              <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <Instagram className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              </a>
+              <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <Youtube className="w-4 h-4 stroke-[1px] hover:text-brand-gold cursor-pointer transition-colors" />
+              </a>
             </div>
             <div className="space-y-6 pt-2">
               <span className="text-[10px] uppercase tracking-[0.5em] font-bold text-[#FBBB14] block [-webkit-text-stroke:1px_rgba(0,0,0,0.06)]">Newsletter</span>
