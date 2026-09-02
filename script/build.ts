@@ -10,7 +10,7 @@ const MERCHANT_SUITE_URL = process.env.NODE_ENV === "production"
 if (!MERCHANT_SUITE_URL) {
   throw new Error("VITE_MERCHANT_SUITE_URL environment variable is not set");
 }
-const storefrontProductsUrl = `${MERCHANT_SUITE_URL}/api/public/storefronts/${storefrontId}/products`;
+const storefrontProductsUrl = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${storefrontId}/products`;
 const generatedProductsFile = "client/src/lib/generated-storefront-products.ts";
 
 const productSlugs = [
