@@ -12,6 +12,7 @@ import {
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
+import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 
 function ProductCard({ p }: { p: StorefrontProduct }) {
   const [, setLocation] = useLocation();
@@ -81,6 +82,8 @@ export default function ProductGrid() {
   const { data: products = [], isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products"],
     queryFn: fetchStorefrontProducts,
+    initialData: generatedStorefrontProducts,
+    initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
@@ -112,7 +115,7 @@ export default function ProductGrid() {
       ─────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="px-5 py-16 md:px-16" aria-busy="true" aria-label="Products are loading" />
-      ) : isError ? (
+      ) : isError && products.length === 0 ? (
         <div className="px-5 py-16 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-red-700 md:px-16">
           Could not load products.
         </div>

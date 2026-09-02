@@ -14,6 +14,7 @@ import {
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
+import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 
 const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 const reveal = {
@@ -80,6 +81,8 @@ export default function ProductsPage() {
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    initialData: generatedStorefrontProducts,
+    initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
   const filteredProducts = products ? searchStorefrontProducts(products, searchQuery) : products;
@@ -102,7 +105,7 @@ export default function ProductsPage() {
           </div>
         )}
 
-        {isError && (
+        {isError && !filteredProducts?.length && (
           <div className="border border-black/10 bg-white px-6 py-10 text-center">
             <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
             <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>

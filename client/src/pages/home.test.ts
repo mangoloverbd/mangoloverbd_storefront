@@ -76,6 +76,12 @@ test("loads every homepage product section from the public catalog", () => {
   assert.match(specialSource, /catalogProducts\.slice\(0, 3\)\.map/);
 });
 
+test("uses the generated catalog while the live catalog revalidates", () => {
+  assert.match(homeSource, /generatedStorefrontProducts/);
+  assert.match(homeSource, /initialData: generatedStorefrontProducts/);
+  assert.match(homeSource, /initialDataUpdatedAt: 0/);
+});
+
 test("uses the Mango Lover hero poster", () => {
   assert.match(homeSource, /src="\/hero-mango-lover\.webp"/);
   assert.doesNotMatch(homeSource, /hero1\.webp/);

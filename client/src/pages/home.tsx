@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -48,6 +49,8 @@ export default function Home() {
   } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    initialData: generatedStorefrontProducts,
+    initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
