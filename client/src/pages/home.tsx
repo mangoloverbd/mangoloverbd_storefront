@@ -24,7 +24,7 @@ function HighlightedWord({ children }: { children: string }) {
       <span className="relative z-10">{children}</span>
       <svg
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-3 rotate-[-2deg] overflow-visible"
+        className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-1 rotate-[-2deg] overflow-visible"
         viewBox="0 0 134 50"
         preserveAspectRatio="none"
       >
