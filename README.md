@@ -157,6 +157,19 @@ End to end:
 5. Refresh the storefront. It appears within ~8s, and the same product shows on the dashboard's
    Products page because both sides are reading one Supabase row.
 
+### Catalog snapshot and live refresh
+
+The storefront ships with a build-generated catalog snapshot in
+`client/src/lib/generated-storefront-products.ts`. It lets a new device render product names,
+prices, and images immediately instead of waiting for the first Merchant Suite request. The
+storefront still requests the live catalog in the background and replaces the snapshot when the
+response arrives. Supabase remains the source of truth.
+
+A newly published product can appear from the live API within about 8 seconds without a storefront
+deploy. It becomes part of the built-in first-paint snapshot on the next successful production
+build. To refresh that snapshot deliberately, run `NODE_ENV=production npm run build` from this repo
+and deploy the resulting commit to `main`. Do not edit the generated file by hand.
+
 ### `published = true` is the gate
 
 The Suite serves only rows matching `org_id = <workspace>` **and** `published = true`. A saved but
@@ -181,18 +194,11 @@ Stock is deliberately served by a separate `/inventory` endpoint with a much sho
 the catalog, so add-to-cart is never acting on stale stock. Read it via
 `fetchStorefrontProductInventory()` / `mergeInventory()`; don't infer stock from a catalog field.
 
-### The hardcoded arrays in `home.tsx` are not products
+### Homepage product sections
 
-`client/src/pages/home.tsx` still contains `latestDropProducts`, `whatsNewProducts`,
-`justArrivedProducts`, and `specialProducts` — leftover Stepprs clothing with `/new1.webp`-style
-images. These are placeholder demo data. **They never reach Supabase and never appear in the
-dashboard.** Retyping them with mango products would create a second source of truth that silently
-goes stale and can't be edited by anyone but a developer.
-
-The live catalog is already wired up in `client/src/pages/products.tsx`,
-`client/src/pages/product.tsx`, and `client/src/components/product-grid.tsx`. The right fix for the
-homepage is to replace those arrays with `fetchStorefrontProducts()` (sliced per section) so the
-dashboard drives the homepage too.
+The homepage sections use the live catalog, with the build-generated snapshot as immediate initial
+data. Do not add hardcoded product arrays or product images to `home.tsx`; dashboard products should
+drive every section.
 
 `client/public/` is for fixed brand assets — logo, hero poster, favicons. Product photos belong in
 Supabase Storage.
@@ -225,7 +231,7 @@ client/
     contexts/    cart-context.tsx
     lib/
       storefront-products.ts        ← the Suite API client
-      generated-storefront-products.ts  ← BUILD ARTIFACT, see warning below
+      generated-storefront-products.ts  ← build-generated first-paint snapshot
 api/orders.ts                       Vercel serverless checkout
 server/                             local Express (dev + self-hosted prod)
 script/build.ts                     build: catalog prefetch → vite → esbuild
@@ -237,20 +243,11 @@ Path aliases (`vite.config.ts`): `@` → `client/src`, `@shared` → `shared`, `
 Routing uses **wouter**, not React Router. That is the opposite of the dashboard repo's rule —
 do not carry that convention across.
 
-### Build-artifact hazard
+### Build-generated catalog file
 
-`script/build.ts` fetches the live catalog and **overwrites**
-`client/src/lib/generated-storefront-products.ts`. While no products are published in the dashboard,
-every `npm run build` silently rewrites that file to an empty array, which shows up as a large
-unintended diff.
-
-This is not limited to builds you run yourself. The global git hook at
-`~/.codex/git-hooks/pre-push` (active via `core.hooksPath`, since `.git/hooks/` is empty) runs
-`lint`, `typecheck`, `test`, and `build` — so **`git push` clobbers the file too**, and it reappears
-as an unstaged ~374-line deletion right after a push that looked clean.
-
-Check `git status` after every build *and* every push; restore with
-`git checkout -- client/src/lib/generated-storefront-products.ts`. Never commit the emptied version.
+`script/build.ts` refreshes `client/src/lib/generated-storefront-products.ts` from the live public
+catalog before building. If the API is unavailable, the build keeps the previous snapshot. If the
+catalog is genuinely empty, check the product API and `git diff` before committing a snapshot refresh.
 
 ---
 

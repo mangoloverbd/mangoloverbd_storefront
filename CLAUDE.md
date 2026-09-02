@@ -35,6 +35,16 @@ Consequences:
 - If a task is "add a product", "change a price", "fix the stock count", or "upload a product photo",
   it belongs in the dashboard. Say so; do not add hardcoded product data here.
 
+### Catalog first paint
+
+`client/src/lib/generated-storefront-products.ts` is a build-generated first-paint snapshot. The
+homepage, products page, search suggestions, and shared product grid render it immediately, then
+revalidate against the live Merchant Suite API. Supabase remains authoritative; the snapshot is only
+a fast fallback. A product published in the dashboard appears through live polling within about 8
+seconds without a storefront deploy. If an agent intentionally refreshes the snapshot, run
+`NODE_ENV=production npm run build`, confirm the generated diff contains the expected published
+catalog, and deploy the storefront commit to `main`.
+
 ---
 
 ## 2. Environment
@@ -109,9 +119,10 @@ server, which holds `SUPABASE_SERVICE_ROLE_KEY`, can write them, and that key mu
 this repo.
 
 So: **to add a product, use the dashboard's Products page** (`/products` in the Suite). It writes to
-Supabase, and this storefront picks it up within ~8 seconds with no commit and no deploy. There is no
-storefront-side path that creates a product, and adding one would mean shipping a service-role key to
-the browser — a full database compromise.
+Supabase, and this storefront picks it up through live polling within ~8 seconds with no commit and
+no deploy. The next storefront production build also includes the product in the first-paint
+snapshot. There is no storefront-side path that creates a product, and adding one would mean shipping
+a service-role key to the browser — a full database compromise.
 
 ### The write path (dashboard → Supabase)
 
@@ -153,17 +164,11 @@ product-level stock is currently written to `app_settings` as `<orgId>:product_s
 rather than `products.stock_quantity`. That is a known dashboard-side inconsistency; from here, always
 read stock through the `/inventory` endpoint and never infer it from a catalog field.
 
-### Hardcoded demo arrays in `home.tsx` — do not mistake these for products
+### Homepage product sections
 
-`client/src/pages/home.tsx` still contains `latestDropProducts`, `whatsNewProducts`,
-`justArrivedProducts`, and `specialProducts` — hardcoded arrays of leftover Stepprs clothing with
-`/new1.webp`-style images. **They never touch Supabase and never appear in the dashboard.** Editing
-them creates a second, silently-stale source of truth.
-
-The live catalog is already wired into `client/src/pages/products.tsx`,
-`client/src/pages/product.tsx`, and `client/src/components/product-grid.tsx` via TanStack Query. The
-correct fix for the homepage is to replace those arrays with `fetchStorefrontProducts()` (sliced for
-each section), not to retype them with mango products.
+The homepage sections use the live catalog with the build-generated snapshot as immediate initial
+data. Do not add hardcoded product arrays or product images to `home.tsx`; dashboard products should
+drive every section.
 
 ### Adding a product end to end
 
@@ -171,7 +176,8 @@ each section), not to retype them with mango products.
 2. Upload images there (they go to Supabase Storage, not `client/public/`).
 3. Add variants if the product has size/weight options.
 4. **Publish it** — unpublished products stay invisible to the storefront.
-5. Storefront picks it up within ~8s. Verify with the curl in the README; no deploy needed.
+5. Storefront picks it up through live polling within ~8s. The next production storefront build also
+   refreshes the first-paint snapshot. Verify with the curl in the README.
 
 Product photos belong in Supabase Storage. `client/public/` is for fixed brand assets — logo, hero
 poster, favicons — that are part of the design, not the catalog.
@@ -286,13 +292,10 @@ copy change in `home.tsx` breaks the matching assertion. When that happens, **up
 describe the new markup**; do not revert the intended change to make a stale test pass. If a test was
 already failing before your change, say so explicitly rather than quietly folding it into your work.
 
-**Build-artifact hazard:** `script/build.ts` overwrites
-`client/src/lib/generated-storefront-products.ts` with the live catalog. While the dashboard has no
-published products, every build silently rewrites it to an empty array. Worse, the global pre-push hook
-at `~/.codex/git-hooks/pre-push` runs `build`, so **a plain `git push` clobbers the file too** — it
-reappears as an unstaged 374-line deletion after a push that looked clean. Always `git status` after
-pushing or building; `git checkout -- client/src/lib/generated-storefront-products.ts` to restore.
-Never commit the emptied version.
+**Build-generated catalog:** `script/build.ts` refreshes
+`client/src/lib/generated-storefront-products.ts` from the live public catalog before building. If
+the API is unavailable, it keeps the previous snapshot. If the catalog is genuinely empty, inspect
+the API response and generated diff before committing the refresh.
 
 No headless browser is installed (Playwright is present but has no browsers downloaded), so visual
 changes cannot be screenshot-verified without installing Chromium first. Do not claim visual
@@ -323,7 +326,7 @@ file you edited is actually the one being rendered.
 9. **Keep `api/orders.ts` and `server/order-service.ts` in sync** — Vercel and local dev use
    different checkout paths.
 10. **Run `npm run check` and the `node --test` files before claiming done**, and check `git status`
-    for a clobbered `generated-storefront-products.ts`.
+    after a build for unexpected generated-catalog changes.
 11. **Do not create real orders in the dashboard for testing** without saying so and cleaning up after.
 12. **Currency is `৳`**, never "BDT" or "Tk".
 
