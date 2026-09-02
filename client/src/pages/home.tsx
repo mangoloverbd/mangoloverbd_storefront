@@ -241,7 +241,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-garet-book text-[clamp(1.6rem,4.2vw,2.5rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
+            <h2 className="font-garet-book text-[clamp(1.5rem,4vw,2.4rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
               <span>FEATURED</span>{" "}
               <HighlightedWord>CATEGORIES</HighlightedWord>
             </h2>
@@ -300,7 +300,7 @@ export default function Home() {
             transition={transition}
             className="flex flex-col items-center justify-center gap-2 overflow-hidden"
           >
-            <h2 className="font-garet-book text-[clamp(1.6rem,4.2vw,2.5rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
+            <h2 className="font-garet-book text-[clamp(1.5rem,4vw,2.4rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
               <HighlightedWord>TOP SELLING</HighlightedWord>{" "}PRODUCTS
             </h2>
             <span aria-hidden="true" className="mt-3 h-1 w-12 bg-[#FBBB14]" />
@@ -424,7 +424,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="font-garet-book text-[clamp(1.75rem,4.5vw,2.8rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
+              className="font-garet-book text-[clamp(1.65rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>LATEST</span>{" "}
               <HighlightedWord>COLLECTION</HighlightedWord>
@@ -518,7 +518,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="font-garet-book text-[clamp(1.75rem,4.5vw,2.8rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
+              className="font-garet-book text-[clamp(1.65rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>JUST</span>{" "}
               <HighlightedWord>ARRIVED</HighlightedWord>
@@ -626,7 +626,7 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-garet-book text-[clamp(1.85rem,4.5vw,2.8rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-garet-book text-[clamp(1.75rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
                 <HighlightedWord>PURE GHEE</HighlightedWord>
               </motion.h2>
@@ -678,7 +678,7 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-garet-book text-[clamp(1.85rem,4.5vw,2.8rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-garet-book text-[clamp(1.75rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
                 <span>BLACK SEED</span>{" "}
                 <HighlightedWord>MIX</HighlightedWord>
@@ -719,7 +719,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="font-garet-book min-w-0 text-[clamp(1.25rem,5.5vw,2.8rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.75rem,4.5vw,2.8rem)]"
+              className="font-garet-book min-w-0 text-[clamp(1.2rem,5.2vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]"
             >
               <span>OUR SPECIAL</span>{" "}
               <span className="block md:inline-block">
