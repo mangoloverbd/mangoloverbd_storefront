@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Globe, Clock, ShieldCheck, ShoppingBag, X } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Globe, Clock, ShieldCheck, ShoppingBag, X, Plus, Minus } from "lucide-react";
 import { Box as ReiconBox, MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -68,6 +68,36 @@ function HomeDuotoneIcon({ className }: { className?: string }) {
 const DHAKA_TIME_ZONE = "Asia/Dhaka";
 const SECONDS_PER_DAY = 24 * 60 * 60;
 
+const MENU_ITEMS = [
+  { label: "Home", href: "/" },
+  { label: "All Categories", href: "/products", keywords: [] },
+  { label: "Oil & ghee", href: "/products", keywords: ["oil", "ghee", "ঘি", "তেল"] },
+  { label: "Organic", href: "/products", keywords: ["organic", "অর্গানিক"] },
+  { label: "Honey", href: "/products", keywords: ["honey", "মধু"] },
+  { label: "Dates", href: "/products", keywords: ["date", "খেজুর"] },
+  { label: "Spices", href: "/products", keywords: ["spice", "মসলা"] },
+  { label: "Nuts & seeds", href: "/products", keywords: ["nut", "seed", "বাদাম", "বীজ"] },
+  { label: "Beverage", href: "/products", keywords: ["beverage", "drink", "পানীয়"] },
+  { label: "Rice", href: "/products", keywords: ["rice", "চাল"] },
+  { label: "Flours & lentils", href: "/products", keywords: ["flour", "lentil", "আটা", "ডাল"] },
+  { label: "Functional food", href: "/products", keywords: ["functional", "health", "স্বাস্থ্য"] },
+  { label: "Track Order", href: "/track-order" },
+  { label: "Contact Us", href: "/contact-us" },
+] as const;
+
+const MOBILE_COLLECTIONS = [
+  "Oil & ghee",
+  "Organic",
+  "Honey",
+  "Dates",
+  "Spices",
+  "Nuts & seeds",
+  "Beverage",
+  "Rice",
+  "Flours & lentils",
+  "Functional food",
+];
+
 const pad = (value: number) => value.toString().padStart(2, "0");
 
 // Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
@@ -97,16 +127,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openMenuItem, setOpenMenuItem] = useState<string | null>(null);
+  const [mobileMenuPage, setMobileMenuPage] = useState<"main" | "collections">("main");
   const [time, setTime] = useState('');
   const [countdown, setCountdown] = useState('');
   const { setIsOpen: setCartOpen, itemCount } = useCart();
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
-    enabled: isSearchOpen,
+    enabled: isSearchOpen || isOpen,
   });
 
   const openSearch = () => setIsSearchOpen(true);
+  const openMenu = () => {
+    setMobileMenuPage("main");
+    setOpenMenuItem(null);
+    setIsOpen(true);
+  };
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const query = searchQuery.trim();
@@ -114,6 +151,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsSearchOpen(false);
   };
   const suggestions = searchStorefrontProducts(searchableProducts, searchQuery).slice(0, 5);
+  const getMenuProducts = (item: (typeof MENU_ITEMS)[number]) => {
+    if (!item.keywords) return [];
+    if (item.keywords.length === 0) return searchableProducts.slice(0, 6);
+    return searchableProducts
+      .filter((product) => item.keywords.some((keyword) => product.name.toLocaleLowerCase().includes(keyword)))
+      .slice(0, 6);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -177,11 +221,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
           <div className="flex-1 flex items-center justify-start">
             <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
-              <Link href="/collection"><a className="hover:text-brand-gold transition-colors">Collection</a></Link>
-              <Link href="/atelier"><a className="hover:text-brand-gold transition-colors">Atelier</a></Link>
+              <button type="button" onClick={openMenu} className="hover:text-brand-gold transition-colors">Menu</button>
             </div>
             <div className="md:hidden">
-              <Button variant="ghost" size="icon" aria-label="Open menu" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 [&_svg]:size-7 md:h-12" onClick={() => setIsOpen(true)}>
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 [&_svg]:size-7 md:h-12" onClick={openMenu}>
                 <MenuLinesIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               </Button>
             </div>
@@ -290,7 +333,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Button
           variant="ghost"
           aria-label="Open menu"
-          onClick={() => setIsOpen(true)}
+          onClick={openMenu}
           className="flex min-w-[52px] flex-col items-center gap-1 rounded-none p-0 text-[9px] font-medium tracking-[0.04em] text-white/55 shadow-none transition-colors hover:bg-transparent hover:text-white"
         >
           <MenuLinesIcon className="!h-5 !w-5 scale-125 opacity-70" />
@@ -360,7 +403,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AnimatePresence initial={true}>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-[100] w-full h-[100dvh] supports-[height:100dvh]:h-dvh p-3 sm:p-4 pointer-events-none md:hidden"
+            className="fixed inset-0 z-[100] w-full h-[100dvh] supports-[height:100dvh]:h-dvh p-3 sm:p-4 pointer-events-none"
           >
             <motion.div
               className="absolute inset-0 bg-black/10 pointer-events-auto"
@@ -374,9 +417,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1, transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] } }}
               exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] } }}
-              className="relative w-full h-full flex flex-col pointer-events-auto text-white rounded-[12px] bg-neutral-500/60 backdrop-blur-md shadow-2xl overflow-hidden"
+              className="relative w-full h-full flex flex-col pointer-events-auto rounded-[12px] bg-white text-black shadow-2xl overflow-hidden md:bg-neutral-500/60 md:text-white md:backdrop-blur-md"
             >
-              <div className="flex flex-col h-full px-6 py-6 md:px-12 md:py-10 justify-between overflow-y-auto">
+              <div className="flex h-full flex-col px-5 py-5 md:hidden">
+                <div className="flex justify-end">
+                  <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} aria-label="Close menu" className="h-10 w-10 rounded-full text-black hover:bg-black/5">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                {mobileMenuPage === "main" ? (
+                  <nav aria-label="Mobile menu" className="mt-[14vh] space-y-5">
+                    <Link href="/" onClick={() => setIsOpen(false)}>
+                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Home</span><ArrowRight size={27} strokeWidth={1.25} /></a>
+                    </Link>
+                    <Link href="/products" onClick={() => setIsOpen(false)}>
+                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Products</span><ArrowRight size={27} strokeWidth={1.25} /></a>
+                    </Link>
+                    <button type="button" onClick={() => setMobileMenuPage("collections")} className="flex w-full items-center justify-between text-left text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Collection</span><ArrowRight size={27} strokeWidth={1.25} /></button>
+                  </nav>
+                ) : (
+                  <div className="mt-8">
+                    <button type="button" onClick={() => setMobileMenuPage("main")} className="mb-10 flex items-center gap-2 text-sm text-black/55"><ArrowRight size={17} className="rotate-180" /> Back</button>
+                    <h2 className="mb-7 text-[2rem] font-normal leading-none tracking-[-0.05em]">Collections</h2>
+                    <nav aria-label="Collections" className="grid grid-cols-1 gap-4 text-lg">
+                      {MOBILE_COLLECTIONS.map((collection) => (
+                        <Link key={collection} href="/products" onClick={() => setIsOpen(false)}>
+                          <a className="transition-opacity hover:opacity-60">{collection}</a>
+                        </Link>
+                      ))}
+                    </nav>
+                  </div>
+                )}
+                <div className="mt-auto grid grid-cols-2 gap-x-8 gap-y-4 pb-2 text-base">
+                  <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Facebook</a>
+                  <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Instagram</a>
+                  <a href="https://api.whatsapp.com/send/?phone=8801733670129" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">WhatsApp</a>
+                </div>
+              </div>
+              <div className="hidden md:flex md:flex-col md:h-full md:px-12 md:py-10 md:justify-between md:overflow-y-auto">
                 {/* Header */}
                 <div className="flex justify-end items-center">
                   <Button
@@ -391,27 +469,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                 {/* Navigation Links */}
                 <div className="flex flex-col gap-6 md:gap-8 py-8 flex-1 justify-center px-2">
-                  {[
-                    { label: "Home", href: "/" },
-                    { label: "Best Sellers", href: "/best-sellers" },
-                    { label: "New Arrival", href: "/new-arrival" },
-                    { label: "Contact Us", href: "/contact-us" }
-                  ].map((item, idx) => (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: idx * 0.1 + 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <Link href={item.href} onClick={() => setIsOpen(false)}>
-                        <a className="group flex items-baseline">
-                          <span className="text-3xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70">
-                            {item.label}
-                          </span>
-                        </a>
-                      </Link>
-                    </motion.div>
-                  ))}
+                  {MENU_ITEMS.map((item, idx) => {
+                    const products = getMenuProducts(item);
+                    const hasSubmenu = Boolean(item.keywords);
+                    const isExpanded = openMenuItem === item.label;
+
+                    return (
+                      <motion.div
+                        key={item.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: idx * 0.06 + 0.2, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          {hasSubmenu ? (
+                            <button type="button" onClick={() => setOpenMenuItem(isExpanded ? null : item.label)} className="group flex items-baseline text-left">
+                              <span className="text-2xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70 md:text-3xl">{item.label}</span>
+                            </button>
+                          ) : (
+                            <Link href={item.href} onClick={() => setIsOpen(false)}>
+                              <a className="group flex items-baseline">
+                                <span className="text-2xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70 md:text-3xl">{item.label}</span>
+                              </a>
+                            </Link>
+                          )}
+                          {hasSubmenu && <button type="button" onClick={() => setOpenMenuItem(isExpanded ? null : item.label)} aria-label={`${isExpanded ? "Collapse" : "Expand"} ${item.label}`} className="p-2 text-white/60">{isExpanded ? <Minus size={18} /> : <Plus size={18} />}</button>}
+                        </div>
+                        {isExpanded && (
+                          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 pl-1">
+                            {products.length > 0 ? products.map((product) => (
+                              <Link key={product.slug} href={`/product/${product.slug}`} onClick={() => setIsOpen(false)}>
+                                <a className="text-sm text-white/65 transition-colors hover:text-white">{product.name}</a>
+                              </Link>
+                            )) : <span className="text-sm text-white/45">No products listed yet</span>}
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </div>
 
                 {/* Footer Info */}
