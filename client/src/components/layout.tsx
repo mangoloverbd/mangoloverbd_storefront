@@ -276,11 +276,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <SearchIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
             </Button>
 
-            {/* Cart button remains available in the mobile header. */}
             <Button
               variant="ghost"
               onClick={() => setCartOpen(true)}
-              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:hidden"
+              aria-label="Cart"
+              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
             >
               <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               {itemCount > 0 && (
