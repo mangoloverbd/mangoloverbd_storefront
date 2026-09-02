@@ -227,7 +227,7 @@ export default function Home() {
                 <span className="relative z-10">Categories</span>
                 <svg
                   aria-hidden="true"
-                  className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto overflow-visible"
+                  className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-1 overflow-visible"
                   viewBox="0 0 134 50"
                   preserveAspectRatio="none"
                 >
