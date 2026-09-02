@@ -29,7 +29,7 @@ function HighlightedWord({ children }: { children: string }) {
         preserveAspectRatio="none"
       >
         <path
-          d="M7 23C7 12 29 6 66 6c37 0 60 6 60 17 0 11-23 17-60 17S7 34 7 23Z"
+          d="M7 23C7 14 29 9 66 9c37 0 60 5 60 14 0 9-23 14-60 14S7 32 7 23Z"
           fill="#FBBB14"
           fillOpacity="0.78"
         />
