@@ -136,10 +136,10 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-4 md:px-0">
+        <div className="relative w-full px-0 pt-0 md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-[6px] bg-white md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -161,11 +161,19 @@ export default function Home() {
           </div>
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-[#f6f6f6]/90 via-[#f6f6f6]/55 to-transparent md:hidden"
+            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-[#f6f6f6]/90 via-[#f6f6f6]/55 to-transparent md:hidden"
+            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 z-20 h-28 w-24 bg-gradient-to-br from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute right-0 top-0 z-20 h-28 w-24 bg-gradient-to-bl from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
           />
         </div>
       </section>
