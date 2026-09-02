@@ -139,7 +139,7 @@ export default function Home() {
         <div className="relative w-full px-4 pt-4 md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-[6px] border border-black/10 bg-white md:aspect-auto md:min-h-[600px]"
+            className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-none border border-black/10 bg-white md:aspect-auto md:min-h-[600px] md:rounded-[6px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -162,22 +162,6 @@ export default function Home() {
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-4 z-30 w-px bg-black/10 md:hidden" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 z-30 w-px bg-black/10 md:hidden" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-4 z-30 h-px bg-black/10 md:hidden" />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 z-20 h-28 w-24 bg-gradient-to-br from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute right-0 top-0 z-20 h-28 w-24 bg-gradient-to-bl from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
-          />
         </div>
       </section>
 
@@ -365,16 +349,23 @@ export default function Home() {
             className="mb-7 flex items-start justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="text-[clamp(2rem,5vw,2.6rem)] font-bold leading-none tracking-[-0.04em] text-black"
+              className="text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black"
             >
-              Latest <span className="font-display italic text-[1.15em]">Drop</span>
+              সর্বশেষ{" "}
+              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
+                সংগ্রহ
+                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
+                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
+                </svg>
+              </span>
             </motion.h2>
 
             <Link
               href="/products"
-              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
+              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              Discover More
+              আরও দেখুন
             </Link>
           </motion.div>
 
@@ -458,16 +449,23 @@ export default function Home() {
             className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="text-[clamp(2rem,5vw,2.6rem)] font-bold leading-none tracking-[-0.04em] text-black"
+              className="text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black"
             >
-              Just <span className="font-display italic text-[1.15em]">arrived</span>
+              নতুন{" "}
+              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
+                এসেছে
+                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
+                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
+                </svg>
+              </span>
             </motion.h2>
 
             <Link
               href="/products"
-              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
+              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              VIEW ALL
+              সব দেখুন
             </Link>
           </motion.div>
 
@@ -480,7 +478,7 @@ export default function Home() {
               ? Array.from({ length: 4 }).map((_, index) => (
                   <div
                     key={index}
-                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
+                     className="aspect-[3/4] min-w-[58vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
                     aria-hidden="true"
                   />
                 ))
@@ -499,7 +497,7 @@ export default function Home() {
                         key={product.id || product.slug}
                         variants={reveal}
                         transition={transition}
-                        className="group min-w-[78vw] snap-start snap-always md:min-w-0"
+                        className="group min-w-[58vw] snap-start snap-always md:min-w-0"
                       >
                         <Link href={`/product/${product.slug}`} className="block h-full">
                           <div className="relative aspect-[3/4] overflow-hidden bg-[#eeeeee]">
@@ -523,7 +521,7 @@ export default function Home() {
                           </div>
 
                           <div className="px-0 pb-2 pt-5 text-black md:pt-7">
-                            <h3 className="text-base font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-xl md:tracking-[0.08em]">
+                            <h3 className="truncate whitespace-nowrap text-base font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-xl md:tracking-[0.08em]">
                               {product.name}
                             </h3>
                             <p className="mt-4 text-xl font-normal tracking-[0.02em] md:text-2xl">
@@ -660,14 +658,23 @@ export default function Home() {
             transition={transition}
             className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
-            <motion.h2 className="text-[clamp(2rem,5vw,2.6rem)] font-bold leading-none tracking-[-0.04em] text-black">
-              Our <span className="font-display italic text-[1.15em]">special</span> collections
+            <motion.h2
+              className="whitespace-nowrap text-[clamp(1.35rem,6vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black md:text-[clamp(1.9rem,5vw,3rem)]"
+            >
+              আমাদের বিশেষ{" "}
+              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
+                সংগ্রহসমূহ
+                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
+                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
+                </svg>
+              </span>
             </motion.h2>
             <Link
               href="/products"
-              className="mt-8 shrink-0 border-b-2 border-black pb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-black transition-opacity hover:opacity-60 md:mt-2 md:text-base md:tracking-[0.24em]"
+              className="-mt-1 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              EXPLORE ALL
+              সব সংগ্রহ দেখুন
             </Link>
           </motion.div>
 
