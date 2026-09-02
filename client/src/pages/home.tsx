@@ -136,10 +136,10 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="relative w-full px-0 pt-0 md:px-0 md:pt-0">
+        <div className="relative w-full bg-white px-4 pt-4 md:bg-transparent md:px-0 md:pt-0">
           <div
             ref={heroRef}
-            className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-[6px] bg-white md:aspect-auto md:min-h-[600px]"
+            className="relative z-10 aspect-[940/1080] w-full overflow-hidden rounded-[6px] border border-black/10 bg-white md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -159,21 +159,24 @@ export default function Home() {
               style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
             />
           </div>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-4 z-30 w-px bg-black/10 md:hidden" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 z-30 w-px bg-black/10 md:hidden" />
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-4 z-30 h-px bg-black/10 md:hidden" />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
+            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-white/65 via-white/30 to-transparent blur-[2px] md:hidden"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-[#f6f6f6]/65 via-[#f6f6f6]/30 to-transparent blur-[2px] md:hidden"
+            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-white/65 via-white/30 to-transparent blur-[2px] md:hidden"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 z-20 h-28 w-24 bg-gradient-to-br from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
+            className="pointer-events-none absolute left-0 top-0 z-20 h-28 w-24 bg-gradient-to-br from-white/75 via-white/35 to-transparent blur-[2px] md:hidden"
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute right-0 top-0 z-20 h-28 w-24 bg-gradient-to-bl from-[#f6f6f6]/75 via-[#f6f6f6]/35 to-transparent blur-[2px] md:hidden"
+            className="pointer-events-none absolute right-0 top-0 z-20 h-28 w-24 bg-gradient-to-bl from-white/75 via-white/35 to-transparent blur-[2px] md:hidden"
           />
         </div>
       </section>
