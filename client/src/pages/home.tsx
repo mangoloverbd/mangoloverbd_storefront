@@ -421,7 +421,7 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="mb-7 flex items-start justify-between gap-6 md:mb-12"
+            className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
               className="font-garet-book text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-normal text-black"
@@ -432,7 +432,7 @@ export default function Home() {
 
             <Link
               href="/products"
-              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
             >
               See More
             </Link>
@@ -515,7 +515,7 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
+            className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
               className="font-garet-book text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-normal text-black"
@@ -526,7 +526,7 @@ export default function Home() {
 
             <Link
               href="/products"
-              className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
             >
               View All
             </Link>
@@ -716,17 +716,19 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
+            className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="font-garet-book whitespace-nowrap text-[clamp(1.35rem,6vw,3rem)] font-bold leading-none tracking-normal text-black md:text-[clamp(1.9rem,5vw,3rem)]"
+              className="font-garet-book min-w-0 text-[clamp(1.35rem,6vw,3rem)] font-bold leading-none tracking-normal text-black md:text-[clamp(1.9rem,5vw,3rem)]"
             >
               <span>Our Special</span>{" "}
-              <HighlightedWord>Collections</HighlightedWord>
+              <span className="block md:inline-block">
+                <HighlightedWord>Collections</HighlightedWord>
+              </span>
             </motion.h2>
             <Link
               href="/products"
-              className="-mt-1 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
+              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
             >
               View All Collections
             </Link>
