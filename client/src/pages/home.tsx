@@ -136,10 +136,10 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="w-full px-4 md:px-0">
+        <div className="relative w-full px-4 md:px-0">
           <div
             ref={heroRef}
-            className="relative aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
+            className="relative z-10 aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
           >
             <Link href="/products" className="absolute inset-0 block">
               <img
@@ -153,26 +153,20 @@ export default function Home() {
                 className="hidden md:block h-full w-full object-cover object-top"
               />
             </Link>
-            <img
-              src="/hero-corner-seal.webp"
-              alt="Mango Lover seal"
-              className="pointer-events-none absolute -right-2 -top-2 z-20 w-20 select-none md:right-6 md:top-6 md:w-28"
-            />
             {/* Foggy gradient bottom blend */}
             <div
               className="absolute bottom-0 left-0 right-0 h-32 md:h-48 pointer-events-none"
               style={{ background: "linear-gradient(to top, #f6f6f6 0%, #f6f6f6 15%, transparent 100%)" }}
             />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[#f6f6f6]/45 to-transparent md:hidden"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-[#f6f6f6]/45 to-transparent md:hidden"
-            />
-
           </div>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-14 bg-gradient-to-r from-[#f6f6f6]/90 via-[#f6f6f6]/55 to-transparent md:hidden"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-14 bg-gradient-to-l from-[#f6f6f6]/90 via-[#f6f6f6]/55 to-transparent md:hidden"
+          />
         </div>
       </section>
 
