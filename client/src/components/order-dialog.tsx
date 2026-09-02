@@ -125,7 +125,7 @@ export default function OrderDialog({
       return;
     }
     if (!/^\d{11}$/.test(phone)) {
-      setOrderError("Please enter exactly 11 English digits for your phone number.");
+      setOrderError("অনুগ্রহ করে ফোন নম্বরটি ইংরেজি সংখ্যায় ১১ ডিজিট লিখুন।");
       return;
     }
     if (!address) {
