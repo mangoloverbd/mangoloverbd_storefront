@@ -65,7 +65,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/0c13208f-6a0b-4080-ace3-e5d73c94df44/11454ec0-caac-4bdf-9833-f3c3e32a8fe8/960.webp"
     ],
     "price": 460,
-    "compare_at_price": null,
+    "compare_at_price": 600,
     "available": true,
     "variants": [
       {
@@ -150,7 +150,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/1310beee-5b37-4b54-931f-c94103a8567c/86d2747d-8622-4918-82c8-4e07685b4c0d/960.webp"
     ],
     "price": 850,
-    "compare_at_price": null,
+    "compare_at_price": 1000,
     "available": true,
     "variants": [
       {
@@ -207,7 +207,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/6f2615bc-0849-4557-97f9-710ffc3aa5fc.webp"
     ],
     "price": 750,
-    "compare_at_price": null,
+    "compare_at_price": 900,
     "available": true,
     "variants": [
       {
@@ -264,7 +264,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/28158f7a-d8b2-44a1-b02f-71145a32a385.webp"
     ],
     "price": 700,
-    "compare_at_price": null,
+    "compare_at_price": 950,
     "available": true,
     "variants": [
       {

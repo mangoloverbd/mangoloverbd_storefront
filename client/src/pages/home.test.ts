@@ -29,6 +29,36 @@ test("renders a What's New section after the hero", () => {
   assert.match(homeSource, /WHAT'S NEW/);
 });
 
+test("uses the English Featured Categories heading", () => {
+  assert.match(homeSource, /Featured[\s\S]*Categories/);
+  assert.doesNotMatch(homeSource, /আমাদের[\s\S]*ক্যাটাগরিসমূহ/);
+  assert.match(homeSource, /className="relative inline-block font-garet font-bold/);
+});
+
+test("labels the product section Top Selling Products without a purchase CTA", () => {
+  const whatsNewSource = homeSource.slice(
+    homeSource.indexOf("What's New Section"),
+    homeSource.indexOf("Latest Drop Section"),
+  );
+
+  assert.match(whatsNewSource, /Top[\s\S]*Selling Products/);
+  assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
+  assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
+});
+
+test("styles the Top Selling Products heading as a modern food feature", () => {
+  const whatsNewSource = homeSource.slice(
+    homeSource.indexOf("What's New Section"),
+    homeSource.indexOf("Latest Drop Section"),
+  );
+
+  assert.match(whatsNewSource, /className="flex flex-col items-center justify-center/);
+  assert.match(whatsNewSource, /Top Selling Products/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.9rem,5vw,3rem\)\]/);
+  assert.match(whatsNewSource, /bg-\[#FBBB14\]/);
+  assert.doesNotMatch(whatsNewSource, /<svg/);
+});
+
 test("styles Latest Drop header like the Just arrived header", () => {
   const latestDropContainer = /Latest Drop Section[\s\S]*?<motion\.div[^>]*className="mx-auto max-w-\[1500px\] px-4 md:px-8 xl:px-12"/.test(homeSource);
   const latestDropHeading = /className="text-\[clamp\(2rem,5vw,2\.6rem\)\] font-bold leading-none tracking-\[-0\.04em\] text-black"[\s\S]*?>\s*Latest\s*<span[\s\S]*?Drop/.test(homeSource);
@@ -68,8 +98,17 @@ test("loads every homepage product section from the public catalog", () => {
   assert.doesNotMatch(homeSource, /const whatsNewProducts = \[/);
   assert.doesNotMatch(homeSource, /const justArrivedProducts = \[/);
   assert.doesNotMatch(homeSource, /const specialProducts = \[/);
-  assert.doesNotMatch(homeSource, /useCart/);
-  assert.doesNotMatch(homeSource, /Quick add/);
+  assert.match(homeSource, /useCart/);
+  assert.match(homeSource, /Add to Cart/);
+  assert.match(whatsNewSource, /getProductNumericId\(product\)/);
+  assert.match(whatsNewSource, /className="mt-auto w-full border border-black\/15 bg-\[#FBBB14\]/);
+  assert.match(whatsNewSource, /const firstVariant = product\.variants\?\.\[0\]/);
+  assert.match(whatsNewSource, /compare_at_price/);
+  assert.match(whatsNewSource, /Save/);
+  assert.match(whatsNewSource, /bg-\[#FBBB14\]\/35/);
+  assert.match(whatsNewSource, /className="group flex min-w-0 flex-col"/);
+  assert.match(whatsNewSource, /line-clamp-1/);
+  assert.match(whatsNewSource, /className="mt-auto w-full border/);
   assert.match(whatsNewSource, /catalogProducts\.slice\(0, 6\)\.map/);
   assert.match(latestDropSource, /catalogProducts\.slice\(0, 4\)\.map/);
   assert.match(justArrivedSource, /catalogProducts\.slice\(0, 4\)\.map/);

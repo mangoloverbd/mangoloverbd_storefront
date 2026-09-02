@@ -3,6 +3,7 @@ import {
   fetchStorefrontProducts,
   formatProductPriceRange,
   getProductImage,
+  getProductNumericId,
   STOREFRONT_POLL_INTERVAL_MS,
 } from "@/lib/storefront-products";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,12 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { useCart } from "@/contexts/cart-context";
+
+function formatCardAmount(value: unknown) {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
+}
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -42,6 +49,7 @@ function useReveal() {
 }
 
 export default function Home() {
+  const { addToCart } = useCart();
   const {
     data: catalogProducts = [],
     isError: isCatalogError,
@@ -208,27 +216,11 @@ export default function Home() {
             className="text-center"
           >
             <h2 className="text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
-              <span className="font-medium">আমাদের</span>{" "}
+              <span className="font-medium">Featured</span>{" "}
               <span
-                className="relative inline-block"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                className="relative inline-block font-garet font-bold"
               >
-                ক্যাটাগরিসমূহ
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 120 60"
-                  preserveAspectRatio="none"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                  style={{ overflow: "visible" }}
-                >
-                  <path
-                    d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeWidth="4.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                Categories
               </span>
             </h2>
           </motion.div>
@@ -284,22 +276,12 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="flex items-center justify-between gap-2 overflow-hidden"
+            className="flex flex-col items-center justify-center gap-2 overflow-hidden"
           >
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto no-scrollbar md:gap-3">
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-bold text-black md:text-[22px]">বাদাম ও বীজ</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-light text-black/30 md:text-[22px]">|</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-bold text-black/60 md:text-[22px]">তেল ও ঘি</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-light text-black/30 md:text-[22px]">|</span>
-              <span className="shrink-0 whitespace-nowrap text-[21px] font-bold text-black/60 md:text-[22px]">মধু</span>
-            </div>
-            <Link
-              href="/products"
-              className="shrink-0 whitespace-nowrap border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-            >
-              এখনই কিনুন
-            </Link>
+            <h2 className="text-[clamp(1.9rem,5vw,3rem)] font-bold tracking-[-0.02em] text-black">
+              Top Selling Products
+            </h2>
+            <span aria-hidden="true" className="mt-3 h-1 w-12 bg-[#FBBB14]" />
           </motion.div>
 
           <motion.div
@@ -324,15 +306,19 @@ export default function Home() {
                   )
                 : catalogProducts.slice(0, 6).map((product) => {
                     const image = getProductImage(product);
+                    const firstVariant = product.variants?.[0];
+                    const currentPrice = Number(firstVariant?.price ?? product.price);
+                    const compareAtPrice = Number(product.compare_at_price);
+                    const hasDiscount = Number.isFinite(currentPrice) && Number.isFinite(compareAtPrice) && compareAtPrice > currentPrice;
 
                     return (
                       <motion.article
                         key={product.id || product.slug}
                         variants={reveal}
                         transition={transition}
-                        className="group min-w-0"
+                        className="group flex min-w-0 flex-col"
                       >
-                        <Link href={`/product/${product.slug}`} className="block h-full">
+                        <Link href={`/product/${product.slug}`} className="block flex-1">
                           <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
                             {image ? (
                               <img
@@ -353,15 +339,47 @@ export default function Home() {
                             )}
                           </div>
 
-                          <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
-                            <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
+                          <div className="space-y-2 pl-0 pr-0 pb-4 pt-3 md:pl-0 md:pr-0 md:pb-5">
+                            <h3 className="line-clamp-1 min-h-[1.2em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[1.2em] md:text-base md:tracking-[0.08em]">
                               {product.name}
                             </h3>
-                            <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">
-                              {formatProductPriceRange(product)}
-                            </p>
+                            <div className="mt-2 flex flex-nowrap items-center gap-x-1">
+                              <span className="shrink-0 text-lg font-bold text-[#f26b4f] md:text-2xl">
+                                {formatCardAmount(currentPrice)}
+                              </span>
+                              {hasDiscount ? (
+                                <span className="shrink-0 text-sm text-black/75 line-through md:text-base">
+                                  {formatCardAmount(compareAtPrice)}
+                                </span>
+                              ) : null}
+                              {hasDiscount ? (
+                                <span className="ml-1 inline-flex shrink-0 whitespace-nowrap rounded-full bg-[#FBBB14]/35 px-2.5 py-1 text-[10px] font-medium text-black">
+                                  Save {formatCardAmount(compareAtPrice - currentPrice)}
+                                </span>
+                              ) : null}
+                            </div>
                           </div>
                         </Link>
+                        <button
+                          type="button"
+                          disabled={product.available === false}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            addToCart(
+                              {
+                                id: getProductNumericId(product),
+                                title: product.name,
+                                price: formatCardAmount(currentPrice),
+                                image,
+                              },
+                              "Default",
+                            );
+                          }}
+                          className="mt-auto w-full border border-black/15 bg-[#FBBB14] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Add to Cart
+                        </button>
                       </motion.article>
                     );
                   })}
