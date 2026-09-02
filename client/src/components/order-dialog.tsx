@@ -19,10 +19,6 @@ const deliveryOptions = [
 
 const freeDeliveryThreshold = 2500;
 
-const normalizePhoneDigits = (value: string) => value
-  .replace(/[০-৯]/g, (digit) => String("০১২৩৪৫৬৭৮৯".indexOf(digit)))
-  .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
-
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
 export type OrderDialogBundle = {
@@ -117,7 +113,7 @@ export default function OrderDialog({
     const eventId = createEventId();
 
     const name = String(formData.get("name") || "").trim();
-    const phone = normalizePhoneDigits(String(formData.get("phone") || "").trim());
+    const phone = String(formData.get("phone") || "").trim();
     const address = String(formData.get("address") || "").trim();
 
     if (!name) {
@@ -128,8 +124,8 @@ export default function OrderDialog({
       setOrderError("Please enter your phone number.");
       return;
     }
-    if (phone.length < 6 || !/^\d+$/.test(phone)) {
-      setOrderError("Please enter a valid phone number.");
+    if (!/^\d{11}$/.test(phone)) {
+      setOrderError("Please enter exactly 11 English digits for your phone number.");
       return;
     }
     if (!address) {
@@ -366,6 +362,9 @@ export default function OrderDialog({
                         required
                         name="phone"
                         type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]{11}"
+                        maxLength={11}
                         className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
                         placeholder="01XXXXXXXXX"
                       />

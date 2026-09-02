@@ -1,10 +1,6 @@
 import { z } from "zod";
 import { randomInt } from "crypto";
 
-const normalizePhoneDigits = (value: string) => value
-  .replace(/[০-৯]/g, (digit) => String("০১২৩৪৫৬৭৮৯".indexOf(digit)))
-  .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
-
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
 export const orderRequestSchema = z.object({
@@ -13,7 +9,7 @@ export const orderRequestSchema = z.object({
   bundlePrice: z.number().int().positive(),
   deliveryCharge: z.number().int().nonnegative(),
   customerName: z.string().min(2).max(120),
-  phone: z.string().transform(normalizePhoneDigits).pipe(z.string().min(6).max(30)),
+  phone: z.string().regex(/^\d{11}$/, "Phone number must contain exactly 11 English digits"),
   address: z.string().min(5).max(500),
   paymentMethod: z.enum(["cash_on_delivery", "bkash"]).default("cash_on_delivery"),
   bkashTrxId: z.string().trim().max(80).optional().default(""),

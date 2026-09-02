@@ -13,10 +13,14 @@ const validOrder = {
   paymentMethod: "cash_on_delivery" as const,
 };
 
-test("normalizes Bengali phone digits before processing an order", () => {
-  const order = orderRequestSchema.parse(validOrder);
+test("accepts exactly 11 English phone digits", () => {
+  const order = orderRequestSchema.parse({ ...validOrder, phone: "01712345678" });
 
   assert.equal(order.phone, "01712345678");
+});
+
+test("rejects Bengali phone digits", () => {
+  assert.throws(() => orderRequestSchema.parse(validOrder));
 });
 
 test("rejects an address with fewer than three words", () => {
