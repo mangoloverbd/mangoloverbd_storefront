@@ -301,7 +301,7 @@ export default function Home() {
             className="flex flex-col items-center justify-center gap-2 overflow-hidden"
           >
             <h2 className="font-garet-book text-[clamp(1.7rem,4.5vw,2.7rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-              <HighlightedWord>Top Selling</HighlightedWord>{" "}Products
+              <HighlightedWord>TOP SELLING</HighlightedWord>{" "}PRODUCTS
             </h2>
             <span aria-hidden="true" className="mt-3 h-1 w-12 bg-[#FBBB14]" />
           </motion.div>
