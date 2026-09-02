@@ -424,15 +424,10 @@ export default function Home() {
             className="mb-7 flex items-start justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black"
+              className="font-garet-book text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-normal text-black"
             >
-              সর্বশেষ{" "}
-              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
-                সংগ্রহ
-                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
-                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
-                </svg>
-              </span>
+              <span>Latest</span>{" "}
+              <HighlightedWord>Collection</HighlightedWord>
             </motion.h2>
 
             <Link
@@ -524,15 +519,10 @@ export default function Home() {
             className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black"
+              className="font-garet-book text-[clamp(1.9rem,5vw,3rem)] font-bold leading-none tracking-normal text-black"
             >
-              নতুন{" "}
-              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
-                এসেছে
-                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
-                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
-                </svg>
-              </span>
+              <span>Just</span>{" "}
+              <HighlightedWord>Arrived</HighlightedWord>
             </motion.h2>
 
             <Link
@@ -638,10 +628,9 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                className="font-garet-book text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-normal text-white"
               >
-                খাঁটি ঘি
+                <HighlightedWord>Pure Ghee</HighlightedWord>
               </motion.h2>
               <motion.p
                 variants={reveal}
@@ -692,10 +681,10 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-[-0.04em] text-white"
-                style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                className="font-garet-book text-[clamp(2rem,5vw,3rem)] font-bold leading-none tracking-normal text-white"
               >
-                কালোজিরা মিক্সড
+                <span>Black Seed</span>{" "}
+                <HighlightedWord>Mix</HighlightedWord>
               </motion.h2>
               <motion.p
                 variants={reveal}
@@ -734,15 +723,10 @@ export default function Home() {
             className="mb-7 flex items-start justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="whitespace-nowrap text-[clamp(1.35rem,6vw,3rem)] font-bold leading-none tracking-[-0.02em] text-black md:text-[clamp(1.9rem,5vw,3rem)]"
+              className="font-garet-book whitespace-nowrap text-[clamp(1.35rem,6vw,3rem)] font-bold leading-none tracking-normal text-black md:text-[clamp(1.9rem,5vw,3rem)]"
             >
-              আমাদের বিশেষ{" "}
-              <span className="relative inline-block font-normal" style={{ fontFamily: "'IhtishamDeshlipi', serif" }}>
-                সংগ্রহসমূহ
-                <svg aria-hidden="true" viewBox="0 0 120 60" preserveAspectRatio="none" className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2" style={{ overflow: "visible" }}>
-                  <path d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30" fill="none" stroke="#FBBB14" strokeWidth="4.5" strokeLinecap="round" />
-                </svg>
-              </span>
+              <span>Our Special</span>{" "}
+              <HighlightedWord>Collections</HighlightedWord>
             </motion.h2>
             <Link
               href="/products"
