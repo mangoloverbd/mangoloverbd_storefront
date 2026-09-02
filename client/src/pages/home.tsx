@@ -242,8 +242,8 @@ export default function Home() {
             className="text-center"
           >
             <h2 className="font-garet-book text-[clamp(1.7rem,4.5vw,2.7rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-              <span>Featured</span>{" "}
-              <HighlightedWord>Categories</HighlightedWord>
+              <span>FEATURED</span>{" "}
+              <HighlightedWord>CATEGORIES</HighlightedWord>
             </h2>
           </motion.div>
 
