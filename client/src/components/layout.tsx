@@ -249,13 +249,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Mobile bottom navigation */}
       <nav
         aria-label="Mobile navigation"
-        className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/40 bg-white/20 px-2 text-black shadow-[0_8px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.55),inset_0_-1px_0_rgba(255,255,255,0.18)] backdrop-blur-2xl backdrop-saturate-150 md:hidden"
+        className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/10 bg-neutral-500/60 px-2 text-white shadow-2xl backdrop-blur-md md:hidden"
       >
         <Link href="/">
           <a
             aria-label="Home"
             aria-current={location === "/" ? "page" : undefined}
-            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/" ? "text-black" : "text-black/55"}`}
+            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/" ? "text-white" : "text-white/55"}`}
           >
             <HomeDuotoneIcon className="h-5 w-5" />
             <span>Home</span>
@@ -265,7 +265,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <a
             aria-label="Products"
             aria-current={location === "/products" ? "page" : undefined}
-            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/products" ? "text-black" : "text-black/55"}`}
+            className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/products" ? "text-white" : "text-white/55"}`}
           >
             <ReiconBox size={20} color="currentColor" weight="light" />
             <span>Products</span>
@@ -283,7 +283,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           )}
           <span className="sr-only">Cart</span>
         </Button>
-        <button type="button" aria-label="Search products" onClick={openSearch} className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-black/55 transition-colors hover:text-black">
+        <button type="button" aria-label="Search products" onClick={openSearch} className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/55 transition-colors hover:text-white">
             <SearchIcon className="h-5 w-5" />
             <span>Search</span>
         </button>
@@ -291,7 +291,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           variant="ghost"
           aria-label="Open menu"
           onClick={() => setIsOpen(true)}
-          className="flex min-w-[52px] flex-col items-center gap-1 rounded-none p-0 text-[9px] font-medium tracking-[0.04em] text-black/55 shadow-none transition-colors hover:bg-transparent hover:text-black"
+          className="flex min-w-[52px] flex-col items-center gap-1 rounded-none p-0 text-[9px] font-medium tracking-[0.04em] text-white/55 shadow-none transition-colors hover:bg-transparent hover:text-white"
         >
           <MenuLinesIcon className="!h-5 !w-5 scale-125 opacity-70" />
           <span>Menu</span>
