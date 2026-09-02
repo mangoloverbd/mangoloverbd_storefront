@@ -125,7 +125,7 @@ export default function OrderDialog({
       return;
     }
     if (!/^\d{11}$/.test(phone)) {
-      setOrderError("অনুগ্রহ করে ফোন নম্বরটি ইংরেজি সংখ্যায় ১১ ডিজিট লিখুন।");
+      setOrderError("ফোন নম্বরটি ইংরেজিতে লিখুন।");
       return;
     }
     if (!address) {
@@ -133,7 +133,7 @@ export default function OrderDialog({
       return;
     }
     if (addressWordCount(address) < 3) {
-      setOrderError("Please enter at least three words for your delivery address.");
+      setOrderError("ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।");
       return;
     }
 
