@@ -1,5 +1,9 @@
 export const STOREFRONT_ID = import.meta.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
-const MERCHANT_SUITE_URL = (import.meta.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const PRODUCTION_MERCHANT_SUITE_URL = "https://admin.mangolover.com.bd";
+const configuredMerchantSuiteUrl = (import.meta.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const MERCHANT_SUITE_URL = import.meta.env.PROD
+  ? PRODUCTION_MERCHANT_SUITE_URL
+  : configuredMerchantSuiteUrl;
 export const STOREFRONT_API_BASE = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${STOREFRONT_ID}`;
 const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 

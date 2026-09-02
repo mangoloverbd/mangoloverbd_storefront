@@ -3,7 +3,10 @@ import { build as viteBuild } from "vite";
 import { copyFile, mkdir, readFile, rm, writeFile } from "fs/promises";
 
 const storefrontId = process.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
-const MERCHANT_SUITE_URL = (process.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const configuredMerchantSuiteUrl = (process.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const MERCHANT_SUITE_URL = process.env.NODE_ENV === "production"
+  ? "https://admin.mangolover.com.bd"
+  : configuredMerchantSuiteUrl;
 if (!MERCHANT_SUITE_URL) {
   throw new Error("VITE_MERCHANT_SUITE_URL environment variable is not set");
 }

@@ -86,7 +86,10 @@ async function processOrder(order: OrderRequest) {
   let orderRef = "";
 
   try {
-    const merchantSuiteUrl = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+    const configuredMerchantSuiteUrl = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+    const merchantSuiteUrl = process.env.NODE_ENV === "production"
+      ? "https://admin.mangolover.com.bd"
+      : configuredMerchantSuiteUrl;
     if (!merchantSuiteUrl) {
       throw new Error("MERCHANT_SUITE_URL environment variable is not set");
     }

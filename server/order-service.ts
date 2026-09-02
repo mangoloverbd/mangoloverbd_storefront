@@ -21,7 +21,10 @@ export const orderRequestSchema = z.object({
 
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
-const MERCHANT_SUITE_URL = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const configuredMerchantSuiteUrl = (process.env.MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const MERCHANT_SUITE_URL = process.env.NODE_ENV === "production"
+  ? "https://admin.mangolover.com.bd"
+  : configuredMerchantSuiteUrl;
 if (!MERCHANT_SUITE_URL) {
   throw new Error("MERCHANT_SUITE_URL environment variable is not set");
 }
