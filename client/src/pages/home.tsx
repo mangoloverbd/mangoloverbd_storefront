@@ -65,6 +65,7 @@ export default function Home() {
   const [specialRef, specialInView] = useReveal();
   const [editorialRef, editorialInView] = useReveal();
   const [essentialsRef, essentialsInView] = useReveal();
+  const categoriesRef = useRef<HTMLDivElement>(null);
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
   const justArrivedGridRef = useRef<HTMLDivElement>(null);
 
@@ -119,6 +120,35 @@ export default function Home() {
       });
     }
     return () => cleanups.forEach((fn) => fn());
+  }, []);
+
+  useEffect(() => {
+    const el = categoriesRef.current;
+    if (!el) return;
+
+    let paused = false;
+    const pause = () => { paused = true; };
+    const resume = () => { paused = false; };
+    const advance = () => {
+      if (paused || el.scrollWidth <= el.clientWidth) return;
+      const step = Math.max(el.clientWidth * 0.34, 104);
+      const nextPosition = el.scrollLeft + step;
+      el.scrollTo({ left: nextPosition >= el.scrollWidth - el.clientWidth ? 0 : nextPosition, behavior: "smooth" });
+    };
+    const intervalId = window.setInterval(advance, 2500);
+
+    el.addEventListener("pointerenter", pause);
+    el.addEventListener("pointerleave", resume);
+    el.addEventListener("touchstart", pause, { passive: true });
+    el.addEventListener("touchend", resume, { passive: true });
+
+    return () => {
+      window.clearInterval(intervalId);
+      el.removeEventListener("pointerenter", pause);
+      el.removeEventListener("pointerleave", resume);
+      el.removeEventListener("touchstart", pause);
+      el.removeEventListener("touchend", resume);
+    };
   }, []);
 
   const categories = [
@@ -204,6 +234,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
+            ref={categoriesRef}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
             {categories.map(({ label, image }) => (

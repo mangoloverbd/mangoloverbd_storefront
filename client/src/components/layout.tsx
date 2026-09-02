@@ -190,7 +190,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
           <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
             <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
-              <span>Mango season</span>
+              <span>আমের মৌসুম</span>
             </div>
             <motion.div
               initial={{ opacity: 0, y: -6 }}
@@ -198,10 +198,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="flex min-w-0 items-center gap-2 text-[8px] font-bold uppercase tracking-[0.12em] md:gap-4 md:text-[9px] md:tracking-[0.24em]"
             >
-              <span className="whitespace-nowrap">Free delivery over ৳2500</span>
+              <span className="whitespace-nowrap">৳২৫০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি</span>
               <span className="h-3 w-px shrink-0 bg-[#163B33]/25" />
               <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
-                <span className="hidden md:inline">Sale&nbsp;</span>ends in
+                অফার শেষ হবে
                 <span className="rounded-[3px] bg-[#163B33] px-1.5 py-0.5 tabular-nums tracking-[0.08em] text-[#FBBB14]">
                   {countdown}
                 </span>
@@ -212,7 +212,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#163B33]/60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#163B33]" />
               </span>
-              <span>Dhaka {time}</span>
+              <span>ঢাকা {time}</span>
             </div>
           </div>
         </div>

@@ -14,8 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 const deliveryOptions = [
-  { label: "Inside Dhaka", bn: "ঢাকার ভিতরে", charge: 80 },
-  { label: "Outside Dhaka", bn: "ঢাকার বাইরে", charge: 130 }
+  { label: "Standard Delivery", bn: "সাধারণ ডেলিভারি", charge: 100 }
 ];
 
 const freeDeliveryThreshold = 2500;
@@ -39,13 +38,13 @@ export default function OrderDialog({
   onSuccess?: () => void;
 }) {
   const [openInstance, setOpenInstance] = useState(0);
-  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(null);
+  const [deliveryCharge, setDeliveryCharge] = useState<number | null>(100);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const [orderSubmitting, setOrderSubmitting] = useState(false);
   const [orderError, setOrderError] = useState("");
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold;
 
@@ -93,7 +92,7 @@ export default function OrderDialog({
 
     setOrderClosing(false);
     onOpenChange(nextOpen);
-    setDeliveryCharge(null);
+    setDeliveryCharge(100);
     setOrderSubmitted(false);
     setOrderSubmitting(false);
     setOrderError("");
@@ -372,7 +371,8 @@ export default function OrderDialog({
                     />
                   </label>
 
-                  <div className="grid gap-2">
+                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid content-start gap-2">
                       <span className="text-[13px] md:text-[14px] font-semibold text-black">
                         Delivery Charge - ডেলিভারি চার্জ
                       </span>
@@ -389,13 +389,13 @@ export default function OrderDialog({
                         </span>
                       </div>
                     ) : (
-                      <div className="grid gap-2 max-md:gap-1.5 md:grid-cols-2">
+                       <div className="grid gap-2 max-md:gap-1.5">
                         {deliveryOptions.map((option) => (
                           <button
                             key={option.label}
                             type="button"
                             onClick={() => setDeliveryCharge(option.charge)}
-                            className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all ${
+                           className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all md:h-[88px] ${
                               deliveryCharge === option.charge
                                 ? "border-brand-gold border-[1.5px] bg-brand-gold/5 rounded-[8px]"
                                 : "border-black/15 bg-transparent hover:border-black/30 rounded-[8px]"
@@ -413,11 +413,11 @@ export default function OrderDialog({
                     )}
                   </div>
 
-                  <div className="grid gap-2">
+                  <div className="grid content-start gap-2">
                     <span className="text-[13px] md:text-[14px] font-semibold text-black">
                       Payment Method - পেমেন্ট পদ্ধতি
                     </span>
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 md:h-full">
                       {[
                         { value: "cash_on_delivery" as const, label: "Cash on Delivery", bn: "ক্যাশ অন ডেলিভারি" },
                       ].map((option) => (
@@ -425,7 +425,7 @@ export default function OrderDialog({
                           key={option.value}
                           type="button"
                           onClick={() => setPaymentMethod(option.value)}
-                          className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all ${
+                            className={`border px-3 py-2 text-left max-md:px-2.5 max-md:py-1.5 transition-all md:h-[88px] ${
                             paymentMethod === option.value
                               ? "border-brand-gold border-[1.5px] bg-brand-gold/5 rounded-[8px]"
                               : "border-black/15 bg-transparent hover:border-black/30 rounded-[8px]"
@@ -437,6 +437,8 @@ export default function OrderDialog({
                         </button>
                       ))}
                     </div>
+
+                  </div>
 
                   </div>
 
