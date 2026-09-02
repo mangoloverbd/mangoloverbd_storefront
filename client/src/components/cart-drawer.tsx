@@ -288,7 +288,7 @@ export default function CartDrawer() {
                 <AnimatePresence initial={true}>
                     {isOpen && (
                         <motion.div
-                                 className="fixed inset-0 z-[100] w-full h-[100dvh] supports-[height:100dvh]:h-dvh pointer-events-none"
+                                 className="fixed inset-0 z-[100] w-full h-[100dvh] supports-[height:100dvh]:h-dvh p-3 sm:p-4 pointer-events-none"
                         >
                             <motion.div 
                                 className="absolute inset-0 bg-black/10 pointer-events-auto"
@@ -302,7 +302,7 @@ export default function CartDrawer() {
                                 initial={{ opacity: 0, scale: 0.96 }}
                                 animate={{ opacity: 1, scale: 1, transition: { duration: 0.58, ease: [0.22, 1, 0.36, 1] } }}
                                 exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] } }}
-                                 className="relative w-full h-full flex flex-col pointer-events-auto rounded-none bg-white text-black shadow-none overflow-hidden md:rounded-[12px] md:bg-neutral-500/60 md:text-white md:shadow-2xl md:backdrop-blur-md"
+                                 className="relative w-full h-full flex flex-col pointer-events-auto rounded-[12px] bg-white text-black shadow-2xl overflow-hidden md:bg-neutral-500/60 md:text-white md:backdrop-blur-md"
                             >
                                 <CartInnerContent {...innerProps} />
                             </motion.div>
