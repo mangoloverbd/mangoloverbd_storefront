@@ -223,10 +223,32 @@ export default function Home() {
           >
             <h2 className="font-garet-book text-[clamp(1.7rem,4.5vw,2.7rem)] font-bold tracking-normal text-black">
               <span>Featured</span>{" "}
-              <span
-                className="relative inline-block"
-              >
-                Categories
+              <span className="relative inline-block px-1.5">
+                <span className="relative z-10">Categories</span>
+                <svg
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-x-3 -inset-y-2 z-0 h-auto w-auto overflow-visible"
+                  viewBox="0 0 134 56"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M7 29C5 13 29 3 65 4c38 0 62 8 63 24 1 15-24 24-62 24C30 52 9 44 7 29Z"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeOpacity="0.68"
+                    strokeWidth="7"
+                  />
+                  <path
+                    d="M10 27C14 12 35 7 67 7c34 0 55 8 57 22 2 12-23 20-57 20-32 0-54-8-57-22Z"
+                    fill="none"
+                    stroke="#FBBB14"
+                    strokeLinecap="round"
+                    strokeOpacity="0.28"
+                    strokeWidth="3"
+                  />
+                </svg>
               </span>
             </h2>
           </motion.div>
