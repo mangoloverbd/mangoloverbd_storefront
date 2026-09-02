@@ -99,6 +99,15 @@ const MOBILE_COLLECTIONS = [
   "Functional food",
 ];
 
+const DESKTOP_COLLECTIONS = [
+  "Oil & Ghee",
+  "Organic Honey",
+  "Dates",
+  "Spices",
+  "Nuts & Seeds",
+  "Functional Food",
+];
+
 const pad = (value: number) => value.toString().padStart(2, "0");
 
 // Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
@@ -221,19 +230,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-[#f6f6f6] backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
-        <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-24 md:px-16">
-          <div className="flex-1 flex items-center justify-start">
-            <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
-              <button type="button" onClick={openMenu} className="hover:text-brand-gold transition-colors">Menu</button>
-            </div>
+        <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-20 md:gap-8 md:px-10 lg:px-16">
+          <div className="flex flex-1 items-center justify-start md:flex-none md:basis-44">
             <div className="md:hidden">
               <Button variant="ghost" size="icon" aria-label="Open menu" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 [&_svg]:size-7 md:h-12" onClick={openMenu}>
                 <MenuLinesIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               </Button>
             </div>
+            <Link href="/">
+              <a className="hidden items-center text-black md:flex">
+                <img src={mangoLoverLogo} alt="Mango Lover" className="h-10 w-auto" />
+              </a>
+            </Link>
           </div>
 
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center md:hidden">
             <Link href="/">
               <a className="flex items-center text-black">
                 <img
@@ -245,49 +256,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          <div className="flex-1 flex items-center justify-end gap-6 md:gap-10">
-            {/* Search + Cart grouped so the search sits directly left of the cart on mobile */}
-            <div className="flex items-center gap-1">
-            {/* Search Button - Mobile only, left of cart */}
+          <div className="hidden min-w-0 flex-1 items-center justify-center md:flex">
+            <div className="flex items-center justify-center gap-5 text-[10px] font-medium uppercase tracking-[0.16em] text-black/70 lg:gap-8">
+              {DESKTOP_COLLECTIONS.map((label) => (
+                <Link key={label} href="/products">
+                  <a className="whitespace-nowrap transition-colors hover:text-brand-gold">{label}</a>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-1 items-center justify-end gap-1 md:flex-none md:basis-44">
             <Button
               variant="ghost"
               onClick={openSearch}
               aria-label="Search"
-              className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 hover:bg-transparent [&_svg]:size-5 md:hidden"
+              className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-5 md:h-12 md:px-3"
             >
               <SearchIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
             </Button>
 
-            {/* Cart Button - Mobile & Desktop */}
+            {/* Cart button remains available in the mobile header. */}
             <Button
               variant="ghost"
               onClick={() => setCartOpen(true)}
-              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:h-12 md:px-3"
+              className="group relative flex h-9 items-center justify-center rounded-[8px] px-1 hover:bg-transparent [&_svg]:size-7 md:hidden"
             >
-              <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100 md:hidden" />
-              {/* Icon on mobile, wordmark on desktop — the label stays in the
-                  accessibility tree at both sizes. */}
-              <span className="sr-only text-[10px] uppercase tracking-[0.3em] font-bold opacity-70 transition-opacity group-hover:opacity-100 md:not-sr-only">
-                Cart
-              </span>
+              <BagIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
               {itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                   {itemCount}
                 </span>
               )}
             </Button>
-            </div>
-
-            <div className="hidden md:flex items-center gap-10 text-[10px] uppercase tracking-[0.3em] font-medium opacity-70">
-              <Link href="/journal"><a className="hover:text-brand-gold transition-colors">Journal</a></Link>
-              <Link href="/booking"><a className="hover:text-brand-gold transition-colors">Booking</a></Link>
-
-            </div>
-
-            <Button variant="ghost" className="hidden md:flex h-12 px-8 rounded-[8px] border border-black/10 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-black hover:text-white transition-all">
-              Private Fitting
-            </Button>
-
           </div>
         </div>
       </nav>
