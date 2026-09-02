@@ -136,7 +136,7 @@ export default function Home() {
     <Layout>
       {/* Hero Section */}
       <section className="w-full bg-[#f6f6f6] pt-0 pb-0">
-        <div className="w-full px-4 md:px-0">
+        <div className="w-full px-0 md:px-0">
           <div
             ref={heroRef}
             className="relative aspect-[940/1150] w-full overflow-hidden bg-[#FBBB14] md:aspect-auto md:min-h-[600px]"
