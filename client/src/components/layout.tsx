@@ -98,7 +98,8 @@ const MOBILE_COLLECTIONS = [
 
 const DESKTOP_COLLECTIONS = [
   "Oil & Ghee",
-  "Organic Honey",
+  "Organic",
+  "Honey",
   "Dates",
   "Spices",
   "Nuts & Seeds",
