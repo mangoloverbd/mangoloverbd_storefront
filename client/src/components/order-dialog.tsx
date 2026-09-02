@@ -456,7 +456,7 @@ export default function OrderDialog({
                   </div>
 
                   {orderError && (
-                    <div className="border border-red-500/30 bg-red-50 px-4 py-3 text-[10px] leading-5 text-red-700">
+                    <div className="border border-red-500/30 bg-red-50 px-4 py-3 text-[10px] leading-5 text-black">
                       {orderError}
                     </div>
                   )}
