@@ -433,9 +433,8 @@ export default function Home() {
             <Link
               href="/products"
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              আরও দেখুন
+              See More
             </Link>
           </motion.div>
 
@@ -528,9 +527,8 @@ export default function Home() {
             <Link
               href="/products"
               className="mt-1.5 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              সব দেখুন
+              View All
             </Link>
           </motion.div>
 
@@ -644,9 +642,8 @@ export default function Home() {
                 <Link
                   href="/products"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
-                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                >
-                  এখনই কিনুন
+              >
+                Shop Now
                 </Link>
               </motion.div>
             </div>
@@ -698,9 +695,8 @@ export default function Home() {
                 <Link
                   href="/products"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
-                  style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
                 >
-                  এখনই কিনুন
+                  Shop Now
                 </Link>
               </motion.div>
             </div>
@@ -731,9 +727,8 @@ export default function Home() {
             <Link
               href="/products"
               className="-mt-1 shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:mt-2 md:text-[18px]"
-              style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
             >
-              সব সংগ্রহ দেখুন
+              View All Collections
             </Link>
           </motion.div>
 
