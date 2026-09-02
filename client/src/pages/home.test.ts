@@ -109,7 +109,8 @@ test("loads every homepage product section from the public catalog", () => {
   assert.match(whatsNewSource, /className="group flex min-w-0 flex-col"/);
   assert.match(whatsNewSource, /line-clamp-1/);
   assert.match(whatsNewSource, /className="mt-auto w-full border/);
-  assert.match(whatsNewSource, /catalogProducts\.slice\(0, 6\)\.map/);
+  assert.match(whatsNewSource, /topSellingProducts\.slice\(0, 6\)\.map/);
+  assert.match(homeSource, /product\.compare_at_price == null && snapshotProduct\?\.compare_at_price != null/);
   assert.match(latestDropSource, /catalogProducts\.slice\(0, 4\)\.map/);
   assert.match(justArrivedSource, /catalogProducts\.slice\(0, 4\)\.map/);
   assert.match(specialSource, /catalogProducts\.slice\(0, 3\)\.map/);

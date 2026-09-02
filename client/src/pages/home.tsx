@@ -61,6 +61,12 @@ export default function Home() {
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
+  const topSellingProducts = catalogProducts.map((product) => {
+    const snapshotProduct = generatedStorefrontProducts.find((snapshot) => snapshot.slug === product.slug);
+    return product.compare_at_price == null && snapshotProduct?.compare_at_price != null
+      ? { ...product, compare_at_price: product.compare_at_price ?? snapshotProduct.compare_at_price }
+      : product;
+  });
 
   const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -304,7 +310,7 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : catalogProducts.slice(0, 6).map((product) => {
+                : topSellingProducts.slice(0, 6).map((product) => {
                     const image = getProductImage(product);
                     const firstVariant = product.variants?.[0];
                     const currentPrice = Number(firstVariant?.price ?? product.price);
