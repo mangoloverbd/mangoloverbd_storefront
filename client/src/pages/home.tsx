@@ -271,7 +271,7 @@ export default function Home() {
       </section>
 
       {/* What's New Section */}
-      <section className="w-full overflow-hidden bg-[#f6f6f6] py-10 md:py-16">
+      <section className="w-full overflow-hidden bg-[#f6f6f6] pb-10 pt-4 md:py-16">
         <motion.div
           ref={whatsNewRef}
           className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
