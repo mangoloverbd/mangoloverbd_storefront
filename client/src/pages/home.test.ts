@@ -82,6 +82,12 @@ test("uses the generated catalog while the live catalog revalidates", () => {
   assert.match(homeSource, /initialDataUpdatedAt: 0/);
 });
 
+test("prioritizes the first category images with lightweight thumbnails", () => {
+  assert.match(homeSource, /image: "\/categories\/homemade-3-320\.webp"/);
+  assert.match(homeSource, /loading=\{index < 4 \? "eager" : "lazy"\}/);
+  assert.match(homeSource, /fetchPriority=\{index < 4 \? "high" : "auto"\}/);
+});
+
 test("uses the Mango Lover hero poster", () => {
   assert.match(homeSource, /src="\/hero-mango-lover\.webp"/);
   assert.doesNotMatch(homeSource, /hero1\.webp/);
