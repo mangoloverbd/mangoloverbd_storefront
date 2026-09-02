@@ -34,12 +34,12 @@ function HighlightedWord({ children }: { children: string }) {
           fillOpacity="0.78"
         />
         <path
-          d="M13 38c26 8 80 10 108-1"
+          d="M16 39c24 7 78 9 102 0"
           fill="none"
           stroke="#FBBB14"
           strokeLinecap="round"
-          strokeOpacity="0.9"
-          strokeWidth="2.5"
+          strokeOpacity="0.82"
+          strokeWidth="2"
         />
       </svg>
     </span>
