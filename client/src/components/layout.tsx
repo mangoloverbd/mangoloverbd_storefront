@@ -87,16 +87,13 @@ const MENU_ITEMS = [
 ] as const;
 
 const MOBILE_COLLECTIONS = [
-  "Oil & ghee",
+  "Oil & Ghee",
   "Organic",
   "Honey",
   "Dates",
   "Spices",
-  "Nuts & seeds",
-  "Beverage",
-  "Rice",
-  "Flours & lentils",
-  "Functional food",
+  "Nuts & Seeds",
+  "Functional Food",
 ];
 
 const DESKTOP_COLLECTIONS = [
