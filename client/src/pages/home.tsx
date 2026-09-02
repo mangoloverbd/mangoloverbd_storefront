@@ -12,7 +12,6 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import { useCart } from "@/contexts/cart-context";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function formatCardAmount(value: unknown) {
   const amount = Number(value);
@@ -86,13 +85,6 @@ export default function Home() {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
   const justArrivedGridRef = useRef<HTMLDivElement>(null);
-
-  const scrollCategories = (direction: "left" | "right") => {
-    categoriesRef.current?.scrollBy({
-      left: direction === "right" ? 220 : -220,
-      behavior: "smooth",
-    });
-  };
 
   useEffect(() => {
     const grids = [whatsNewGridRef.current, justArrivedGridRef.current];
@@ -239,22 +231,13 @@ export default function Home() {
             </h2>
           </motion.div>
 
-          <div className="mt-8 flex items-center gap-2 sm:mt-10">
-            <button
-              type="button"
-              aria-label="Scroll categories left"
-              onClick={() => scrollCategories("left")}
-              className="shrink-0 rounded-full border border-black/15 bg-white/90 p-2 text-black shadow-sm backdrop-blur-sm sm:hidden"
-            >
-              <ChevronLeft className="h-[18px] w-[18px]" strokeWidth={1.5} />
-            </button>
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
-              ref={categoriesRef}
-              className="no-scrollbar min-w-0 flex-1 snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
-            >
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
+            ref={categoriesRef}
+            className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
+          >
             {categories.map(({ label, image }, index) => (
               <Link
                 key={label}
@@ -283,16 +266,7 @@ export default function Home() {
                 </span>
               </Link>
             ))}
-            </motion.div>
-            <button
-              type="button"
-              aria-label="Scroll categories right"
-              onClick={() => scrollCategories("right")}
-              className="shrink-0 rounded-full border border-black/15 bg-white/90 p-2 text-black shadow-sm backdrop-blur-sm sm:hidden"
-            >
-              <ChevronRight className="h-[18px] w-[18px]" strokeWidth={1.5} />
-            </button>
-          </div>
+          </motion.div>
         </div>
       </section>
 
