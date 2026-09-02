@@ -26,8 +26,8 @@
 }
 
 @font-face {
-  font-family: 'FriendBestie';
-  src: url('/fonts/friend-bestie.otf') format('opentype');
+  font-family: 'MetrowayDemo';
+  src: url('/fonts/metroway-demo.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -45,7 +45,7 @@
   --font-display: 'Cormorant Garamond', serif;
   --font-modern: 'Space Grotesk', sans-serif;
   --font-garet: 'Garet', 'Space Grotesk', 'Inter', sans-serif;
-  --font-friend-bestie: 'FriendBestie', sans-serif;
+  --font-metroway: 'MetrowayDemo', sans-serif;
 }
 
 :root {
