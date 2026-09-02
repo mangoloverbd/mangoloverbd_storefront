@@ -19,6 +19,12 @@ const deliveryOptions = [
 
 const freeDeliveryThreshold = 2500;
 
+const normalizePhoneDigits = (value: string) => value
+  .replace(/[০-৯]/g, (digit) => String("০১২৩৪৫৬৭৮৯".indexOf(digit)))
+  .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
+
+const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
+
 export type OrderDialogBundle = {
   title: string;
   details: string;
@@ -111,7 +117,7 @@ export default function OrderDialog({
     const eventId = createEventId();
 
     const name = String(formData.get("name") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
+    const phone = normalizePhoneDigits(String(formData.get("phone") || "").trim());
     const address = String(formData.get("address") || "").trim();
 
     if (!name) {
@@ -122,8 +128,16 @@ export default function OrderDialog({
       setOrderError("Please enter your phone number.");
       return;
     }
+    if (phone.length < 6 || !/^\d+$/.test(phone)) {
+      setOrderError("Please enter a valid phone number.");
+      return;
+    }
     if (!address) {
       setOrderError("Please enter your delivery address.");
+      return;
+    }
+    if (addressWordCount(address) < 3) {
+      setOrderError("Please enter at least three words for your delivery address.");
       return;
     }
 
@@ -148,8 +162,8 @@ export default function OrderDialog({
         bundlePrice: bundle.price,
         deliveryCharge: selectedDeliveryCharge,
         customerName: String(formData.get("name") || ""),
-        phone: String(formData.get("phone") || ""),
-        address: String(formData.get("address") || ""),
+         phone,
+         address,
         paymentMethod: selectedPaymentMethod,
         metaEventId: eventId,
       });
