@@ -221,7 +221,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-mistur text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
+            <h2 className="font-softspoken text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
               <span>Featured</span>{" "}
               <span
                 className="relative inline-block"
@@ -284,7 +284,7 @@ export default function Home() {
             transition={transition}
             className="flex flex-col items-center justify-center gap-2 overflow-hidden"
           >
-            <h2 className="font-mistur text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
+            <h2 className="font-softspoken text-[clamp(1.9rem,5vw,3rem)] font-normal tracking-[-0.02em] text-black">
               Top Selling Products
             </h2>
             <span aria-hidden="true" className="mt-3 h-1 w-12 bg-[#FBBB14]" />

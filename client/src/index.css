@@ -26,8 +26,8 @@
 }
 
 @font-face {
-  font-family: 'MisturSleuth';
-  src: url('/fonts/mistur-sleuth.ttf') format('truetype');
+  font-family: 'SoftspokenSans';
+  src: url('/fonts/softspoken-sans.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -45,7 +45,7 @@
   --font-display: 'Cormorant Garamond', serif;
   --font-modern: 'Space Grotesk', sans-serif;
   --font-garet: 'Garet', 'Space Grotesk', 'Inter', sans-serif;
-  --font-mistur: 'MisturSleuth', sans-serif;
+  --font-softspoken: 'SoftspokenSans', sans-serif;
 }
 
 :root {
