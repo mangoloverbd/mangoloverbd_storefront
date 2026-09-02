@@ -79,8 +79,10 @@ export default function Hero() {
                   aria-hidden="true"
                   loading="eager"
                   draggable={false}
-                  className={`absolute inset-0 h-full w-full select-none object-center brightness-95 contrast-105 ${
-                    image.fit === "cover" ? "object-cover" : "object-contain"
+                  className={`absolute inset-0 h-full w-full select-none brightness-95 contrast-105 ${
+                    image.fit === "cover"
+                      ? "object-cover object-center"
+                      : "max-md:object-cover max-md:object-[center_42%] md:object-contain md:object-center"
                   }`}
                 />
               </div>

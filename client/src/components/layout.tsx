@@ -426,7 +426,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </span>
                   </div>
                   <div className="text-white/60 text-sm">
-                    © 2026 Stepprs. All rights reserved.
+                    © 2026 ম্যাংগো লাভার - Mango Lover
                   </div>
                 </div>
               </div>
