@@ -425,15 +425,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
-                {mobileMenuPage === "main" ? (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={mobileMenuPage}
+                    initial={{ opacity: 0, y: 4, scale: 0.99 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.99 }}
+                    transition={{ duration: 0.42, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="flex min-h-0 flex-1 flex-col"
+                  >
+                  {mobileMenuPage === "main" ? (
                   <nav aria-label="Mobile menu" className="mt-[14vh] space-y-5">
                     <Link href="/" onClick={() => setIsOpen(false)}>
-                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Home</span><ArrowRight size={27} strokeWidth={1.25} /></a>
+                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Home <span className="text-[1.45rem] font-bold text-black/55">/ হোম</span></span><ArrowRight size={27} strokeWidth={1.25} /></a>
                     </Link>
                     <Link href="/products" onClick={() => setIsOpen(false)}>
-                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Products</span><ArrowRight size={27} strokeWidth={1.25} /></a>
+                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Products <span className="text-[1.45rem] font-bold text-black/55">/ পণ্যসমূহ</span></span><ArrowRight size={27} strokeWidth={1.25} /></a>
                     </Link>
-                    <button type="button" onClick={() => setMobileMenuPage("collections")} className="flex w-full items-center justify-between text-left text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Collection</span><ArrowRight size={27} strokeWidth={1.25} /></button>
+                    <button type="button" onClick={() => setMobileMenuPage("collections")} className="flex w-full items-center justify-between text-left text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Collection <span className="text-[1.45rem] font-bold text-black/55">/ ক্যাটাগরিসমূহ</span></span><ArrowRight size={27} strokeWidth={1.25} /></button>
                   </nav>
                 ) : (
                   <div className="mt-8">
@@ -448,11 +457,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </nav>
                   </div>
                 )}
-                <div className="mt-auto grid grid-cols-2 gap-x-8 gap-y-4 pb-2 text-base">
-                  <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Facebook</a>
-                  <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Instagram</a>
-                  <a href="https://api.whatsapp.com/send/?phone=8801733670129" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">WhatsApp</a>
-                </div>
+                  {mobileMenuPage === "main" && (
+                  <div className="mt-auto grid grid-cols-1 gap-y-4 pb-2 text-base">
+                    <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Facebook</a>
+                    <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Instagram</a>
+                    <a href="https://api.whatsapp.com/send/?phone=8801733670129" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">WhatsApp</a>
+                    <a href="tel:+8801301636461" className="transition-opacity hover:opacity-60">Call Mango Lover Team</a>
+                  </div>
+                )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
               <div className="hidden md:flex md:flex-col md:h-full md:px-12 md:py-10 md:justify-between md:overflow-y-auto">
                 {/* Header */}
