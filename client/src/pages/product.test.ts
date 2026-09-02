@@ -42,6 +42,11 @@ test("uses shared sizing and IhtishamDeshlipi for product detail labels", () => 
   assert.match(productSource, /text-\[15px\] transition-colors md:text-\[17px\]/);
 });
 
+test("does not mark a live product unavailable while inventory is still loading", () => {
+  assert.match(productSource, /const merchantUnavailable = merchantProductUnavailable \|\| inventoryUnavailable/);
+  assert.match(productSource, /const inventoryUnavailable = merchantInventory\?\.inventory \? !isProductOrderable\(product\) : false/);
+});
+
 test("highlights the বৈশিষ্ট্য label with the existing yellow hand-drawn oval", () => {
   assert.match(
     productSource,

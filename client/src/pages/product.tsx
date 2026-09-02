@@ -249,7 +249,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const selectedVariant = product?.variants?.[0] || null;
   const productImage = product.image_url || "";
   const merchantAvailabilityKnown = isFetched || isError;
-  const merchantUnavailable = merchantAvailabilityKnown && (!merchantProduct || !isProductOrderable(product));
+  const merchantProductUnavailable = merchantAvailabilityKnown && (!merchantProduct || merchantProduct.available === false);
+  const inventoryUnavailable = merchantInventory?.inventory ? !isProductOrderable(product) : false;
+  const merchantUnavailable = merchantProductUnavailable || inventoryUnavailable;
   const isUnavailable = availabilityBlocked || merchantUnavailable;
   const gallery = getProductGallery(product);
   const displayImage = getProductImage(product) || productImage;
