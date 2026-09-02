@@ -234,7 +234,7 @@ export default function Home() {
                   <path
                     d="M4 19c7-7 28-10 63-9 31 0 55 4 63 10-8 7-30 10-63 10-34 0-56-3-63-11Zm2 10c10 6 31 8 60 8 31 0 54-4 62-10-12 4-32 6-61 6-29 0-49-1-61-4Z"
                     fill="#FBBB14"
-                    fillOpacity="0.42"
+                    fillOpacity="0.78"
                   />
                 </svg>
               </span>
