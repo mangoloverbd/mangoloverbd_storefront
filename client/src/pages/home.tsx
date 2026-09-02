@@ -227,18 +227,14 @@ export default function Home() {
                 <span className="relative z-10">Categories</span>
                 <svg
                   aria-hidden="true"
-                  className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-2 overflow-visible"
+                  className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-2 rotate-[-2deg] overflow-visible"
                   viewBox="0 0 134 50"
                   preserveAspectRatio="none"
                 >
                   <path
-                    d="M8 26C7 13 30 5 65 5c37 0 59 7 61 20 2 13-22 20-59 20-35 0-57-7-59-19Z"
-                    fill="none"
-                    stroke="#FBBB14"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeOpacity="0.58"
-                    strokeWidth="5.5"
+                    d="M4 19c7-7 28-10 63-9 31 0 55 4 63 10-8 7-30 10-63 10-34 0-56-3-63-11Zm2 10c10 6 31 8 60 8 31 0 54-4 62-10-12 4-32 6-61 6-29 0-49-1-61-4Z"
+                    fill="#FBBB14"
+                    fillOpacity="0.42"
                   />
                 </svg>
               </span>
