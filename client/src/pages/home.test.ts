@@ -41,7 +41,7 @@ test("labels the product section Top Selling Products without a purchase CTA", (
     homeSource.indexOf("Latest Drop Section"),
   );
 
-  assert.match(whatsNewSource, /Top[\s\S]*Selling Products/);
+  assert.match(whatsNewSource, /TOP SELLING[\s\S]*PRODUCTS/);
   assert.doesNotMatch(whatsNewSource, /এখনই কিনুন/);
   assert.doesNotMatch(whatsNewSource, /বাদাম ও বীজ[\s\S]*তেল ও ঘি[\s\S]*মধু/);
 });
@@ -53,8 +53,9 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   );
 
   assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
-  assert.match(whatsNewSource, /Top Selling Products/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.9rem,5vw,3rem\)\]/);
+  assert.match(whatsNewSource, /TOP SELLING[\s\S]*PRODUCTS/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.5rem,4vw,2\.4rem\)\]/);
+  assert.match(whatsNewSource, /className="ml-1 text-\[1\.85rem\] leading-none md:ml-0 md:text-\[inherit\]"/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /<svg/);
