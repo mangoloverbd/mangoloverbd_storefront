@@ -18,9 +18,9 @@ function formatCardAmount(value: unknown) {
   return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
 }
 
-function HighlightedWord({ children }: { children: string }) {
+function HighlightedWord({ children, className = "" }: { children: string; className?: string }) {
   return (
-    <span className="relative inline-block px-1.5">
+    <span className={`relative inline-block px-1.5 ${className}`}>
       <span className="relative z-10">{children}</span>
       <svg
         aria-hidden="true"
@@ -34,12 +34,12 @@ function HighlightedWord({ children }: { children: string }) {
           fillOpacity="0.78"
         />
         <path
-          d="M16 39c24 7 78 9 102 0"
+          d="M12 34c24 15 86 15 110 0"
           fill="none"
           stroke="#FBBB14"
           strokeLinecap="round"
           strokeOpacity="0.82"
-          strokeWidth="2"
+          strokeWidth="2.5"
         />
       </svg>
     </span>
@@ -249,7 +249,7 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-garet-book text-[clamp(1.5rem,4vw,2.4rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
               <span>FEATURED</span>{" "}
               <HighlightedWord>CATEGORIES</HighlightedWord>
             </h2>
@@ -306,12 +306,17 @@ export default function Home() {
           <motion.div
             variants={reveal}
             transition={transition}
-            className="flex flex-col items-center justify-center gap-2 overflow-hidden"
+            className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
-            <h2 className="font-garet-book text-[clamp(1.5rem,4vw,2.4rem)] font-bold tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-              <HighlightedWord>TOP SELLING</HighlightedWord>{" "}PRODUCTS
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:leading-none">
+              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-2 md:ml-0">PRODUCTS</HighlightedWord>
             </h2>
-            <span aria-hidden="true" className="mt-3 h-1 w-12 bg-[#FBBB14]" />
+            <Link
+              href="/products"
+              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
+            >
+              View All
+            </Link>
           </motion.div>
 
           <motion.div
@@ -432,7 +437,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 md:mb-12"
           >
             <motion.h2
-              className="font-garet-book text-[clamp(1.65rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
+              className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>LATEST</span>{" "}
               <HighlightedWord>COLLECTION</HighlightedWord>
@@ -526,7 +531,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="font-garet-book text-[clamp(1.65rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
+              className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>JUST</span>{" "}
               <HighlightedWord>ARRIVED</HighlightedWord>
@@ -634,7 +639,7 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-garet-book text-[clamp(1.75rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
                 <HighlightedWord>PURE GHEE</HighlightedWord>
               </motion.h2>
@@ -686,7 +691,7 @@ export default function Home() {
               <motion.h2
                 variants={reveal}
                 transition={transition}
-                className="font-garet-book text-[clamp(1.75rem,4.3vw,2.6rem)] font-bold leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
+                className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
                 <span>BLACK SEED</span>{" "}
                 <HighlightedWord>MIX</HighlightedWord>
@@ -727,7 +732,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
           >
             <motion.h2
-              className="font-garet-book min-w-0 text-[clamp(1.2rem,5.2vw,2.6rem)] font-bold leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]"
+              className="font-inter-28pt-semibold min-w-0 text-[clamp(1.2rem,5.2vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]"
             >
               <span>OUR SPECIAL</span>{" "}
               <span className="block md:inline-block">
