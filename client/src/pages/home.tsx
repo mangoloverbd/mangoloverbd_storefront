@@ -18,31 +18,32 @@ function formatCardAmount(value: unknown) {
   return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
 }
 
-function HighlightedWord({ children, className = "" }: { children: string; className?: string }) {
+function HighlightedWord({
+  children,
+  className = "",
+  highlightColor = "#FBBB14",
+}: {
+  children: string;
+  className?: string;
+  highlightColor?: string;
+}) {
   return (
-    <span className={`relative inline-block px-1.5 ${className}`}>
-      <span className="relative z-10">{children}</span>
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-x-2 -inset-y-1 z-0 h-auto w-auto -translate-y-1 rotate-[-2deg] overflow-visible"
-        viewBox="0 0 134 50"
-        preserveAspectRatio="none"
-      >
-        <path
-          d="M7 23C7 14 29 9 66 9c37 0 60 5 60 14 0 9-23 14-60 14S7 32 7 23Z"
-          fill="#FBBB14"
-          fillOpacity="0.78"
-        />
-        <path
-          d="M12 34c24 15 86 15 110 0"
-          fill="none"
-          stroke="#FBBB14"
-          strokeLinecap="round"
-          strokeOpacity="0.82"
-          strokeWidth="2.5"
-        />
-      </svg>
-    </span>
+    <motion.span
+      className={`inline ${className}`}
+      style={{
+        backgroundImage: `linear-gradient(${highlightColor}, ${highlightColor})`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "0% 0%",
+        backgroundSize: "100% 100%",
+        boxDecorationBreak: "clone",
+        WebkitBoxDecorationBreak: "clone",
+      }}
+      initial={{ backgroundSize: "0% 100%" }}
+      animate={{ backgroundSize: "100% 100%" }}
+      transition={{ type: "spring", duration: 1, bounce: 0 }}
+    >
+      {children}
+    </motion.span>
   );
 }
 
@@ -251,7 +252,7 @@ export default function Home() {
           >
             <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
               <span>FEATURED</span>{" "}
-              <HighlightedWord>CATEGORIES</HighlightedWord>
+              <HighlightedWord highlightColor="#FBBB14">CATEGORIES</HighlightedWord>
             </h2>
           </motion.div>
 
@@ -309,7 +310,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
             <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:leading-none">
-              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-2 md:ml-0">PRODUCTS</HighlightedWord>
+              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-2 md:ml-0" highlightColor="#FBBB14">PRODUCTS</HighlightedWord>
             </h2>
             <Link
               href="/products"
@@ -440,7 +441,7 @@ export default function Home() {
               className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>LATEST</span>{" "}
-              <HighlightedWord>COLLECTION</HighlightedWord>
+               <HighlightedWord highlightColor="#FFD166">COLLECTION</HighlightedWord>
             </motion.h2>
 
             <Link
@@ -534,7 +535,7 @@ export default function Home() {
               className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
               <span>JUST</span>{" "}
-              <HighlightedWord>ARRIVED</HighlightedWord>
+               <HighlightedWord highlightColor="#A8DADC">ARRIVED</HighlightedWord>
             </motion.h2>
 
             <Link
@@ -641,7 +642,7 @@ export default function Home() {
                 transition={transition}
                 className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
-                <HighlightedWord>PURE GHEE</HighlightedWord>
+                <HighlightedWord highlightColor="#F4A261">PURE GHEE</HighlightedWord>
               </motion.h2>
               <motion.p
                 variants={reveal}
@@ -694,7 +695,7 @@ export default function Home() {
                 className="font-inter-28pt-semibold text-[clamp(1.75rem,4.3vw,2.6rem)] leading-none tracking-normal text-white [-webkit-text-stroke:0.25px_currentColor]"
               >
                 <span>BLACK SEED</span>{" "}
-                <HighlightedWord>MIX</HighlightedWord>
+                <HighlightedWord highlightColor="#B8D8BA">MIX</HighlightedWord>
               </motion.h2>
               <motion.p
                 variants={reveal}
@@ -736,7 +737,7 @@ export default function Home() {
             >
               <span>OUR SPECIAL</span>{" "}
               <span className="block md:inline-block">
-                <HighlightedWord>COLLECTIONS</HighlightedWord>
+                <HighlightedWord highlightColor="#CDB4DB">COLLECTIONS</HighlightedWord>
               </span>
             </motion.h2>
             <Link
