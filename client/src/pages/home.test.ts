@@ -52,10 +52,11 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
     homeSource.indexOf("Latest Drop Section"),
   );
 
-  assert.match(whatsNewSource, /className="flex flex-col items-center justify-center/);
+  assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
   assert.match(whatsNewSource, /Top Selling Products/);
   assert.match(whatsNewSource, /text-\[clamp\(1\.9rem,5vw,3rem\)\]/);
-  assert.match(whatsNewSource, /bg-\[#FBBB14\]/);
+  assert.match(whatsNewSource, /View All/);
+  assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /<svg/);
 });
 

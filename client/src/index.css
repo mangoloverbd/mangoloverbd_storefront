@@ -33,6 +33,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Inter28ptSemibold';
+  src: url('/fonts/inter-28pt-semibold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -76,6 +84,11 @@
 
 .text-minimal {
   @apply uppercase tracking-[0.2em] font-medium;
+}
+
+.font-inter-28pt-semibold {
+  font-family: 'Inter28ptSemibold', sans-serif;
+  font-weight: 600;
 }
 
 .no-scrollbar::-webkit-scrollbar {
