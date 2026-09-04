@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/cart-context";
 import Layout from "@/components/layout";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
 import { createEventId, trackMetaEvent } from "@/lib/meta";
+import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent } from "@/lib/google-analytics";
 import { getProductDetailSections } from "@/lib/product-details";
 import { Counter } from "@/components/ui/animated-counter";
 import {
@@ -140,6 +141,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   // horizontal drag stutter on real phones but not on a desktop localhost.
   const [activeReelVideo, setActiveReelVideo] = useState<number | null>(null);
   const activeReelVideoRef = useRef<HTMLVideoElement | null>(null);
+  const viewedGoogleItemRef = useRef("");
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const [galleryRef, galleryApi] = useEmblaCarousel({
@@ -246,7 +248,17 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     return [{ id: 1, title: "Default", price: `৳${base.toLocaleString()}`, amount: base }];
   })();
   const selectedBundle = bundles[selectedBundleIdx] ?? bundles[0];
-  const selectedVariant = product?.variants?.[0] || null;
+  const selectedVariant = product?.variants?.find((variant) => {
+    const label = String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
+    return label === selectedBundle.title;
+  }) || null;
+  const productAnalyticsItem = useMemo(() => toGoogleAnalyticsItem({
+    id: selectedVariant?.id ?? product.id ?? product.slug,
+    name: product.name,
+    variant: selectedBundle.title === "Default" ? null : selectedBundle.title,
+    price: selectedBundle.amount,
+    quantity: 1,
+  }), [product.id, product.name, product.slug, selectedBundle.amount, selectedBundle.title, selectedVariant?.id]);
   const productImage = product.image_url || "";
   const merchantAvailabilityKnown = isFetched || isError;
   const merchantProductUnavailable = merchantAvailabilityKnown && (!merchantProduct || merchantProduct.available === false);
@@ -315,6 +327,16 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   useEffect(() => {
     if (isLoading) return;
+    const googleViewKey = product.slug;
+    if (viewedGoogleItemRef.current !== googleViewKey) {
+      viewedGoogleItemRef.current = googleViewKey;
+      trackGoogleEcommerceEvent("view_item", {
+        pageType: "product",
+        value: selectedBundle.amount,
+        items: [productAnalyticsItem],
+      });
+    }
+
     const eventId = createEventId();
     trackMetaEvent({
       eventName: "ViewContent",
@@ -328,7 +350,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         contents: [{ id: product.slug, quantity: 1, item_price: selectedBundle.amount }],
       },
     });
-  }, [selectedBundle]);
+  }, [isLoading, product.slug, productAnalyticsItem, selectedBundle.amount]);
 
   useEffect(() => {
     if (!galleryApi) return;
@@ -366,6 +388,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         details: selectedBundle.title,
         price: selectedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
+        analyticsItems: [productAnalyticsItem],
       };
 
   if (isLoading) {
@@ -552,6 +575,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             title: `${product.name} (${selectedBundle.title})`,
                             price: selectedBundle.price,
                             image: displayImage,
+                            analyticsItem: productAnalyticsItem,
                           },
                           selectedBundle.title,
                         );

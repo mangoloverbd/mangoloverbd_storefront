@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import { useCart } from "@/contexts/cart-context";
+import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
 
 function formatCardAmount(value: unknown) {
   const amount = Number(value);
@@ -408,6 +409,13 @@ export default function Home() {
                                 title: product.name,
                                 price: formatCardAmount(currentPrice),
                                 image,
+                                analyticsItem: toGoogleAnalyticsItem({
+                                  id: product.id ?? product.slug,
+                                  name: product.name,
+                                  variant: "Default",
+                                  price: currentPrice,
+                                  quantity: 1,
+                                }),
                               },
                               "Default",
                             );

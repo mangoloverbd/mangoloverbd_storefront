@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
+import { trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 
 export interface CartItem {
     id: string;
@@ -10,11 +11,12 @@ export interface CartItem {
     image: string;
     size: string;
     quantity: number;
+    analyticsItem?: GoogleAnalyticsItem;
 }
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: { id: number; title: string; price: string; image: string }, size: string, quantity?: number) => void;
+    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem }, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
     clearCart: () => void;
@@ -47,7 +49,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }, [items]);
 
     const addToCart = (
-        product: { id: number; title: string; price: string; image: string },
+        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem },
         size: string,
         quantity: number = 1
     ) => {
@@ -74,7 +76,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                         price: product.price,
                         image: product.image,
                         size,
-                        quantity
+                        quantity,
+                        analyticsItem: product.analyticsItem
                     }
                 ];
             }
@@ -97,6 +100,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             content_ids: [String(product.id)],
             contents: [{ id: String(product.id), quantity, item_price: value }],
           },
+        });
+        trackGoogleEcommerceEvent("add_to_cart", {
+          pageType: "product",
+          value,
+          items: [
+            product.analyticsItem
+              ? { ...product.analyticsItem, quantity }
+              : {
+                  item_id: String(product.id),
+                  item_name: product.title,
+                  item_brand: "Mango Lover BD",
+                  item_variant: size,
+                  price: value,
+                  quantity,
+                },
+          ],
         });
     };
 

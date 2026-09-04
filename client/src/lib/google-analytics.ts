@@ -1,0 +1,176 @@
+export type GoogleEcommerceEventName = "view_item" | "add_to_cart" | "begin_checkout" | "purchase";
+
+export type GoogleAnalyticsItem = {
+  item_id: string;
+  item_name: string;
+  item_brand: "Mango Lover BD";
+  item_category?: string;
+  item_variant?: string;
+  price: number;
+  quantity: number;
+};
+
+type GoogleAnalyticsItemInput = {
+  id: string | number | null | undefined;
+  name: string;
+  category?: string | null;
+  variant?: string | null;
+  price: string | number | null | undefined;
+  quantity?: number | null;
+};
+
+type GoogleEcommerceBaseInput = {
+  event: GoogleEcommerceEventName;
+  pageType: "product" | "checkout" | "thank_you";
+  title?: string;
+  url?: string;
+  language?: string;
+  value: number;
+  items: GoogleAnalyticsItem[];
+  transactionId?: string | null;
+  tax?: number;
+  shipping?: number;
+  coupon?: string;
+};
+
+export type GoogleEcommercePayload = {
+  event: GoogleEcommerceEventName;
+  page_type: GoogleEcommerceBaseInput["pageType"];
+  page_title: string;
+  page_url: string;
+  page_path: string;
+  page_language: string;
+  logged_in: false;
+  customer_id: null;
+  currency: "BDT";
+  value: number;
+  items: GoogleAnalyticsItem[];
+  transaction_id?: string;
+  tax?: number;
+  shipping?: number;
+  coupon?: string;
+};
+
+type GoogleTagFunction = (...args: unknown[]) => void;
+
+export type GoogleAnalyticsWindow = {
+  dataLayer?: unknown[];
+  gtag?: GoogleTagFunction;
+  location?: Pick<Location, "href" | "pathname"> | URL;
+  document?: {
+    title?: string;
+    documentElement?: { lang?: string };
+  };
+};
+
+declare global {
+  interface Window {
+    dataLayer?: unknown[];
+    gtag?: GoogleTagFunction;
+  }
+}
+
+export function parseCurrencyAmount(value: string | number | null | undefined) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  const amount = Number(String(value ?? "").replace(/[^0-9.]/g, ""));
+  return Number.isFinite(amount) ? amount : 0;
+}
+
+function roundMoney(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+export function toGoogleAnalyticsItem(input: GoogleAnalyticsItemInput): GoogleAnalyticsItem {
+  const variant = input.variant?.trim() || "";
+  const item: GoogleAnalyticsItem = {
+    item_id: String(input.id || input.name),
+    item_name: variant ? `${input.name} — ${variant}` : input.name,
+    item_brand: "Mango Lover BD",
+    price: roundMoney(parseCurrencyAmount(input.price)),
+    quantity: input.quantity && input.quantity > 0 ? input.quantity : 1,
+  };
+
+  if (input.category?.trim()) {
+    item.item_category = input.category.trim();
+  }
+
+  if (variant) {
+    item.item_variant = variant;
+  }
+
+  return item;
+}
+
+export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): GoogleEcommercePayload {
+  const url = input.url || "";
+  let pagePath = "";
+
+  try {
+    pagePath = url ? new URL(url).pathname : "";
+  } catch {
+    pagePath = "";
+  }
+
+  const payload: GoogleEcommercePayload = {
+    event: input.event,
+    page_type: input.pageType,
+    page_title: input.title || "",
+    page_url: url,
+    page_path: pagePath,
+    page_language: input.language || "en",
+    logged_in: false,
+    customer_id: null,
+    currency: "BDT",
+    value: roundMoney(input.value),
+    items: input.items,
+  };
+
+  if (input.transactionId) payload.transaction_id = input.transactionId;
+  if (typeof input.tax === "number") payload.tax = roundMoney(input.tax);
+  if (typeof input.shipping === "number") payload.shipping = roundMoney(input.shipping);
+  if (typeof input.coupon === "string") payload.coupon = input.coupon;
+
+  return payload;
+}
+
+function getBrowserTarget(target?: GoogleAnalyticsWindow): GoogleAnalyticsWindow | null {
+  if (target) return target;
+  return typeof window === "undefined" ? null : window;
+}
+
+function getCurrentUrl(target: GoogleAnalyticsWindow) {
+  return target.location?.href || "";
+}
+
+function getCurrentLanguage(target: GoogleAnalyticsWindow) {
+  return target.document?.documentElement?.lang || "en";
+}
+
+export function trackGoogleEcommerceEvent(
+  event: GoogleEcommerceEventName,
+  input: Omit<GoogleEcommerceBaseInput, "event" | "title" | "url" | "language"> &
+    Partial<Pick<GoogleEcommerceBaseInput, "title" | "url" | "language">>,
+  target?: GoogleAnalyticsWindow,
+) {
+  const browserTarget = getBrowserTarget(target);
+  if (!browserTarget) return null;
+
+  const payload = buildGoogleEcommercePayload({
+    ...input,
+    event,
+    title: input.title ?? browserTarget.document?.title ?? "",
+    url: input.url ?? getCurrentUrl(browserTarget),
+    language: input.language ?? getCurrentLanguage(browserTarget),
+  });
+
+  browserTarget.dataLayer = browserTarget.dataLayer || [];
+  browserTarget.dataLayer.push(payload);
+
+  const { event: _event, ...gtagPayload } = payload;
+  browserTarget.gtag?.("event", event, gtagPayload);
+
+  return payload;
+}

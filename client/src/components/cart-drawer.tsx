@@ -5,6 +5,7 @@ import { Minus, Plus, X, ShoppingBag, ArrowDownRight } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useMemo, useState, useEffect } from "react";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
+import { parseCurrencyAmount, toGoogleAnalyticsItem } from "@/lib/google-analytics";
 
 const cartEase = [0.22, 1, 0.36, 1] as const;
 
@@ -244,7 +245,16 @@ export default function CartDrawer() {
             images: items.slice(0, 2).map((item) => ({
                 src: item.image,
                 alt: item.title
-            }))
+            })),
+            analyticsItems: items.map((item) => item.analyticsItem
+                ? { ...item.analyticsItem, quantity: item.quantity }
+                : toGoogleAnalyticsItem({
+                    id: item.productId,
+                    name: item.title,
+                    variant: item.size,
+                    price: parseCurrencyAmount(item.price),
+                    quantity: item.quantity,
+                })),
         };
     }, [items]);
 

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { createEventId, trackMetaEvent } from "@/lib/meta";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
+import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +27,22 @@ export type OrderDialogBundle = {
   details: string;
   price: number;
   images: { src: string; alt: string }[];
+  analyticsItems?: GoogleAnalyticsItem[];
 };
+
+function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
+  if (bundle.analyticsItems?.length) {
+    return bundle.analyticsItems;
+  }
+
+  return [toGoogleAnalyticsItem({
+    id: bundle.title,
+    name: bundle.title,
+    variant: bundle.details,
+    price: bundle.price,
+    quantity: 1,
+  })];
+}
 
 export default function OrderDialog({
   open,
@@ -54,6 +70,13 @@ export default function OrderDialog({
     if (!previousOpen.current && open) {
       setOpenInstance((current) => current + 1);
       trackMerchantSuiteEvent("checkout");
+      if (bundle) {
+        trackGoogleEcommerceEvent("begin_checkout", {
+          pageType: "checkout",
+          value: bundle.price,
+          items: getBundleAnalyticsItems(bundle),
+        });
+      }
 
       const eventId = createEventId();
       trackMetaEvent({
@@ -71,7 +94,7 @@ export default function OrderDialog({
       });
     }
     previousOpen.current = open;
-  }, [open]);
+  }, [open, bundle]);
 
   useEffect(() => {
     if (open && qualifiesForFreeDelivery) {
@@ -167,6 +190,15 @@ export default function OrderDialog({
       setOrderRef(result.orderRef || "");
       setOrderSubmitted(true);
       onSuccess?.();
+      trackGoogleEcommerceEvent("purchase", {
+        pageType: "thank_you",
+        value: bundle.price + selectedDeliveryCharge,
+        items: getBundleAnalyticsItems(bundle),
+        transactionId: result.orderRef || result.order_id,
+        tax: 0,
+        shipping: selectedDeliveryCharge,
+        coupon: "",
+      });
 
       trackMetaEvent({
         eventName: "Purchase",
