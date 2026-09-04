@@ -311,7 +311,7 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
             <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)] md:leading-none">
-              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-1 text-[1.85rem] leading-none md:ml-0 md:text-[inherit]" highlightColor="#FBBB14">PRODUCTS</HighlightedWord>
+              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-1 text-[1.85rem] leading-none md:ml-0 md:text-[clamp(1.65rem,4.3vw,2.6rem)]" highlightColor="#FBBB14">PRODUCTS</HighlightedWord>
             </h2>
             <Link
               href="/products"

@@ -55,7 +55,7 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   assert.match(whatsNewSource, /className="mb-7 flex items-center justify-between/);
   assert.match(whatsNewSource, /TOP SELLING[\s\S]*PRODUCTS/);
   assert.match(whatsNewSource, /text-\[clamp\(1\.5rem,4vw,2\.4rem\)\]/);
-  assert.match(whatsNewSource, /className="ml-1 text-\[1\.85rem\] leading-none md:ml-0 md:text-\[inherit\]"/);
+  assert.match(whatsNewSource, /className="ml-1 text-\[1\.85rem\] leading-none md:ml-0 md:text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]"/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /<svg/);

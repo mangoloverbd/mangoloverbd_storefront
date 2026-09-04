@@ -270,9 +270,9 @@ Currency is always `৳`, never "BDT" or "Tk".
 
 ### Known branding gaps
 
-Not yet cleaned up in `client/index.html`: both meta descriptions still mention "Stepprs",
-`twitter:site` is `@stepprs`, `og:image` points at `/favicon.png`, and there is a `preconnect` to an
-unrelated Supabase project. Also, no loaded webfont contains Bengali glyphs — the Bangla wordmark
+Template cleanup is done (Stepprs fallback, makeup-template components and their
+orphaned media removed; canonical Mango Lover meta in `client/index.html`).
+Still open: no loaded webfont contains Bengali glyphs — the Bangla wordmark
 falls back to a system font. Adding Hind Siliguri or Anek Bangla would fix that.
 
 ---

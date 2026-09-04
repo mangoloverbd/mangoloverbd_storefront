@@ -270,11 +270,15 @@ scale — `object-cover` or a scale transform crops the lettering.
 New images: optimize before committing. `cwebp -q 90` cut the hero from 2.1 MB to 231 KB with the
 Bangla type still crisp. (`sips -s format webp` silently no-ops on this machine; use `cwebp`.)
 
-Unfinished, safe to pick up: `client/index.html` still carries Stepprs meta descriptions,
-`twitter:site` `@stepprs`, an `og:image` pointing at `/favicon.png`, and a `preconnect` to an
-unrelated Supabase project. No loaded webfont has Bengali glyphs, so the Bangla wordmark falls back
-to a system font — Hind Siliguri or Anek Bangla would fix it. `client/public/` also holds several MB
-of orphaned hero images from the previous brand.
+Stepprs/template cleanup is done: the hardcoded `stepprs-massage-insoles` fallback in
+`product.tsx`, the Stepprs detail sections, makeup-template components
+(`bundle-section`, `booking-section`, `customer-reviews`, `categories`, `video-reel`)
+and their orphaned media (`hero-insoles.png`, `insoles.png`, `peptide-lip-benefits.png`,
+`vid_0*.mp4`, unreferenced `AQP*.mp4`, `makeup_pen_4_in_1.png`, `peptide_lip_tint_*.png`)
+were removed, and `client/index.html` now uses canonical Mango Lover meta with
+`https://www.mangolover.com.bd/` OG URLs.
+No loaded webfont has Bengali glyphs, so the Bangla wordmark falls back
+to a system font — Hind Siliguri or Anek Bangla would fix it.
 
 ---
 
