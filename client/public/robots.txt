@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.mangolover.com.bd/sitemap.xml

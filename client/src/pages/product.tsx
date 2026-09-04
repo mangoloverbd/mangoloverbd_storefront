@@ -33,24 +33,6 @@ import {
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 
-const staticProduct: StorefrontProduct = {
-  id: "stepprs-massage-insoles",
-  name: "Stepprs Massage Insoles",
-  slug: "stepprs-massage-insoles",
-  description: "Instant pain relief in every step. Engineered with targeted massage nodes, biomechanical arch support, and breathable vents. Trimmable for a perfect fit.",
-  image_url: "/hero-insoles.png",
-  price: 500,
-  compare_at_price: null,
-  available: true,
-  stock_quantity: 1,
-};
-
-const staticBundles = [
-  { id: 1, title: "1 Pair", price: "৳500", amount: 500 },
-  { id: 2, title: "2 Pairs", price: "৳850", amount: 850 },
-  { id: 3, title: "3 Pairs", price: "৳1350", amount: 1350 },
-];
-
 // Use the direct catalog image URL. Vercel's image optimizer currently
 // rejects these Supabase URLs in production (INVALID_IMAGE_OPTIMIZE_REQUEST),
 // so we skip it and rely on Supabase's own CDN.
@@ -91,7 +73,7 @@ function useReveal() {
 }
 
 function getMerchantSlug(slug: string) {
-  return slug === "massage-insoles" ? staticProduct.slug : slug || staticProduct.slug;
+  return slug || "";
 }
 
 function formatTimelineDate(date: Date) {
@@ -219,7 +201,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 
-  const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug) || staticProduct;
+  const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug);
   const product = mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
 
   const relatedSource =
@@ -228,14 +210,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     .filter((p) => p.slug !== product?.slug)
     .slice(0, 8);
   const bundles = (() => {
-    if (slug === "stepprs-massage-insoles") return staticBundles;
     const variants = product?.variants?.filter((variant) => {
       if (variant.available === false) return false;
       return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
     });
     if (variants?.length) {
       return variants.map((variant, i) => {
-        const amount = Number.isFinite(Number(variant.price)) ? Number(variant.price) : Number(product.price) || 0;
+        const amount = Number.isFinite(Number(variant.price)) ? Number(variant.price) : Number(product?.price) || 0;
         return {
           id: i + 1,
           title: String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default"),
@@ -244,7 +225,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         };
       });
     }
-    const base = Number(product.price) || 0;
+    const base = Number(product?.price) || 0;
     return [{ id: 1, title: "Default", price: `৳${base.toLocaleString()}`, amount: base }];
   })();
   const selectedBundle = bundles[selectedBundleIdx] ?? bundles[0];
@@ -253,23 +234,23 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     return label === selectedBundle.title;
   }) || null;
   const productAnalyticsItem = useMemo(() => toGoogleAnalyticsItem({
-    id: selectedVariant?.id ?? product.id ?? product.slug,
-    name: product.name,
+    id: selectedVariant?.id ?? product?.id ?? product?.slug ?? slug,
+    name: product?.name ?? slug,
     variant: selectedBundle.title === "Default" ? null : selectedBundle.title,
     price: selectedBundle.amount,
     quantity: 1,
-  }), [product.id, product.name, product.slug, selectedBundle.amount, selectedBundle.title, selectedVariant?.id]);
-  const productImage = product.image_url || "";
+  }), [product?.id, product?.name, product?.slug, slug, selectedBundle.amount, selectedBundle.title, selectedVariant?.id]);
+  const productImage = product?.image_url || "";
   const merchantAvailabilityKnown = isFetched || isError;
   const merchantProductUnavailable = merchantAvailabilityKnown && (!merchantProduct || merchantProduct.available === false);
   const inventoryUnavailable = merchantInventory?.inventory ? !isProductOrderable(product) : false;
   const merchantUnavailable = merchantProductUnavailable || inventoryUnavailable;
   const isUnavailable = availabilityBlocked || merchantUnavailable;
-  const gallery = getProductGallery(product);
-  const displayImage = getProductImage(product) || productImage;
+  const gallery = product ? getProductGallery(product) : [];
+  const displayImage = (product ? getProductImage(product) : "") || productImage;
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
-  const isLoading = !merchantAvailabilityKnown && !cachedProduct;
-  const compareAtAmount = Number(product.compare_at_price);
+  const isLoading = !merchantAvailabilityKnown && !cachedProduct && !generatedProduct;
+  const compareAtAmount = Number(product?.compare_at_price);
   const detailSections = getProductDetailSections(product);
   const [openSection, setOpenSection] = useState(0);
 
@@ -326,7 +307,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [isFetched, merchantProduct, slug]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !product) return;
     const googleViewKey = product.slug;
     if (viewedGoogleItemRef.current !== googleViewKey) {
       viewedGoogleItemRef.current = googleViewKey;
@@ -350,7 +331,77 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         contents: [{ id: product.slug, quantity: 1, item_price: selectedBundle.amount }],
       },
     });
-  }, [isLoading, product.slug, productAnalyticsItem, selectedBundle.amount]);
+  }, [isLoading, product, productAnalyticsItem, selectedBundle.amount]);
+
+  // SEO: per-product title/meta/OG + JSON-LD so crawlers index real mango
+  // products. Unknown slugs get noindex instead of a fake Stepprs fallback.
+  useEffect(() => {
+    if (isLoading) return;
+    const siteUrl = "https://www.mangolover.com.bd";
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.head.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        if (selector.includes('property="')) {
+          el.setAttribute("property", selector.split('property="')[1].split('"')[0]);
+        } else if (selector.includes('name="')) {
+          el.setAttribute("name", selector.split('name="')[1].split('"')[0]);
+        }
+        document.head.appendChild(el);
+      }
+      el.setAttribute(attr, value);
+    };
+    // Clean up previously injected product JSON-LD.
+    document.head.querySelectorAll('script[data-seo="product"]').forEach((n) => n.remove());
+    document.head.querySelectorAll('link[data-seo="canonical"]').forEach((n) => n.remove());
+    if (!product) {
+      document.title = "Product not found | ম্যাংগো লাভার - Mango Lover";
+      setMeta('meta[name="robots"]', "content", "noindex, follow");
+      return;
+    }
+    const price = Number(selectedBundle.amount) || Number(product.price) || 0;
+    const desc = (product.description || "ম্যাংগো লাভার — Mango Lover BD. Fresh, authentic products delivered across Bangladesh.").slice(0, 160);
+    const title = `${product.name} | ম্যাংগো লাভার - Mango Lover`;
+    const url = `${siteUrl}/product/${product.slug}`;
+    document.title = title;
+    setMeta('meta[name="description"]', "content", desc);
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[property="og:description"]', "content", desc);
+    setMeta('meta[property="og:type"]', "content", "product");
+    setMeta('meta[property="og:url"]', "content", url);
+    if (displayImage) {
+      setMeta('meta[property="og:image"]', "content", displayImage);
+      setMeta('meta[name="twitter:image"]', "content", displayImage);
+    }
+    setMeta('meta[name="twitter:title"]', "content", title);
+    setMeta('meta[name="twitter:description"]', "content", desc);
+    setMeta('meta[name="robots"]', "content", "index, follow");
+    const link = document.createElement("link");
+    link.rel = "canonical";
+    link.href = url;
+    link.setAttribute("data-seo", "canonical");
+    document.head.appendChild(link);
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.setAttribute("data-seo", "product");
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      description: desc,
+      image: displayGallery.length ? displayGallery : undefined,
+      url,
+      brand: { "@type": "Brand", name: "Mango Lover" },
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "BDT",
+        price: String(price),
+        availability: isProductOrderable(product) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        url,
+      },
+    });
+    document.head.appendChild(script);
+  }, [isLoading, product, selectedBundle.amount, displayImage, displayGallery]);
 
   useEffect(() => {
     if (!galleryApi) return;
@@ -383,18 +434,34 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     { title: "ডেলিভারি", date: formatTimelineDate(deliveredDate) },
   ];
 
-  const orderBundle: OrderDialogBundle = {
+  const orderBundle: OrderDialogBundle | null = product ? {
         title: product.name,
         details: selectedBundle.title,
         price: selectedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
         analyticsItems: [productAnalyticsItem],
-      };
+      } : null;
 
   if (isLoading) {
     return (
       <Layout>
         <ProductSkeleton />
+      </Layout>
+    );
+  }
+
+  if (!product || !orderBundle) {
+    return (
+      <Layout>
+        <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-brand-ivory px-6 text-center">
+          <h1 className="text-2xl font-semibold text-black">Product not found</h1>
+          <p className="max-w-md text-sm text-black/60">
+            This product is no longer available. Browse fresh mangoes, honey, ghee and more.
+          </p>
+          <Link href="/products" className="rounded-[8px] bg-black px-6 py-3 text-[11px] font-bold uppercase tracking-[0.25em] text-white">
+            Browse products
+          </Link>
+        </div>
       </Layout>
     );
   }

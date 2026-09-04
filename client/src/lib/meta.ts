@@ -29,12 +29,13 @@ function getFbcFromLocation() {
 
 function getBrowserId() {
   if (typeof window === "undefined") return "";
-  const storageKey = "stepprs-meta-browser-id";
-  const existing = window.localStorage.getItem(storageKey);
+  const storageKey = "mango-lover-meta-browser-id";
+  const existing = window.localStorage.getItem(storageKey) ?? window.localStorage.getItem("stepprs-meta-browser-id");
   if (existing) return existing;
 
   const next = createEventId();
   window.localStorage.setItem(storageKey, next);
+  window.localStorage.removeItem("stepprs-meta-browser-id");
   return next;
 }
 

@@ -36,7 +36,7 @@ const MERCHANT_SUITE_URL = process.env.NODE_ENV === "production"
 if (!MERCHANT_SUITE_URL) {
   throw new Error("MERCHANT_SUITE_URL environment variable is not set");
 }
-const CUSTOM_ORDERS_API_KEY = process.env.CUSTOM_ORDERS_API_KEY ?? "stepprsbangladesh-098765";
+const CUSTOM_ORDERS_API_KEY = process.env.CUSTOM_ORDERS_API_KEY ?? "";
 
 function createOrderRef() {
   const timestamp = Date.now().toString().slice(-8);

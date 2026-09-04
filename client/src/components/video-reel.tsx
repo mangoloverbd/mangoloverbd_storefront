@@ -51,7 +51,7 @@ export default function VideoReel() {
 
                     <div className="flex flex-col items-end gap-3 text-right">
                         <span className="text-[8px] md:text-[10px] normal-case tracking-[0.35em] md:tracking-[0.6em] font-bold text-brand-gold">
-                            Stepprs
+                            Mango Lover
                         </span>
                         <span className="h-px w-10 md:w-20 bg-black/15" />
                         <span className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.5em] font-medium text-black/35">

@@ -91,20 +91,6 @@ export const productDetailSections: Record<string, ProductDetailSection[]> = {
       ],
     },
   ],
-  "stepprs-massage-insoles": [
-    {
-      label: "Core Feature",
-      details: ["Targeted Massage Nodes"],
-    },
-    {
-      label: "Support & Comfort",
-      details: ["Biomechanical Arch Support", "Thick Heel Cup & Cushioning"],
-    },
-    {
-      label: "Fit & Material",
-      details: ["Trimmable to Fit", "Breathable Vents"],
-    },
-  ],
 };
 
 export function getProductDetailSections(

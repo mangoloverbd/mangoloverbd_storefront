@@ -93,7 +93,7 @@ async function processOrder(order: OrderRequest) {
     if (!merchantSuiteUrl) {
       throw new Error("MERCHANT_SUITE_URL environment variable is not set");
     }
-    const customOrdersApiKey = process.env.CUSTOM_ORDERS_API_KEY ?? "stepprsbangladesh-098765";
+    const customOrdersApiKey = process.env.CUSTOM_ORDERS_API_KEY ?? "";
     const response = await fetch(`${merchantSuiteUrl}/api/custom-orders/webhook`, {
       method: "POST",
       headers: {

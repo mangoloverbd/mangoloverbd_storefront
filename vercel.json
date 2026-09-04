@@ -1,4 +1,41 @@
 {
+  "redirects": [
+    {
+      "source": "/product/stepprs-massage-insoles",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/massage-insoles",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/4-in-1-makeup-pen",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/bordeaux",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/plum-veil",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/rosy-bloom",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/product/mauve-nude",
+      "destination": "/products",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api(?:/|$)|assets(?:/|$)|.*\\.[^/]+$).*)",
