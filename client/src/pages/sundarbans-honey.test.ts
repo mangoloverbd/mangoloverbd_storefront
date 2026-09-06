@@ -181,7 +181,8 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
 test("hero is full-bleed honeycomb art with minimal copy and a highlight CTA", () => {
   assert.match(sectionsSource, /sundarbans-honeycomb-hero-v1\.webp/);
   assert.doesNotMatch(sectionsSource, /sundarbans-river-hero-mobile-v1\.webp/);
-  assert.match(sectionsSource, /object-cover/);
+  assert.match(sectionsSource, /object-contain/);
+  assert.doesNotMatch(sectionsSource, /object-cover/);
   assert.match(sectionsSource, /aria-hidden="true"/);
   assert.match(sectionsSource, /variant="highlight"/);
   assert.match(sectionsSource, /bg-\[#FFD60A\]/);

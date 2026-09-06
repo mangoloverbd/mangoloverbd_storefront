@@ -78,12 +78,12 @@ function PointList({ points }: { points: HoneyNarrativePoint[] }) {
 export function DocumentarySections({ productImageUrl, onOrderClick }: DocumentarySectionsProps) {
   return (
     <>
-      <section aria-labelledby="honey-hero-heading" className="relative overflow-hidden bg-[#f2a200] text-[#3d2800]">
+      <section aria-labelledby="honey-hero-heading" className="relative overflow-hidden bg-gradient-to-b from-[#f2a200] via-[#f6b90c] to-[#f4ecd9] text-[#3d2800]">
         <img
           src="/step/sundarbans-natural-honey/sundarbans-honeycomb-hero-v1.webp"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain"
           fetchPriority="high"
           decoding="async"
         />
