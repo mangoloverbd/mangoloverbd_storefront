@@ -1,4 +1,16 @@
-export type GoogleEcommerceEventName = "view_item" | "add_to_cart" | "begin_checkout" | "purchase";
+export type GoogleEcommerceEventName =
+  | "view_item"
+  | "select_item"
+  | "add_to_cart"
+  | "begin_checkout"
+  | "purchase";
+
+export type GoogleInteractionEventName =
+  | "campaign_view"
+  | "landing_cta_click"
+  | "whatsapp_click"
+  | "phone_click"
+  | "checkout_error";
 
 export type GoogleAnalyticsItem = {
   item_id: string;
@@ -171,6 +183,22 @@ export function trackGoogleEcommerceEvent(
 
   const { event: _event, ...gtagPayload } = payload;
   browserTarget.gtag?.("event", event, gtagPayload);
+
+  return payload;
+}
+
+export function trackGoogleInteractionEvent(
+  event: GoogleInteractionEventName,
+  parameters: Record<string, string | number | boolean>,
+  target?: GoogleAnalyticsWindow,
+) {
+  const browserTarget = getBrowserTarget(target);
+  if (!browserTarget) return null;
+
+  const payload = { event, ...parameters };
+  browserTarget.dataLayer = browserTarget.dataLayer || [];
+  browserTarget.dataLayer.push(payload);
+  browserTarget.gtag?.("event", event, parameters);
 
   return payload;
 }

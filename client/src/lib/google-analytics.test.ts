@@ -5,7 +5,9 @@ import {
   parseCurrencyAmount,
   toGoogleAnalyticsItem,
   trackGoogleEcommerceEvent,
+  trackGoogleInteractionEvent,
   type GoogleAnalyticsWindow,
+  type GoogleEcommerceEventName,
 } from "./google-analytics.ts";
 
 test("normalizes storefront items into the merchant team's GA4 item shape", () => {
@@ -135,6 +137,62 @@ test("pushes clean dataLayer objects and sends direct GA4 ecommerce events", () 
       ],
     }],
   ]);
+});
+
+test("pushes custom interactions to both dataLayer and direct GA4", () => {
+  const gtagCalls: unknown[][] = [];
+  const target: GoogleAnalyticsWindow = {
+    dataLayer: [],
+    gtag: (...args: unknown[]) => gtagCalls.push(args),
+  };
+
+  const payload = trackGoogleInteractionEvent("landing_cta_click", {
+    campaign: "sundarbans_natural_honey",
+    placement: "hero",
+  }, target);
+
+  assert.deepEqual(payload, {
+    event: "landing_cta_click",
+    campaign: "sundarbans_natural_honey",
+    placement: "hero",
+  });
+  assert.deepEqual(target.dataLayer, [payload]);
+  assert.deepEqual(gtagCalls, [["event", "landing_cta_click", {
+    campaign: "sundarbans_natural_honey",
+    placement: "hero",
+  }]]);
+});
+
+test("uses the GA4 select_item ecommerce shape for a selected live pack", () => {
+  const event: GoogleEcommerceEventName = "select_item";
+  const target: GoogleAnalyticsWindow = {
+    dataLayer: [],
+    location: new URL("https://mangoloverbd.vercel.app/step/sundarbans-natural-honey"),
+    document: { title: "Sundarbans Honey", documentElement: { lang: "bn" } },
+  };
+
+  const payload = trackGoogleEcommerceEvent(event, {
+    pageType: "product",
+    value: 1600,
+    items: [toGoogleAnalyticsItem({
+      id: "honey-1kg",
+      name: "Sundarbans Natural Honey",
+      variant: "1KG",
+      price: 1600,
+      quantity: 2,
+    })],
+  }, target);
+
+  assert.deepEqual(payload?.items, [{
+    item_id: "honey-1kg",
+    item_name: "Sundarbans Natural Honey — 1KG",
+    item_brand: "Mango Lover BD",
+    item_variant: "1KG",
+    price: 1600,
+    quantity: 2,
+  }]);
+  assert.equal(payload?.event, "select_item");
+  assert.equal(payload?.value, 1600);
 });
 
 test("parses visible taka prices into GA4 numbers", () => {
