@@ -1,13 +1,30 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
-import { processOrder, orderRequestSchema } from "./order-service";
-import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "./meta-capi";
+import {
+  OrderUpstreamError,
+  processOrder,
+  orderRequestSchema,
+  shouldSendMetaPurchase,
+  type OrderRequest,
+} from "./order-service.ts";
+import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "./meta-capi.ts";
+
+type RouteDependencies = {
+  processOrder?: (order: OrderRequest) => Promise<{ orderRef: string }>;
+  getMetaUserDataFromRequest?: typeof getMetaUserDataFromRequest;
+  sendMetaCapiEvent?: typeof sendMetaCapiEvent;
+};
 
 export async function registerRoutes(
   httpServer: Server,
-  app: Express
+  app: Express,
+  dependencies: RouteDependencies = {},
 ): Promise<Server> {
+  const process = dependencies.processOrder ?? processOrder;
+  const getMetaUserData = dependencies.getMetaUserDataFromRequest ?? getMetaUserDataFromRequest;
+  const sendMetaEvent = dependencies.sendMetaCapiEvent ?? sendMetaCapiEvent;
+
   app.post("/api/meta", async (req, res, next) => {
     try {
       const body = req.body as {
@@ -27,11 +44,11 @@ export async function registerRoutes(
         return;
       }
 
-      const result = await sendMetaCapiEvent({
+      const result = await sendMetaEvent({
         event_name: body.event_name,
         event_id: body.event_id,
         event_source_url: body.event_source_url,
-        user_data: getMetaUserDataFromRequest({
+        user_data: getMetaUserData({
           headers: req.headers as unknown as Record<string, unknown>,
           eventSourceUrl: body.event_source_url,
           browserUserData: body.user_data,
@@ -48,40 +65,46 @@ export async function registerRoutes(
   app.post("/api/orders", async (req, res, next) => {
     try {
       const order = orderRequestSchema.parse(req.body);
-      const result = await processOrder(order);
+      const result = await process(order);
 
-      // Fire-and-forget Purchase CAPI (do not block checkout).
-      void sendMetaCapiEvent({
-        event_name: "Purchase",
-        event_id: (req.body as any)?.metaEventId,
-        event_source_url: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
-        user_data: getMetaUserDataFromRequest({
-          headers: req.headers as unknown as Record<string, unknown>,
-          customerName: order.customerName,
-          phone: order.phone,
-        }),
-        custom_data: {
-          currency: "BDT",
-          value: order.bundlePrice + order.deliveryCharge,
-          content_type: "product",
-          contents: [{
-            id: order.bundleTitle,
-            quantity: order.quantity,
-            item_price: order.bundlePrice / order.quantity,
-          }],
-          order_id: result.orderRef,
-        },
-      }).catch((error) => {
-        console.error("Meta Purchase CAPI failed:", error);
-      });
+      if (shouldSendMetaPurchase(order)) {
+        // Fire-and-forget Purchase CAPI (do not block checkout).
+        void sendMetaEvent({
+          event_name: "Purchase",
+          event_id: order.metaEventId,
+          event_source_url: `${req.protocol}://${req.get("host")}${req.originalUrl}`,
+          user_data: getMetaUserData({
+            headers: req.headers as unknown as Record<string, unknown>,
+            customerName: order.customerName,
+            phone: order.phone,
+          }),
+          custom_data: {
+            currency: "BDT",
+            value: order.bundlePrice + order.deliveryCharge,
+            content_type: "product",
+            contents: [{
+              id: order.bundleTitle,
+              quantity: order.quantity,
+              item_price: order.bundlePrice / order.quantity,
+            }],
+            order_id: result.orderRef,
+          },
+        }).catch(() => {
+          console.warn("Meta Purchase CAPI failed");
+        });
+      }
 
-      res.status(201).json(result);
+      res.status(201).json({ orderRef: result.orderRef });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({
           message: "Invalid order details",
-          errors: error.flatten().fieldErrors,
         });
+        return;
+      }
+
+      if (error instanceof OrderUpstreamError) {
+        res.status(502).json({ message: "Could not confirm order. Please try again." });
         return;
       }
 
