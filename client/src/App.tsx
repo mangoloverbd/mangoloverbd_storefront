@@ -10,6 +10,9 @@ import Home from "@/pages/home";
 import ProductPage from "@/pages/product";
 import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
+import SundarbansHoneyPage from "@/pages/sundarbans-honey";
+import SundarbansHoneyThankYouPage from "@/pages/sundarbans-honey-thank-you";
+import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
@@ -48,6 +51,7 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
+  const googleOnlyCampaign = isGoogleOnlyCampaignPath(location);
   const scrollPositions = useRef(new Map<string, number>());
   const currentLocation = useRef(location);
   const isHistoryNavigation = useRef(false);
@@ -62,12 +66,16 @@ function Router() {
   };
 
   useEffect(() => {
-    initMetaPixel();
-  }, []);
+    if (!googleOnlyCampaign) {
+      initMetaPixel();
+    }
+  }, [googleOnlyCampaign]);
 
   useEffect(() => {
-    trackMetaEvent({ eventName: "PageView", eventId: createEventId(), capi: true });
-  }, [location]);
+    if (!googleOnlyCampaign) {
+      trackMetaEvent({ eventName: "PageView", eventId: createEventId(), capi: true });
+    }
+  }, [googleOnlyCampaign, location]);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -151,6 +159,12 @@ function Router() {
   return (
     <AnimatePresence>
       <Switch location={location} key={location}>
+        <Route path="/step/sundarbans-natural-honey/thank-you">
+          <PageTransition><SundarbansHoneyThankYouPage /></PageTransition>
+        </Route>
+        <Route path="/step/sundarbans-natural-honey">
+          <PageTransition><SundarbansHoneyPage /></PageTransition>
+        </Route>
         <Route path="/">
           <PageTransition>
             <Home />
