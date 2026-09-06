@@ -1,4 +1,5 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
+import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 
 export const HONEY_DELIVERY_CHARGE = 100;
 export const HONEY_CONFIRMATION_KEY = "sundarbans-honey-order-confirmation-v1";
@@ -65,7 +66,7 @@ function requiredTrimmedString(value: unknown, maxLength: number, field: string)
 }
 
 export function getHoneyPackOptions(product: StorefrontProduct): HoneyPackOption[] {
-  if (product.available === false) return [];
+  if (!isProductOrderable(product)) return [];
 
   return (product.variants ?? []).flatMap((variant) => {
     if (variant.available === false) return [];

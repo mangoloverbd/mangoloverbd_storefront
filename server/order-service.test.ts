@@ -36,6 +36,11 @@ test("accepts exactly 11 English phone digits", () => {
   assert.equal(order.phone, "01712345678");
 });
 
+test("trims whitespace around an otherwise valid phone number", () => {
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, phone: " 01712345678 " });
+  assert.equal(order.phone, "01712345678");
+});
+
 test("rejects Bengali phone digits", () => {
   assert.throws(() => orderRequestSchema.parse(validOrder));
 });

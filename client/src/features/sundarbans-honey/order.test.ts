@@ -69,6 +69,10 @@ test("omits packs that cannot be safely ordered without substituting a base pric
   }), []);
 });
 
+test("returns no pack options when product-level stock is sold out", () => {
+  assert.deepEqual(getHoneyPackOptions({ ...product, stock_quantity: 0 }), []);
+});
+
 test("calculates exact integer taka totals with the fixed delivery charge", () => {
   assert.deepEqual(calculateHoneyOrder(1600, 2), {
     unitPrice: 1600,

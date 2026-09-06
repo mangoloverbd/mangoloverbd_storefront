@@ -10,7 +10,7 @@ export const orderRequestSchema = z.object({
   quantity: z.number().int().min(1).max(100).refine(Number.isSafeInteger),
   deliveryCharge: z.number().int().min(0).max(100_000).refine(Number.isSafeInteger),
   customerName: z.string().trim().min(2).max(120),
-  phone: z.string().regex(/^\d{11}$/, "Phone number must contain exactly 11 English digits"),
+  phone: z.string().trim().regex(/^\d{11}$/, "Phone number must contain exactly 11 English digits"),
   address: z.string().trim().min(5).max(500),
   paymentMethod: z.enum(["cash_on_delivery", "bkash"]).default("cash_on_delivery"),
   bkashTrxId: z.string().trim().max(80).optional().default(""),

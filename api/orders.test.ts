@@ -26,6 +26,10 @@ test("retains a positive whole-number quantity", () => {
   assert.equal(validateOrder(validOrder).quantity, 3);
 });
 
+test("trims whitespace around an otherwise valid phone number", () => {
+  assert.equal(validateOrder({ ...validOrder, phone: " 01712345678 " }).phone, "01712345678");
+});
+
 test("rejects invalid quantities", () => {
   const { quantity: _quantity, ...withoutQuantity } = validOrder;
   assert.throws(() => validateOrder(withoutQuantity));
