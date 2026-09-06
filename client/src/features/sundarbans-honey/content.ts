@@ -82,7 +82,7 @@ export const journeyStages: HoneyNarrativePoint[] = [
   },
   {
     title: "প্রাকৃতিক মৌচাক",
-    text: "গাছের ডালে বুনো মৌমাছির বড় চাকে এই মধু জমে—কোনো কৃত্রিম খামারের মধু নয়।",
+    text: "গাছের ডালে বুনো মৌমাছির বড় চাকে জমা মধু—প্রাকৃতিক মৌচাক থেকে সংগ্রহ করা মধু।",
   },
   {
     title: "সংগ্রহ ও বোতলজাত",
@@ -102,8 +102,8 @@ export const whyMangoLoverPoints: HoneyNarrativePoint[] = [
     text: "কোন বনের কোন প্রক্রিয়ায় মধু এলো—লুকোছাপা ছাড়াই জানিয়ে দিই।",
   },
   {
-    title: "সংগ্রহ প্রক্রিয়ার সত্য বর্ণনা",
-    text: "মাঠপর্যায়ে যেভাবে সংগ্রহ হয়, ঠিক সেভাবেই তুলে ধরি।",
+    title: "সংগ্রহ প্রক্রিয়ার বর্ণনা",
+    text: "সংগ্রহ থেকে বোতলজাত পর্যন্ত প্রতিটি ধাপ লিখিতভাবে জানিয়ে দিই।",
   },
   {
     title: "পরিচ্ছন্ন সংগ্রহ ও বোতলজাত",
@@ -125,6 +125,18 @@ export const whyMangoLoverPoints: HoneyNarrativePoint[] = [
 
 export const importantNotesHeading = "গুরুত্বপূর্ণ তথ্য";
 export const checkoutSectionHeading = "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন";
+
+// Reviews ship-gate (spec: Error and edge states). The review section is
+// intentionally omitted until BOTH hold: genuine supplied reviews with display
+// permission AND explicit stakeholder approval to ship with or without them.
+// Approval status: PENDING — do not invent it. Task 9 must not claim the page
+// shippable on reviews without flipping this gate with recorded approval.
+export const honeyReviewsShipGate = {
+  shipped: false,
+  requiresGenuineReviews: true,
+  requiresStakeholderApproval: true,
+  stakeholderApproval: "pending",
+} as const;
 export type HoneyImportantNote = {
   tone: "warning" | "info";
   text: string;

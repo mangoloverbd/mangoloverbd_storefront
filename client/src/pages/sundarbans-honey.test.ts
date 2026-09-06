@@ -172,7 +172,7 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   const combined = `${contentSource}\n${layoutSource}\n${sectionsSource}\n${barSource}\n${pageSource}`;
   assert.doesNotMatch(combined, /autoplay/i);
   assert.doesNotMatch(combined, /<video/i);
-  assert.doesNotMatch(sectionsSource, /review/i);
+  assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
   assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 1);
@@ -239,4 +239,22 @@ test("missing authentic media is documented per asset, not fabricated", () => {
     assert.ok(attributionSource.includes(asset), `ATTRIBUTION.md must track ${asset}`);
   }
   assert.match(attributionSource, /pending/i);
+});
+
+test("fix round 1: no fabricated-proof-adjacent claims without shipped media", () => {
+  const combined = `${contentSource}\n${sectionsSource}\n${pageSource}`;
+  assert.doesNotMatch(combined, /ঠিক সেভাবেই তুলে ধরি/);
+  assert.doesNotMatch(combined, /সত্য বর্ণনা/);
+  assert.match(contentSource, /সংগ্রহ প্রক্রিয়ার বর্ণনা/);
+  assert.doesNotMatch(combined, /কৃত্রিম খামার/);
+  assert.match(contentSource, /প্রাকৃতিক মৌচাক থেকে সংগ্রহ করা মধু/);
+});
+
+test("fix round 1: reviews omission is gated on approval, not auto-shippable", () => {
+  assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
+  assert.match(sectionsSource, /intentionally omitted/i);
+  assert.match(contentSource, /shipped: false/);
+  assert.match(contentSource, /stakeholder approval/i);
+  assert.match(attributionSource, /stakeholder approval/i);
+  assert.match(attributionSource, /not auto-shippable/i);
 });

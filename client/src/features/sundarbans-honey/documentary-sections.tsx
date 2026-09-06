@@ -202,6 +202,10 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
         </div>
       </section>
 
+      {/* Customer reviews intentionally omitted: no genuine reviews supplied yet,
+          and shipping without them needs explicit stakeholder approval (see
+          honeyReviewsShipGate in content.ts and ATTRIBUTION.md). */}
+
       <section
         aria-labelledby="honey-notes-heading"
         className="mx-auto max-w-5xl px-4 py-12 sm:px-6"

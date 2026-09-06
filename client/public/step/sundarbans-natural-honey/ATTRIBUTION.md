@@ -28,6 +28,15 @@ No files processed yet. When originals arrive, process per the Task 8 brief
 video, poster extracted at 00:00:01) and record source, permission, and edits
 here.
 
+## Reviews ship-gate (explicit approval required)
+
+The omitted review section is not auto-shippable. Per the spec (Error and
+edge states), shipping without genuine reviews needs explicit stakeholder approval. Status: pending — no approval invented or assumed. Code gate:
+`honeyReviewsShipGate` in
+`client/src/features/sundarbans-honey/content.ts` (`shipped: false`). Task 9
+must not claim shippable without flipping that gate with both genuine reviews
+and recorded approval.
+
 ## First asset request
 
 Please supply, individually:
