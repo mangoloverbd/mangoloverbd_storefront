@@ -175,7 +175,14 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 2);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 3);
+});
+
+test("why-special section shows the supplied infographic with screen-reader text", () => {
+  assert.match(sectionsSource, /sundarbans-why-special-infographic-v1\.webp/);
+  assert.match(sectionsSource, /loading="lazy"/);
+  assert.match(sectionsSource, /sr-only/);
+  assert.match(sectionsSource, /whySpecialPoints\.map/);
 });
 
 test("hero is full-bleed honeycomb art with minimal copy and a highlight CTA", () => {

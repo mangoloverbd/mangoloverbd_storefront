@@ -124,12 +124,26 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
       </section>
 
       <section aria-labelledby="honey-why-heading" className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-        <h2 id="honey-why-heading" className="text-2xl font-bold text-[#19382d] sm:text-3xl">
+        <h2 id="honey-why-heading" className="text-balance text-2xl font-bold text-[#19382d] sm:text-3xl">
           {whySpecialHeading}
         </h2>
-        <div className="mt-6">
-          <PointList points={whySpecialPoints} />
-        </div>
+        <img
+          src="/step/sundarbans-natural-honey/sundarbans-why-special-infographic-v1.webp"
+          alt=""
+          aria-hidden="true"
+          width={1122}
+          height={1402}
+          loading="lazy"
+          decoding="async"
+          className="mx-auto mt-6 w-full max-w-xl rounded-3xl"
+        />
+        <ul className="sr-only">
+          {whySpecialPoints.map((point) => (
+            <li key={point.title}>
+              {point.title}: {point.text}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section

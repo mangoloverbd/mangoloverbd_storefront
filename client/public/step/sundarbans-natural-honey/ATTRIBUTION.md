@@ -15,6 +15,7 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 | `sundarbans-river-hero-v1.webp` | Sundarbans river/forest hero original, at least 2400px wide | pending — no original supplied |
 | `sundarbans-river-hero-mobile-v1.webp` | Mobile-only river illustration (AI-generated) | superseded 2026-09-07 — file deleted, replaced by honeycomb hero below |
 | `sundarbans-honeycomb-hero-v1.webp` | Full-bleed hero art (honeycomb, hive, bees, honey stack illustration) | shipped — AI-generated file supplied by stakeholder 2026-09-07, used as decorative art; NOT an authentic photograph, never presented as proof of origin |
+| `sundarbans-why-special-infographic-v1.webp` | "Why special" infographic (hive, bees, 5 Bangla points, illustrative bottle + box render) | shipped — AI-generated file supplied by stakeholder 2026-09-07. Bottle/box are illustrative recreations, NOT real packaging photos; real bottle photo stays the live catalog image. Baked-in Bangla copy mirrored in a screen-reader-only list beside the image. |
 | `sundarbans-hive-v1.webp` | Real natural hive photo | pending — no original supplied |
 | `sundarbans-collection-v1.webp` | Real honey collection photo | pending — no original supplied |
 | `sundarbans-collection-poster-v1.webp` | Poster frame for the collection video | pending — no original supplied |
@@ -24,6 +25,8 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 | `review-01-v1.webp` through `review-04-v1.webp` | Three or four genuine reviews plus display permission | pending — review section omitted until supplied; never commit private/unredacted review material |
 
 ## Processing log
+
+- 2026-09-07 `sundarbans-why-special-infographic-v1.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 02_08_59 AM.webp` (1122×1402, 305 KB, AI-generated, Bangla copy baked in). Processed with `cwebp -q 86 -metadata none` → 1122×1402 kept, 179 KB, metadata stripped. Below-fold (`loading="lazy"`, explicit dimensions) with sr-only text mirror.
 
 - 2026-09-07 `sundarbans-honeycomb-hero-v1.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 01_48_08 AM.webp` (1122×1402, 260 KB, AI-generated, no baked-in text). Processed with `cwebp -q 88 -metadata none` → 1122×1402 kept, 179 KB, metadata stripped. Full-bleed hero background on all breakpoints with cream bottom fade; decorative only.
 - 2026-09-07 `sundarbans-river-hero-mobile-v1.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 01_18_47 AM.webp` (1122×1402, AI-generated, baked-in "Shundarban" lettering). Shipped briefly as mobile-only background, then superseded by the honeycomb hero per stakeholder instruction; file deleted. Entry kept for history. Authentic river/forest photograph still pending.
