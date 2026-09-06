@@ -17,6 +17,12 @@ import {
 import { DISTRICTS, getUpazilas } from "./location-data";
 import { LocationCombobox } from "./location-combobox";
 import {
+  getFirstHoneyInvalidField,
+  getHoneyFocusTargetId,
+  type HoneyCheckoutStatus,
+  type HoneyFieldErrors,
+} from "./honey-checkout-state";
+import {
   HONEY_DELIVERY_CHARGE,
   buildHoneyAddress,
   buildHoneyOrderConfirmation,
@@ -44,13 +50,12 @@ type RefreshQuery<T> = {
 };
 
 type HoneyCheckoutProps = {
-  product: StorefrontProduct;
+  product: StorefrontProduct | null;
+  status: HoneyCheckoutStatus;
   productQuery: RefreshQuery<StorefrontProduct | null>;
   inventoryQuery: RefreshQuery<StorefrontProductInventory>;
+  onRetry: () => void;
 };
-
-type FieldName = "name" | "phone" | "address" | "district" | "upazila" | "pack" | "quantity";
-type FieldErrors = Partial<Record<FieldName, string>>;
 
 type CheckoutFields = {
   name: string;
@@ -62,8 +67,8 @@ type CheckoutFields = {
   quantity: number;
 };
 
-function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): FieldErrors {
-  const errors: FieldErrors = {};
+function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): HoneyFieldErrors {
+  const errors: HoneyFieldErrors = {};
   const district = DISTRICTS.find((option) => option.id === fields.districtId);
   const upazila = getUpazilas(fields.districtId).find((option) => option.id === fields.upazilaId);
 
@@ -128,9 +133,12 @@ function SupportActions({ placement }: { placement: string }) {
   );
 }
 
-export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCheckoutProps) {
+export function HoneyCheckout({ product, status, productQuery, inventoryQuery, onRetry }: HoneyCheckoutProps) {
   const [, setLocation] = useLocation();
-  const packs = useMemo(() => getHoneyPackOptions(product), [product]);
+  const livePacks = useMemo(() => product ? getHoneyPackOptions(product) : [], [product]);
+  const lastPacksRef = useRef(livePacks);
+  if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
+  const packs = status === "ready" ? livePacks : lastPacksRef.current;
   const [selectedVariantId, setSelectedVariantId] = useState(() => packs[0]?.variantId ?? "");
   const [quantity, setQuantity] = useState(1);
   const [name, setName] = useState("");
@@ -138,7 +146,7 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
   const [address, setAddress] = useState("");
   const [districtId, setDistrictId] = useState("");
   const [upazilaId, setUpazilaId] = useState("");
-  const [errors, setErrors] = useState<FieldErrors>({});
+  const [errors, setErrors] = useState<HoneyFieldErrors>({});
   const [announcement, setAnnouncement] = useState("");
   const [requestError, setRequestError] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -146,17 +154,18 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
   const selectedPack = packs.find(({ variantId }) => variantId === selectedVariantId);
+  const presentedPack = status === "ready" ? selectedPack : null;
   const upazilas = getUpazilas(districtId);
-  const totals = selectedPack
+  const totals = presentedPack
     ? calculateHoneyOrder(
-        selectedPack.unitPrice,
+        presentedPack.unitPrice,
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
       )
     : null;
 
   const analyticsItem = (pack: HoneyPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
     id: pack.variantId,
-    name: product.name,
+    name: product?.name ?? "",
     variant: pack.label,
     price: pack.unitPrice,
     quantity: itemQuantity,
@@ -167,7 +176,7 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
   };
 
   const beginCheckout = () => {
-    if (beganCheckoutRef.current || !selectedPack) return;
+    if (beganCheckoutRef.current || status !== "ready" || !selectedPack || !product) return;
     beganCheckoutRef.current = true;
     trackGoogleEcommerceEvent("begin_checkout", {
       pageType: "checkout",
@@ -186,20 +195,38 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
 
   useEffect(() => {
     const initialPack = packs.find(({ variantId }) => variantId === selectedVariantId);
-    if (viewedItemRef.current || !initialPack) return;
+    if (viewedItemRef.current || status !== "ready" || !initialPack || !product) return;
     viewedItemRef.current = true;
     trackGoogleEcommerceEvent("view_item", {
       pageType: "product",
       value: initialPack.unitPrice,
       items: [analyticsItem(initialPack, 1)],
     });
-  }, [packs, selectedVariantId]);
+  }, [packs, product, selectedVariantId, status]);
 
-  const focusFirstInvalidField = (fieldErrors: FieldErrors) => {
-    const firstField = (Object.keys(fieldErrors) as FieldName[])[0];
-    if (!firstField) return;
-    const fieldId = firstField === "pack" ? "honey-pack" : `honey-${firstField}`;
-    requestAnimationFrame(() => document.getElementById(fieldId)?.focus());
+  useEffect(() => {
+    const selectionIsCurrent = livePacks.some(({ variantId }) => variantId === selectedVariantId);
+    if (status !== "ready" || (selectedVariantId && !selectionIsCurrent && beganCheckoutRef.current)) {
+      setErrors((current) => ({ ...current, pack: AVAILABILITY_ERROR }));
+      setAnnouncement(AVAILABILITY_ERROR);
+      return;
+    }
+    setErrors((current) => current.pack === AVAILABILITY_ERROR
+      ? { ...current, pack: undefined }
+      : current);
+    setAnnouncement((current) => current === AVAILABILITY_ERROR ? "" : current);
+  }, [livePacks, selectedVariantId, status]);
+
+  const focusFirstInvalidField = (
+    fieldErrors: HoneyFieldErrors,
+    renderedPacks = packs,
+  ) => {
+    const fieldId = getHoneyFocusTargetId(
+      fieldErrors,
+      selectedVariantId,
+      renderedPacks.map(({ variantId }) => variantId),
+    );
+    if (fieldId) requestAnimationFrame(() => document.getElementById(fieldId)?.focus());
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -211,7 +238,8 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
       setRequestError(false);
-      const firstError = Object.values(nextErrors)[0] ?? "অর্ডারের তথ্য আবার দেখুন।";
+      const firstInvalidField = getFirstHoneyInvalidField(nextErrors);
+      const firstError = (firstInvalidField ? nextErrors[firstInvalidField] : null) ?? "অর্ডারের তথ্য আবার দেখুন।";
       setAnnouncement(firstError);
       focusFirstInvalidField(nextErrors);
       trackCheckoutError("validation");
@@ -251,7 +279,7 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
         const availabilityErrors = { pack: AVAILABILITY_ERROR };
         setErrors(availabilityErrors);
         setAnnouncement(AVAILABILITY_ERROR);
-        focusFirstInvalidField(availabilityErrors);
+        focusFirstInvalidField(availabilityErrors, freshPacks);
         trackCheckoutError("availability");
         return;
       }
@@ -301,17 +329,17 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
     }
   };
 
-  if (!packs.length) {
+  if (status === "loading") {
     return (
-      <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-6 sm:p-8" aria-labelledby="honey-checkout-title">
-        <h2 id="honey-checkout-title" className="text-2xl font-bold text-[#19382d]" tabIndex={-1}>
-          অর্ডার করুন
-        </h2>
-        <p className="mt-3 text-[#654b2f]">এই মুহূর্তে কোনো প্যাক অর্ডারের জন্য পাওয়া যাচ্ছে না। সরাসরি যোগাযোগ করুন।</p>
-        <div className="mt-5"><SupportActions placement="checkout_unavailable" /></div>
+      <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-6" aria-label="অর্ডারের তথ্য লোড হচ্ছে">
+        <div className="h-6 w-36 animate-pulse rounded bg-[#dfd2b5] motion-reduce:animate-none" />
+        <div className="mt-4 h-12 w-full animate-pulse rounded-xl bg-[#ebe0c8] motion-reduce:animate-none" />
+        <span className="sr-only">অর্ডারের তথ্য লোড হচ্ছে…</span>
       </section>
     );
   }
+
+  const showAvailabilityRecovery = status !== "ready" || errors.pack === AVAILABILITY_ERROR;
 
   return (
     <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-5 shadow-[0_24px_70px_rgba(50,35,16,0.10)] sm:p-8" aria-labelledby="honey-checkout-title">
@@ -340,10 +368,13 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
                 >
                   <span className="flex items-center gap-3">
                     <input
+                      id={`honey-pack-${pack.variantId}`}
                       type="radio"
                       name="pack"
                       value={pack.variantId}
                       checked={selectedVariantId === pack.variantId}
+                      disabled={status !== "ready"}
+                      {...fieldErrorProps("honey-pack", errors.pack)}
                       onChange={() => {
                         beginCheckout();
                         setSelectedVariantId(pack.variantId);
@@ -358,11 +389,28 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
                     />
                     <span className="font-semibold text-[#19382d]">{pack.label}</span>
                   </span>
-                  <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
+                  {status === "ready" ? (
+                    <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
+                  ) : null}
                 </label>
               ))}
             </div>
-            <InlineError id="honey-pack" error={errors.pack} />
+            <InlineError id="honey-pack" error={showAvailabilityRecovery ? undefined : errors.pack} />
+            {showAvailabilityRecovery ? (
+              <div className="space-y-4 rounded-xl border border-[#b8872c] bg-[#fff7df] p-4">
+                <p className="text-sm font-semibold leading-6 text-[#654b2f]">{AVAILABILITY_ERROR}</p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={onRetry}
+                    className="min-h-11 rounded-full bg-[#19382d] px-5 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2"
+                  >
+                    আবার চেষ্টা করুন
+                  </button>
+                  <SupportActions placement="checkout_availability_error" />
+                </div>
+              </div>
+            ) : null}
           </fieldset>
 
           <div className="space-y-2">
@@ -495,7 +543,7 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
         <aside className="h-fit rounded-2xl bg-[#19382d] p-5 text-[#fffaf0] lg:sticky lg:top-6">
           <h3 className="text-xl font-bold">অর্ডার সারাংশ</h3>
           <dl className="mt-5 space-y-3 text-sm">
-            <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{selectedPack?.label ?? "—"}</dd></div>
+            <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="font-semibold">৳{HONEY_DELIVERY_CHARGE}</dd></div>
@@ -516,7 +564,7 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
 
           <Button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || status !== "ready"}
             className="mt-5 min-h-12 w-full rounded-xl bg-[#f5c456] text-base font-bold text-[#19382d] hover:bg-[#ffd675] focus-visible:ring-[#fffaf0] disabled:opacity-70"
           >
             {isPending ? (
@@ -528,5 +576,3 @@ export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCh
     </section>
   );
 }
-
-export { SupportActions as HoneySupportActions };

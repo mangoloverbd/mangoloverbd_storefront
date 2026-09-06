@@ -21,6 +21,9 @@ test("campaign checkout polls the fixed live product and inventory with snapshot
   assert.match(pageSource, /generatedStorefrontProducts/);
   assert.match(pageSource, /findGeneratedStorefrontProduct/);
   assert.match(pageSource, /mergeInventory\(productQuery\.data, inventoryQuery\.data\?\.inventory\)/);
+  assert.match(pageSource, /resolveHoneyCheckoutStatus/);
+  assert.doesNotMatch(pageSource, /\{product \? \(/);
+  assert.match(pageSource, /<HoneyCheckout[\s\S]*status=\{checkoutStatus\}/);
   assert.doesNotMatch(pageSource, /unitPrice:\s*(?:800|1600)/);
 });
 
@@ -49,9 +52,24 @@ test("submission revalidates the exact pack and sends only the Google-only COD c
   assert.match(checkoutSource, /paymentMethod: "cash_on_delivery"/);
   assert.match(checkoutSource, /trackingMode: "google_only"/);
   assert.match(checkoutSource, /apiRequest\("POST", "\/api\/orders", payload\)/);
-  assert.match(checkoutSource, /disabled=\{isPending\}/);
+  assert.match(checkoutSource, /disabled=\{isPending \|\| status !== "ready"\}/);
   assert.match(checkoutSource, /setLocation\("\/step\/sundarbans-natural-honey\/thank-you"\)/);
   assert.doesNotMatch(checkoutSource, /trackGoogleEcommerceEvent\("purchase"/);
+});
+
+test("availability failures preserve the mounted form and provide exact recovery actions", () => {
+  assert.doesNotMatch(checkoutSource, /if \(!packs\.length\) \{/);
+  assert.match(checkoutSource, /status: HoneyCheckoutStatus/);
+  assert.match(checkoutSource, /AVAILABILITY_ERROR/);
+  assert.match(checkoutSource, /onRetry/);
+  assert.match(checkoutSource, /<SupportActions placement="checkout_availability_error"/);
+  assert.match(checkoutSource, /status === "ready" \? selectedPack : null/);
+});
+
+test("validation focuses controls in explicit DOM order and gives every pack radio an id", () => {
+  assert.match(checkoutSource, /getHoneyFocusTargetId/);
+  assert.match(checkoutSource, /id=\{`honey-pack-\$\{pack\.variantId\}`\}/);
+  assert.doesNotMatch(checkoutSource, /Object\.keys\(fieldErrors\)/);
 });
 
 test("checkout analytics use product data but never customer fields", () => {
