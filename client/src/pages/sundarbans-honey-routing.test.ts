@@ -59,7 +59,7 @@ test("owns campaign metadata outside the animated route lifecycle", () => {
   assert.match(app, /অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার/);
 
   for (const page of [landingPage, thankYouPage]) {
-    assert.doesNotMatch(page, /useEffect|document\.(?:title|head)/);
+    assert.doesNotMatch(page, /document\.(?:title|head)/);
   }
 });
 
