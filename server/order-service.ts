@@ -7,6 +7,7 @@ export const orderRequestSchema = z.object({
   bundleTitle: z.string().min(1),
   bundleDetails: z.string().min(1),
   bundlePrice: z.number().int().positive(),
+  quantity: z.number().int().positive(),
   deliveryCharge: z.number().int().nonnegative(),
   customerName: z.string().min(2).max(120),
   phone: z.string().regex(/^\d{11}$/, "Phone number must contain exactly 11 English digits"),
@@ -62,7 +63,7 @@ export async function processOrder(order: OrderRequest) {
         phone: order.phone,
         address: order.address,
         product: `${order.bundleTitle} - ${order.bundleDetails}`,
-        quantity: 1,
+        quantity: order.quantity,
         price: order.bundlePrice,
         delivery_rate: order.deliveryCharge
       })

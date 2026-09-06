@@ -5,6 +5,7 @@ type OrderRequest = {
   bundleTitle: string;
   bundleDetails: string;
   bundlePrice: number;
+  quantity: number;
   deliveryCharge: number;
   customerName: string;
   phone: string;
@@ -28,7 +29,7 @@ async function readBody(req: IncomingMessage & { body?: unknown }) {
   return rawBody ? JSON.parse(rawBody) : {};
 }
 
-function validateOrder(body: unknown): OrderRequest {
+export function validateOrder(body: unknown): OrderRequest {
   if (!body || typeof body !== "object") {
     throw new Error("Invalid order details");
   }
@@ -37,6 +38,7 @@ function validateOrder(body: unknown): OrderRequest {
   const bundleTitle = String(order.bundleTitle || "").trim();
   const bundleDetails = String(order.bundleDetails || "").trim();
   const bundlePrice = Number(order.bundlePrice);
+  const quantity = Number(order.quantity);
   const deliveryCharge = Number(order.deliveryCharge);
   const customerName = String(order.customerName || "").trim();
   const phone = String(order.phone || "").trim();
@@ -51,6 +53,8 @@ function validateOrder(body: unknown): OrderRequest {
     !bundleDetails ||
     !Number.isInteger(bundlePrice) ||
     bundlePrice <= 0 ||
+    !Number.isInteger(quantity) ||
+    quantity < 1 ||
     !Number.isInteger(deliveryCharge) ||
     deliveryCharge < 0 ||
     customerName.length < 2 ||
@@ -65,6 +69,7 @@ function validateOrder(body: unknown): OrderRequest {
     bundleTitle,
     bundleDetails,
     bundlePrice,
+    quantity,
     deliveryCharge,
     customerName,
     phone,
@@ -106,7 +111,7 @@ async function processOrder(order: OrderRequest) {
         phone: order.phone,
         address: order.address,
         product: `${order.bundleTitle} - ${order.bundleDetails}`,
-        quantity: 1,
+        quantity: order.quantity,
         price: order.bundlePrice,
         delivery_rate: order.deliveryCharge
       })
@@ -159,7 +164,11 @@ async function sendPurchaseCapi(opts: {
       currency: "BDT",
       value: opts.total,
       content_type: "product",
-      contents: [{ id: opts.order.bundleTitle, quantity: 1, item_price: opts.order.bundlePrice }],
+      contents: [{
+        id: opts.order.bundleTitle,
+        quantity: opts.order.quantity,
+        item_price: opts.order.bundlePrice / opts.order.quantity,
+      }],
       order_id: opts.orderRef,
     },
   });

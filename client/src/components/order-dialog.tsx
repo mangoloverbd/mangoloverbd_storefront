@@ -26,6 +26,8 @@ export type OrderDialogBundle = {
   title: string;
   details: string;
   price: number;
+  quantity?: number;
+  unitPrice?: number;
   images: { src: string; alt: string }[];
   analyticsItems?: GoogleAnalyticsItem[];
 };
@@ -39,8 +41,8 @@ function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
     id: bundle.title,
     name: bundle.title,
     variant: bundle.details,
-    price: bundle.price,
-    quantity: 1,
+    price: bundle.unitPrice ?? bundle.price / (bundle.quantity ?? 1),
+    quantity: bundle.quantity ?? 1,
   })];
 }
 
@@ -64,6 +66,8 @@ export default function OrderDialog({
   const [orderClosing, setOrderClosing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
+  const bundleQuantity = bundle?.quantity ?? 1;
+  const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
   const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold;
 
   useEffect(() => {
@@ -88,13 +92,13 @@ export default function OrderDialog({
           value: bundle?.price ?? 0,
           content_type: "product",
           contents: bundle
-            ? [{ id: bundle.title, quantity: 1, item_price: bundle.price }]
+            ? [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }]
             : [],
         },
       });
     }
     previousOpen.current = open;
-  }, [open, bundle]);
+  }, [open, bundle, bundleQuantity, bundleUnitPrice]);
 
   useEffect(() => {
     if (open && qualifiesForFreeDelivery) {
@@ -179,6 +183,7 @@ export default function OrderDialog({
         bundleTitle: bundle.title,
         bundleDetails: bundle.details,
         bundlePrice: bundle.price,
+        quantity: bundleQuantity,
         deliveryCharge: selectedDeliveryCharge,
         customerName: String(formData.get("name") || ""),
          phone,
@@ -208,7 +213,7 @@ export default function OrderDialog({
           currency: "BDT",
           value: bundle.price + selectedDeliveryCharge,
           content_type: "product",
-          contents: [{ id: bundle.title, quantity: 1, item_price: bundle.price }],
+          contents: [{ id: bundle.title, quantity: bundleQuantity, item_price: bundleUnitPrice }],
         },
       });
     } catch (error) {
@@ -356,7 +361,7 @@ export default function OrderDialog({
                         className="h-full w-full object-contain mix-blend-multiply"
                       />
                       <div className="absolute -top-2 -right-2 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm">
-                        1
+                        {bundleQuantity}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">

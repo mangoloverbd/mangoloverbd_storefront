@@ -47,6 +47,16 @@ test("does not mark a live product unavailable while inventory is still loading"
   assert.match(productSource, /const inventoryUnavailable = merchantInventory\?\.inventory \? !isProductOrderable\(product\) : false/);
 });
 
+test("lets customers choose a quantity for cart and direct checkout", () => {
+  assert.match(productSource, /const \[quantity, setQuantity\] = useState\(1\)/);
+  assert.match(productSource, /aria-label="Decrease quantity"/);
+  assert.match(productSource, /disabled=\{quantity === 1\}/);
+  assert.match(productSource, /aria-label="Increase quantity"/);
+  assert.match(productSource, /Math\.max\(1, current - 1\)/);
+  assert.match(productSource, /price: selectedBundle\.amount \* quantity/);
+  assert.match(productSource, /selectedBundle\.title,\s*quantity/);
+});
+
 test("highlights the বৈশিষ্ট্য label with the existing yellow hand-drawn oval", () => {
   assert.match(
     productSource,

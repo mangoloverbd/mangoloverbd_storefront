@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -114,6 +114,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [availabilityBlocked, setAvailabilityBlocked] = useState(false);
 
   const [activeImage, setActiveImage] = useState(0);
@@ -275,6 +276,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   useEffect(() => {
     setSelectedBundleIdx(0);
+    setQuantity(1);
   }, [slug]);
 
   useEffect(() => {
@@ -437,9 +439,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const orderBundle: OrderDialogBundle | null = product ? {
         title: product.name,
         details: selectedBundle.title,
-        price: selectedBundle.amount,
+        price: selectedBundle.amount * quantity,
+        quantity,
+        unitPrice: selectedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
-        analyticsItems: [productAnalyticsItem],
+        analyticsItems: [{ ...productAnalyticsItem, quantity }],
       } : null;
 
   if (isLoading) {
@@ -621,6 +625,37 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 </div>
 
+                <div className="space-y-2.5 md:space-y-3">
+                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                    Quantity
+                  </span>
+                  <div className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
+                    <button
+                      type="button"
+                      aria-label="Decrease quantity"
+                      disabled={quantity === 1}
+                      onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                      className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-black/20"
+                    >
+                      <Minus className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                    <span
+                      aria-live="polite"
+                      className="flex h-11 min-w-12 items-center justify-center border-x border-black/10 px-3 text-sm font-semibold tabular-nums text-black"
+                    >
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label="Increase quantity"
+                      onClick={() => setQuantity((current) => current + 1)}
+                      className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5"
+                    >
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+
                 {isUnavailable ? (
                   <div className="rounded-[8px] border border-black/10 bg-white/35 p-4 text-center text-[10px] font-bold uppercase tracking-[0.35em] text-black/45">
                     Unavailable
@@ -645,6 +680,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             analyticsItem: productAnalyticsItem,
                           },
                           selectedBundle.title,
+                          quantity,
                         );
                       }}
                       className="group flex h-12 items-center justify-center gap-2 rounded-[8px] border border-black/20 bg-transparent px-2 text-[10px] font-bold uppercase tracking-[0.4em] text-black transition-all hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-50"

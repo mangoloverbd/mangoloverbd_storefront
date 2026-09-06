@@ -10,7 +10,7 @@ const orderDialog = readFileSync(new URL("../components/order-dialog.tsx", impor
 
 test("product page sends view_item and direct checkout item metadata", () => {
   assert.match(productPage, /trackGoogleEcommerceEvent\("view_item"/);
-  assert.match(productPage, /analyticsItems: \[productAnalyticsItem\]/);
+  assert.match(productPage, /analyticsItems: \[\{ \.\.\.productAnalyticsItem, quantity \}\]/);
 });
 
 test("cart add sends add_to_cart with selected variant metadata", () => {
@@ -33,4 +33,12 @@ test("order dialog sends begin_checkout and purchase after a successful order", 
   assert.match(orderDialog, /trackGoogleEcommerceEvent\("begin_checkout"/);
   assert.match(orderDialog, /trackGoogleEcommerceEvent\("purchase"/);
   assert.match(orderDialog, /transactionId: result\.orderRef \|\| result\.order_id/);
+});
+
+test("direct checkout analytics preserve selected quantity and unit price", () => {
+  assert.match(productPage, /analyticsItems: \[\{ \.\.\.productAnalyticsItem, quantity \}\]/);
+  assert.match(orderDialog, /const bundleQuantity = bundle\?\.quantity \?\? 1/);
+  assert.match(orderDialog, /const bundleUnitPrice = bundle\?\.unitPrice \?\?/);
+  assert.match(orderDialog, /quantity: bundleQuantity/);
+  assert.match(orderDialog, /item_price: bundleUnitPrice/);
 });

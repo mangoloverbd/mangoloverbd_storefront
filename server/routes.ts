@@ -64,7 +64,11 @@ export async function registerRoutes(
           currency: "BDT",
           value: order.bundlePrice + order.deliveryCharge,
           content_type: "product",
-          contents: [{ id: order.bundleTitle, quantity: 1, item_price: order.bundlePrice }],
+          contents: [{
+            id: order.bundleTitle,
+            quantity: order.quantity,
+            item_price: order.bundlePrice / order.quantity,
+          }],
           order_id: result.orderRef,
         },
       }).catch((error) => {
