@@ -206,8 +206,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/2a5ec3ce-f08d-4f31-8885-d001542a792c.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/6f2615bc-0849-4557-97f9-710ffc3aa5fc.webp"
     ],
-    "price": 750,
-    "compare_at_price": 900,
+    "price": 800,
+    "compare_at_price": 950,
     "available": true,
     "variants": [
       {
@@ -215,7 +215,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "attributes": {
           "size": "0.5KG"
         },
-        "price": 750,
+        "price": 800,
         "available": true
       },
       {
@@ -223,7 +223,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "attributes": {
           "size": "1KG"
         },
-        "price": 1400,
+        "price": 1600,
         "available": true
       }
     ]
