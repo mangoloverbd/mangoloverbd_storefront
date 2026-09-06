@@ -57,6 +57,15 @@ test("lets customers choose a quantity for cart and direct checkout", () => {
   assert.match(productSource, /selectedBundle\.title,\s*quantity/);
 });
 
+test("shows quantity before size at every breakpoint", () => {
+  const quantityIndex = productSource.indexOf("                    Quantity");
+  const sizeIndex = productSource.indexOf("                    Select Size");
+
+  assert.notEqual(quantityIndex, -1);
+  assert.notEqual(sizeIndex, -1);
+  assert.ok(quantityIndex < sizeIndex);
+});
+
 test("highlights the বৈশিষ্ট্য label with the existing yellow hand-drawn oval", () => {
   assert.match(
     productSource,

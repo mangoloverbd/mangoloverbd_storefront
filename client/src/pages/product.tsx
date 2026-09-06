@@ -596,37 +596,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
                 <div className="space-y-2.5 md:space-y-3">
                   <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
-                    Select Size
-                  </span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {bundles.map((bundle, idx) => {
-                      const selected = selectedBundleIdx === idx;
-                      return (
-                        <button
-                          key={bundle.id}
-                          type="button"
-                          onClick={() => setSelectedBundleIdx(idx)}
-                          aria-pressed={selected}
-                          className={`flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
-                            selected
-                              ? "border-black bg-white text-black"
-                              : "border-black/10 bg-white text-black hover:border-black/30"
-                          }`}
-                        >
-                          <span className="text-[11px] font-medium tracking-[0.04em]">
-                            {bundle.title}
-                          </span>
-                          <span className="mt-0.5 text-[11px] font-medium font-garet">
-                            {bundle.price}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="space-y-2.5 md:space-y-3">
-                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                     Quantity
                   </span>
                   <div className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
@@ -653,6 +622,37 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     >
                       <Plus className="h-4 w-4" aria-hidden="true" />
                     </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5 md:space-y-3">
+                  <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
+                    Select Size
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {bundles.map((bundle, idx) => {
+                      const selected = selectedBundleIdx === idx;
+                      return (
+                        <button
+                          key={bundle.id}
+                          type="button"
+                          onClick={() => setSelectedBundleIdx(idx)}
+                          aria-pressed={selected}
+                          className={`flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
+                            selected
+                              ? "border-black bg-white text-black"
+                              : "border-black/10 bg-white text-black hover:border-black/30"
+                          }`}
+                        >
+                          <span className="text-[11px] font-medium tracking-[0.04em]">
+                            {bundle.title}
+                          </span>
+                          <span className="mt-0.5 text-[11px] font-medium font-garet">
+                            {bundle.price}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
