@@ -42,17 +42,25 @@ test("suppresses Meta initialization and PageView tracking on campaign paths", (
   );
 });
 
-test("sets and restores campaign-specific title and robots metadata", () => {
-  for (const page of [landingPage, thankYouPage]) {
-    assert.match(page, /const previousTitle = document\.title/);
-    assert.match(page, /document\.title = PAGE_TITLE/);
-    assert.match(page, /robots\.content = "noindex, nofollow"/);
-    assert.match(page, /document\.title = previousTitle/);
-    assert.match(page, /robots\.content = previousRobotsContent/);
-  }
+test("owns campaign metadata outside the animated route lifecycle", () => {
+  const metadataOwner = app.indexOf("<CampaignMetadata location={location} />");
+  const animatedRoutes = app.indexOf("<AnimatePresence>");
 
-  assert.match(landingPage, /সুন্দরবনের প্রাকৃতিক মধু \| ম্যাংগো লাভার/);
-  assert.match(thankYouPage, /অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার/);
+  assert.ok(metadataOwner >= 0, "Router should render a stable campaign metadata owner");
+  assert.ok(
+    metadataOwner < animatedRoutes,
+    "campaign metadata owner should sit outside AnimatePresence",
+  );
+  assert.match(app, /const previousTitle = document\.title/);
+  assert.match(app, /robots\.content = "noindex, nofollow"/);
+  assert.match(app, /document\.title = previousTitle/);
+  assert.match(app, /robots\.content = previousRobotsContent/);
+  assert.match(app, /সুন্দরবনের প্রাকৃতিক মধু \| ম্যাংগো লাভার/);
+  assert.match(app, /অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার/);
+
+  for (const page of [landingPage, thankYouPage]) {
+    assert.doesNotMatch(page, /useEffect|document\.(?:title|head)/);
+  }
 });
 
 test("sets noindex headers for campaign paths on both hosts", () => {
