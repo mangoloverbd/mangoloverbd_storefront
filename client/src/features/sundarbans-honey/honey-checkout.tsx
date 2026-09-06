@@ -1,0 +1,532 @@
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { LoaderCircle, MessageCircle, Minus, Phone, Plus } from "lucide-react";
+import { useLocation } from "wouter";
+
+import { Button } from "@/components/ui/button";
+import { apiRequest } from "@/lib/queryClient";
+import {
+  mergeInventory,
+  type StorefrontProduct,
+  type StorefrontProductInventory,
+} from "@/lib/storefront-products";
+import {
+  toGoogleAnalyticsItem,
+  trackGoogleEcommerceEvent,
+} from "@/lib/google-analytics";
+
+import { DISTRICTS, getUpazilas } from "./location-data";
+import { LocationCombobox } from "./location-combobox";
+import {
+  HONEY_DELIVERY_CHARGE,
+  buildHoneyAddress,
+  buildHoneyOrderConfirmation,
+  buildHoneyOrderPayload,
+  calculateHoneyOrder,
+  getHoneyPackOptions,
+  writeHoneyOrderConfirmation,
+  type HoneyOrderPayload,
+  type HoneyPackOption,
+} from "./order";
+import { trackHoneyCampaignEvent } from "./tracking";
+
+const PHONE_NUMBER = "01301636461";
+const PHONE_HREF = "tel:+8801301636461";
+const WHATSAPP_HREF = `https://wa.me/8801301636461?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধু অর্ডার করতে চাই।")}`;
+const AVAILABILITY_ERROR = "এই প্যাকটি এখন অর্ডারের জন্য পাওয়া যাচ্ছে না। অন্য প্যাক বেছে নিন বা আমাদের কল করুন।";
+
+type RefreshResult<T> = {
+  data: T | undefined;
+  isError: boolean;
+};
+
+type RefreshQuery<T> = {
+  refetch: () => Promise<RefreshResult<T>>;
+};
+
+type HoneyCheckoutProps = {
+  product: StorefrontProduct;
+  productQuery: RefreshQuery<StorefrontProduct | null>;
+  inventoryQuery: RefreshQuery<StorefrontProductInventory>;
+};
+
+type FieldName = "name" | "phone" | "address" | "district" | "upazila" | "pack" | "quantity";
+type FieldErrors = Partial<Record<FieldName, string>>;
+
+type CheckoutFields = {
+  name: string;
+  phone: string;
+  address: string;
+  districtId: string;
+  upazilaId: string;
+  selectedVariantId: string;
+  quantity: number;
+};
+
+function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): FieldErrors {
+  const errors: FieldErrors = {};
+  const district = DISTRICTS.find((option) => option.id === fields.districtId);
+  const upazila = getUpazilas(fields.districtId).find((option) => option.id === fields.upazilaId);
+
+  if (fields.name.trim().length < 2 || fields.name.trim().length > 120) {
+    errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
+  }
+  if (!/^\d{11}$/.test(fields.phone.trim())) {
+    errors.phone = "ফোন নম্বরটি ঠিক ১১টি ইংরেজি সংখ্যায় লিখুন।";
+  }
+  if (fields.address.trim().split(/\s+/).filter(Boolean).length < 3 || fields.address.trim().length > 300) {
+    errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
+  }
+  if (!district) errors.district = "জেলা বেছে নিন।";
+  if (!upazila) errors.upazila = "থানা / উপজেলা বেছে নিন।";
+  if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId)) {
+    errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
+  }
+  if (!Number.isSafeInteger(fields.quantity) || fields.quantity < 1 || fields.quantity > 100) {
+    errors.quantity = "পরিমাণ ১ থেকে ১০০-এর মধ্যে পূর্ণ সংখ্যায় লিখুন।";
+  }
+
+  return errors;
+}
+
+function fieldErrorProps(id: string, error: string | undefined) {
+  return {
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": error ? `${id}-error` : undefined,
+  };
+}
+
+function InlineError({ id, error }: { id: string; error?: string }) {
+  return error ? (
+    <p id={`${id}-error`} className="text-sm text-red-700">
+      {error}
+    </p>
+  ) : null;
+}
+
+function SupportActions({ placement }: { placement: string }) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <a
+        href={PHONE_HREF}
+        onClick={() => trackHoneyCampaignEvent("phone_click", { placement })}
+        className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#285240] bg-white px-4 py-2 font-semibold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
+      >
+        <Phone className="size-4" aria-hidden="true" />
+        কল করুন: {PHONE_NUMBER}
+      </a>
+      <a
+        href={WHATSAPP_HREF}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackHoneyCampaignEvent("whatsapp_click", { placement })}
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187d48] px-4 py-2 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
+      >
+        <MessageCircle className="size-4" aria-hidden="true" />
+        WhatsApp
+      </a>
+    </div>
+  );
+}
+
+export function HoneyCheckout({ product, productQuery, inventoryQuery }: HoneyCheckoutProps) {
+  const [, setLocation] = useLocation();
+  const packs = useMemo(() => getHoneyPackOptions(product), [product]);
+  const [selectedVariantId, setSelectedVariantId] = useState(() => packs[0]?.variantId ?? "");
+  const [quantity, setQuantity] = useState(1);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [districtId, setDistrictId] = useState("");
+  const [upazilaId, setUpazilaId] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [announcement, setAnnouncement] = useState("");
+  const [requestError, setRequestError] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const submittingRef = useRef(false);
+  const viewedItemRef = useRef(false);
+  const beganCheckoutRef = useRef(false);
+  const selectedPack = packs.find(({ variantId }) => variantId === selectedVariantId);
+  const upazilas = getUpazilas(districtId);
+  const totals = selectedPack
+    ? calculateHoneyOrder(
+        selectedPack.unitPrice,
+        Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
+      )
+    : null;
+
+  const analyticsItem = (pack: HoneyPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
+    id: pack.variantId,
+    name: product.name,
+    variant: pack.label,
+    price: pack.unitPrice,
+    quantity: itemQuantity,
+  });
+
+  const trackCheckoutError = (type: "validation" | "availability" | "network") => {
+    trackHoneyCampaignEvent("checkout_error", { error_type: type });
+  };
+
+  const beginCheckout = () => {
+    if (beganCheckoutRef.current || !selectedPack) return;
+    beganCheckoutRef.current = true;
+    trackGoogleEcommerceEvent("begin_checkout", {
+      pageType: "checkout",
+      value: selectedPack.unitPrice * quantity,
+      items: [analyticsItem(selectedPack, quantity)],
+    });
+  };
+
+  useEffect(() => {
+    if (!packs[0]
+      || (selectedVariantId
+        && packs.some(({ variantId }) => variantId === selectedVariantId))
+      || beganCheckoutRef.current) return;
+    setSelectedVariantId(packs[0].variantId);
+  }, [packs, selectedVariantId]);
+
+  useEffect(() => {
+    const initialPack = packs.find(({ variantId }) => variantId === selectedVariantId);
+    if (viewedItemRef.current || !initialPack) return;
+    viewedItemRef.current = true;
+    trackGoogleEcommerceEvent("view_item", {
+      pageType: "product",
+      value: initialPack.unitPrice,
+      items: [analyticsItem(initialPack, 1)],
+    });
+  }, [packs, selectedVariantId]);
+
+  const focusFirstInvalidField = (fieldErrors: FieldErrors) => {
+    const firstField = (Object.keys(fieldErrors) as FieldName[])[0];
+    if (!firstField) return;
+    const fieldId = firstField === "pack" ? "honey-pack" : `honey-${firstField}`;
+    requestAnimationFrame(() => document.getElementById(fieldId)?.focus());
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (submittingRef.current) return;
+
+    const fields = { name, phone, address, districtId, upazilaId, selectedVariantId, quantity };
+    const nextErrors = getFieldErrors(fields, packs);
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors);
+      setRequestError(false);
+      const firstError = Object.values(nextErrors)[0] ?? "অর্ডারের তথ্য আবার দেখুন।";
+      setAnnouncement(firstError);
+      focusFirstInvalidField(nextErrors);
+      trackCheckoutError("validation");
+      return;
+    }
+
+    submittingRef.current = true;
+    setIsPending(true);
+    setErrors({});
+    setRequestError(false);
+    setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
+
+    try {
+      const [productRefresh, inventoryRefresh] = await Promise.all([
+        productQuery.refetch(),
+        inventoryQuery.refetch(),
+      ]);
+      if (productRefresh.isError || inventoryRefresh.isError) {
+        throw new Error("refresh-failed");
+      }
+
+      const refreshedProduct = mergeInventory(productRefresh.data, inventoryRefresh.data?.inventory);
+      const freshPacks = refreshedProduct ? getHoneyPackOptions(refreshedProduct) : [];
+      const freshPack = freshPacks.find(({ variantId }) => variantId === selectedVariantId);
+      const freshVariant = refreshedProduct?.variants?.find(
+        (variant) => String(variant.id) === selectedVariantId,
+      );
+      const freshInventoryVariant = inventoryRefresh.data?.inventory?.variants[selectedVariantId];
+      if (!refreshedProduct
+        || !inventoryRefresh.data?.inventory
+        || !freshPack
+        || !freshVariant
+        || !freshInventoryVariant
+        || freshVariant.available === false
+        || freshInventoryVariant.available === false
+        || freshInventoryVariant.stock_quantity <= 0) {
+        const availabilityErrors = { pack: AVAILABILITY_ERROR };
+        setErrors(availabilityErrors);
+        setAnnouncement(AVAILABILITY_ERROR);
+        focusFirstInvalidField(availabilityErrors);
+        trackCheckoutError("availability");
+        return;
+      }
+
+      const district = DISTRICTS.find((option) => option.id === districtId);
+      const upazila = getUpazilas(districtId).find((option) => option.id === upazilaId);
+      if (!district || !upazila) {
+        const locationErrors = getFieldErrors(fields, freshPacks);
+        setErrors(locationErrors);
+        setAnnouncement(Object.values(locationErrors)[0] ?? "ঠিকানা আবার যাচাই করুন।");
+        focusFirstInvalidField(locationErrors);
+        trackCheckoutError("validation");
+        return;
+      }
+
+      const combinedAddress = buildHoneyAddress(address, district.nameBn, upazila.nameBn);
+      const payload: HoneyOrderPayload = {
+        ...buildHoneyOrderPayload({
+          productName: refreshedProduct.name,
+          pack: freshPack,
+          quantity,
+          customerName: name,
+          phone,
+          address: combinedAddress,
+        }),
+        deliveryCharge: HONEY_DELIVERY_CHARGE,
+        paymentMethod: "cash_on_delivery" as const,
+        trackingMode: "google_only" as const,
+      };
+      const response = await apiRequest("POST", "/api/orders", payload);
+      if (response.status !== 201) throw new Error("unexpected-order-response");
+
+      const result = await response.json() as { orderRef?: unknown };
+      if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
+        throw new Error("missing-order-reference");
+      }
+      const confirmation = buildHoneyOrderConfirmation(result.orderRef, payload);
+      writeHoneyOrderConfirmation(window.sessionStorage, confirmation);
+      setLocation("/step/sundarbans-natural-honey/thank-you");
+    } catch {
+      setRequestError(true);
+      setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
+      trackCheckoutError("network");
+    } finally {
+      submittingRef.current = false;
+      setIsPending(false);
+    }
+  };
+
+  if (!packs.length) {
+    return (
+      <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-6 sm:p-8" aria-labelledby="honey-checkout-title">
+        <h2 id="honey-checkout-title" className="text-2xl font-bold text-[#19382d]" tabIndex={-1}>
+          অর্ডার করুন
+        </h2>
+        <p className="mt-3 text-[#654b2f]">এই মুহূর্তে কোনো প্যাক অর্ডারের জন্য পাওয়া যাচ্ছে না। সরাসরি যোগাযোগ করুন।</p>
+        <div className="mt-5"><SupportActions placement="checkout_unavailable" /></div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-5 shadow-[0_24px_70px_rgba(50,35,16,0.10)] sm:p-8" aria-labelledby="honey-checkout-title">
+      <div className="max-w-2xl">
+        <p className="text-sm font-bold tracking-[0.16em] text-[#936514]">সহজ অর্ডার</p>
+        <h2 id="honey-checkout-title" className="mt-2 text-3xl font-bold text-[#19382d]" tabIndex={-1}>
+          ক্যাশ অন ডেলিভারিতে অর্ডার করুন
+        </h2>
+        <p className="mt-3 leading-7 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন। সারা দেশে ডেলিভারি চার্জ ৳{HONEY_DELIVERY_CHARGE}।</p>
+      </div>
+
+      <form
+        className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
+        onSubmit={handleSubmit}
+        onFocusCapture={beginCheckout}
+        noValidate
+      >
+        <div className="space-y-6">
+          <fieldset className="space-y-3">
+            <legend className="font-semibold text-[#19382d]">প্যাক সাইজ বেছে নিন</legend>
+            <div id="honey-pack" tabIndex={-1} className="grid gap-3 sm:grid-cols-2" {...fieldErrorProps("honey-pack", errors.pack)}>
+              {packs.map((pack) => (
+                <label
+                  key={pack.variantId}
+                  className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
+                >
+                  <span className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="pack"
+                      value={pack.variantId}
+                      checked={selectedVariantId === pack.variantId}
+                      onChange={() => {
+                        beginCheckout();
+                        setSelectedVariantId(pack.variantId);
+                        setErrors((current) => ({ ...current, pack: undefined }));
+                        trackGoogleEcommerceEvent("select_item", {
+                          pageType: "product",
+                          value: pack.unitPrice,
+                          items: [analyticsItem(pack, quantity)],
+                        });
+                      }}
+                      className="size-5 accent-[#285240]"
+                    />
+                    <span className="font-semibold text-[#19382d]">{pack.label}</span>
+                  </span>
+                  <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
+                </label>
+              ))}
+            </div>
+            <InlineError id="honey-pack" error={errors.pack} />
+          </fieldset>
+
+          <div className="space-y-2">
+            <label htmlFor="honey-quantity" className="block font-semibold text-[#19382d]">পরিমাণ</label>
+            <div className="flex w-fit items-center overflow-hidden rounded-xl border border-[#c8b98f] bg-white">
+              <button
+                type="button"
+                className="grid min-h-11 min-w-11 place-items-center text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-[-3px]"
+                aria-label="পরিমাণ কমান"
+                onClick={() => {
+                  beginCheckout();
+                  setQuantity((current) => Math.max(1, current - 1));
+                }}
+              >
+                <Minus className="size-4" aria-hidden="true" />
+              </button>
+              <input
+                id="honey-quantity"
+                name="quantity"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={100}
+                step={1}
+                value={quantity}
+                onChange={(event) => setQuantity(Number(event.target.value))}
+                className="min-h-11 w-16 border-x border-[#c8b98f] bg-white text-center text-base font-bold text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#285240]"
+                {...fieldErrorProps("honey-quantity", errors.quantity)}
+              />
+              <button
+                type="button"
+                className="grid min-h-11 min-w-11 place-items-center text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-[-3px]"
+                aria-label="পরিমাণ বাড়ান"
+                onClick={() => {
+                  beginCheckout();
+                  setQuantity((current) => Math.min(100, current + 1));
+                }}
+              >
+                <Plus className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+            <InlineError id="honey-quantity" error={errors.quantity} />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="honey-name" className="block font-semibold text-[#19382d]">পুরো নাম</label>
+            <input
+              id="honey-name"
+              name="name"
+              type="text"
+              autoComplete="name"
+              maxLength={120}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              {...fieldErrorProps("honey-name", errors.name)}
+            />
+            <InlineError id="honey-name" error={errors.name} />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="honey-phone" className="block font-semibold text-[#19382d]">মোবাইল নম্বর</label>
+            <input
+              id="honey-phone"
+              name="phone"
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              maxLength={11}
+              pattern="[0-9]{11}"
+              placeholder="01XXXXXXXXX"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
+              {...fieldErrorProps("honey-phone", errors.phone)}
+            />
+            <InlineError id="honey-phone" error={errors.phone} />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="honey-address" className="block font-semibold text-[#19382d]">বাড়ি, সড়ক ও এলাকার বিস্তারিত ঠিকানা</label>
+            <textarea
+              id="honey-address"
+              name="address"
+              autoComplete="street-address"
+              rows={3}
+              maxLength={300}
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
+              className="min-h-24 w-full rounded-xl border border-[#c8b98f] bg-white px-4 py-3 text-base text-[#19382d] outline-none focus-visible:ring-2 focus-visible:ring-[#285240]"
+              {...fieldErrorProps("honey-address", errors.address)}
+            />
+            <InlineError id="honey-address" error={errors.address} />
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <LocationCombobox
+              id="honey-district"
+              label="জেলা"
+              placeholder="জেলা বেছে নিন"
+              searchPlaceholder="জেলা খুঁজুন..."
+              emptyLabel="কোনো জেলা পাওয়া যায়নি।"
+              options={DISTRICTS}
+              value={districtId}
+              error={errors.district}
+              onChange={(value) => {
+                setDistrictId(value);
+                setUpazilaId("");
+                setErrors((current) => ({ ...current, district: undefined, upazila: undefined }));
+              }}
+            />
+            <LocationCombobox
+              id="honey-upazila"
+              label="থানা / উপজেলা"
+              placeholder={districtId ? "থানা / উপজেলা বেছে নিন" : "আগে জেলা বেছে নিন"}
+              searchPlaceholder="থানা / উপজেলা খুঁজুন..."
+              emptyLabel="কোনো থানা / উপজেলা পাওয়া যায়নি।"
+              options={upazilas}
+              value={upazilaId}
+              disabled={!districtId}
+              error={errors.upazila}
+              onChange={(value) => {
+                setUpazilaId(value);
+                setErrors((current) => ({ ...current, upazila: undefined }));
+              }}
+            />
+          </div>
+        </div>
+
+        <aside className="h-fit rounded-2xl bg-[#19382d] p-5 text-[#fffaf0] lg:sticky lg:top-6">
+          <h3 className="text-xl font-bold">অর্ডার সারাংশ</h3>
+          <dl className="mt-5 space-y-3 text-sm">
+            <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{selectedPack?.label ?? "—"}</dd></div>
+            <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
+            <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
+            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="font-semibold">৳{HONEY_DELIVERY_CHARGE}</dd></div>
+            <div className="flex justify-between gap-4 border-t border-white/25 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#f5c456]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
+          </dl>
+          <p className="mt-5 rounded-xl bg-white/10 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
+
+          <div className="mt-5 min-h-6 text-sm" aria-live="polite" aria-atomic="true">
+            {announcement}
+          </div>
+
+          {requestError ? (
+            <div className="mt-4 space-y-4 rounded-xl border border-[#f5c456]/50 bg-white/10 p-4">
+              <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
+              <SupportActions placement="checkout_network_error" />
+            </div>
+          ) : null}
+
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="mt-5 min-h-12 w-full rounded-xl bg-[#f5c456] text-base font-bold text-[#19382d] hover:bg-[#ffd675] focus-visible:ring-[#fffaf0] disabled:opacity-70"
+          >
+            {isPending ? (
+              <><LoaderCircle className="size-5 animate-spin motion-reduce:animate-none" aria-hidden="true" /> অর্ডার পাঠানো হচ্ছে…</>
+            ) : requestError ? "আবার অর্ডার চেষ্টা করুন" : "অর্ডার নিশ্চিত করুন"}
+          </Button>
+        </aside>
+      </form>
+    </section>
+  );
+}
+
+export { SupportActions as HoneySupportActions };
