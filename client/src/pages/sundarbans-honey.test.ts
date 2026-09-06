@@ -178,10 +178,14 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 2);
 });
 
-test("mobile hero uses the supplied river illustration as a background, desktop stays text-first", () => {
-  assert.match(sectionsSource, /sundarbans-river-hero-mobile-v1\.webp/);
-  assert.match(sectionsSource, /md:hidden/);
+test("hero is full-bleed honeycomb art with minimal copy and a highlight CTA", () => {
+  assert.match(sectionsSource, /sundarbans-honeycomb-hero-v1\.webp/);
+  assert.doesNotMatch(sectionsSource, /sundarbans-river-hero-mobile-v1\.webp/);
+  assert.match(sectionsSource, /object-cover/);
   assert.match(sectionsSource, /aria-hidden="true"/);
+  assert.match(sectionsSource, /variant="highlight"/);
+  assert.match(sectionsSource, /bg-\[#FFD60A\]/);
+  assert.doesNotMatch(sectionsSource, /heroPoints\.map/);
 });
 
 test("minimal campaign chrome links phone and WhatsApp without full layout", () => {
@@ -235,7 +239,7 @@ test("campaign typography and palette stay scoped off global tokens", () => {
 test("missing authentic media is documented per asset, not fabricated", () => {
   for (const asset of [
     "sundarbans-river-hero-v1.webp",
-    "sundarbans-river-hero-mobile-v1.webp",
+    "sundarbans-honeycomb-hero-v1.webp",
     "sundarbans-hive-v1.webp",
     "sundarbans-collection-v1.webp",
     "sundarbans-collection-poster-v1.webp",

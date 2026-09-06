@@ -3,7 +3,6 @@ import { CheckCircle2, TriangleAlert } from "lucide-react";
 import {
   heroEyebrow,
   heroHeadline,
-  heroPoints,
   heroSubcopy,
   importantNotes,
   importantNotesHeading,
@@ -38,14 +37,16 @@ function OrderButton({
   placement: string;
   label: string;
   onOrderClick: (placement: string) => void;
-  variant?: "primary" | "outline";
+  variant?: "primary" | "outline" | "highlight";
 }) {
   return (
     <button
       type="button"
       onClick={() => onOrderClick(placement)}
       className={
-        variant === "primary"
+        variant === "highlight"
+          ? "inline-flex min-h-12 items-center justify-center rounded-xl bg-[#FFD60A] px-8 py-3 text-lg font-bold text-[#19382d] shadow-[0_6px_20px_rgba(25,56,45,0.35)] ring-2 ring-[#19382d]/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
+          : variant === "primary"
           ? "inline-flex min-h-12 items-center justify-center rounded-xl bg-[#19382d] px-8 py-3 text-lg font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
           : "inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-[#19382d] px-8 py-3 text-lg font-bold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]"
       }
@@ -77,43 +78,44 @@ function PointList({ points }: { points: HoneyNarrativePoint[] }) {
 export function DocumentarySections({ productImageUrl, onOrderClick }: DocumentarySectionsProps) {
   return (
     <>
-      <section aria-labelledby="honey-hero-heading" className="relative overflow-hidden bg-[#19382d] text-[#fffaf0]">
-        <div aria-hidden="true" className="absolute inset-0 md:hidden">
-          <img
-            src="/step/sundarbans-natural-honey/sundarbans-river-hero-mobile-v1.webp"
-            alt=""
-            className="h-full w-full object-cover"
-            fetchPriority="high"
-            decoding="async"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#19382d]/85 via-[#19382d]/55 to-[#19382d]/90" />
-        </div>
-        <div className="relative mx-auto grid max-w-5xl items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <section aria-labelledby="honey-hero-heading" className="relative overflow-hidden bg-[#f2a200] text-[#3d2800]">
+        <img
+          src="/step/sundarbans-natural-honey/sundarbans-honeycomb-hero-v1.webp"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-b from-[#f2a200]/40 via-transparent to-[#f4ecd9]"
+        />
+        <div className="relative mx-auto max-w-5xl px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-8">
           <div>
-            <p className="text-sm font-bold tracking-[0.16em] text-[#f5c456]">{heroEyebrow}</p>
-            <h2 id="honey-hero-heading" className="mt-3 text-3xl font-bold leading-snug sm:text-4xl">
+            <p className="text-sm font-bold tracking-[0.16em] text-[#6b3d00]">{heroEyebrow}</p>
+            <h2
+              id="honey-hero-heading"
+              className="mt-3 max-w-xl text-balance text-3xl font-bold leading-snug sm:text-4xl"
+            >
               {heroHeadline}
             </h2>
-            <p className="mt-4 leading-8 text-[#f4ecd9]">{heroSubcopy}</p>
-            <ul className="mt-6 space-y-2">
-              {heroPoints.map((point) => (
-                <li key={point} className="flex items-center gap-2 leading-7">
-                  <CheckCircle2 className="size-5 shrink-0 text-[#f5c456]" aria-hidden="true" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
+            <p className="mt-4 max-w-lg font-medium leading-8 text-[#4a2f00]">{heroSubcopy}</p>
             <div className="mt-8">
-              <OrderButton placement="hero" label="এখনই অর্ডার করুন" onOrderClick={onOrderClick} />
+              <OrderButton
+                placement="hero"
+                label="এখনই অর্ডার করুন"
+                variant="highlight"
+                onOrderClick={onOrderClick}
+              />
             </div>
           </div>
           {productImageUrl ? (
-            <div className="mx-auto w-full max-w-sm overflow-hidden rounded-3xl bg-[#fffaf0] p-4">
+            <div className="mx-auto hidden w-full max-w-sm overflow-hidden rounded-3xl bg-[#fffaf0]/95 p-4 shadow-xl lg:block">
               <img
                 src={productImageUrl}
                 alt="সুন্দরবনের প্রাকৃতিক চাকের মধুর বোতল"
                 className="aspect-[4/5] w-full rounded-2xl object-contain"
-                fetchPriority="high"
                 decoding="async"
               />
             </div>
