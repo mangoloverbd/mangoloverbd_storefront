@@ -4,7 +4,28 @@ import test from "node:test";
 
 const pagePath = new URL("./sundarbans-honey.tsx", import.meta.url);
 const checkoutPath = new URL("../features/sundarbans-honey/honey-checkout.tsx", import.meta.url);
+const contentPath = new URL("../features/sundarbans-honey/content.ts", import.meta.url);
+const layoutPath = new URL("../features/sundarbans-honey/campaign-layout.tsx", import.meta.url);
+const sectionsPath = new URL("../features/sundarbans-honey/documentary-sections.tsx", import.meta.url);
+const barPath = new URL("../features/sundarbans-honey/mobile-order-bar.tsx", import.meta.url);
+const campaignCssPath = new URL("../index.css", import.meta.url);
+const htmlPath = new URL("../../index.html", import.meta.url);
+const attributionPath = new URL("../../public/step/sundarbans-natural-honey/ATTRIBUTION.md", import.meta.url);
 const pageSource = readFileSync(pagePath, "utf8");
+function readOptional(path: URL) {
+  try {
+    return readFileSync(path, "utf8");
+  } catch {
+    return "";
+  }
+}
+const contentSource = readOptional(contentPath);
+const layoutSource = readOptional(layoutPath);
+const sectionsSource = readOptional(sectionsPath);
+const barSource = readOptional(barPath);
+const campaignCssSource = readOptional(campaignCssPath);
+const htmlSource = readOptional(htmlPath);
+const attributionSource = readOptional(attributionPath);
 const checkoutSource = (() => {
   try {
     return readFileSync(checkoutPath, "utf8");
@@ -89,4 +110,133 @@ test("checkout analytics use product data but never customer fields", () => {
   assert.match(checkoutSource, /items: \[analyticsItem\(initialPack, 1\)\]/);
   assert.match(checkoutSource, /items: \[analyticsItem\(pack, quantity\)\]/);
   assert.doesNotMatch(checkoutSource, /trackHoneyCampaignEvent\("checkout_error", \{[^}]*?(?:name|phone|address|district|upazila)/);
+});
+
+test("documentary narrative renders every approved Bangla section in order", () => {
+  const combined = `${contentSource}\n${sectionsSource}\n${pageSource}`;
+  const required = [
+    "সুন্দরবনের গভীর থেকে সংগ্রহ করা প্রকৃতির অনন্য উপহার",
+    "কেন সুন্দরবনের চাকের মধু বিশেষ?",
+    "পরিবারের কারা খেতে পারেন?",
+    "যেভাবে খেতে পারেন",
+    "সুন্দরবন থেকে আপনার ঘরে",
+    "পুষ্টিবিদের বক্তব্য",
+    "কেন ম্যাংগো লাভার?",
+    "গুরুত্বপূর্ণ তথ্য",
+    "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন",
+    "এক বছরের কম বয়সী শিশুকে মধু দেওয়া যাবে না।",
+  ];
+  for (const text of required) {
+    assert.ok(combined.includes(text), `missing approved copy: ${text}`);
+  }
+  let lastIndex = -1;
+  for (const text of required) {
+    const at = combined.indexOf(text);
+    assert.ok(at > lastIndex, `approved copy out of order: ${text}`);
+    lastIndex = at;
+  }
+  assert.match(sectionsSource, /<section[\s>]/);
+  assert.match(sectionsSource, /aria-labelledby/);
+});
+
+test("approved content data uses exact trust points, notes, and nutritionist statement", () => {
+  assert.match(contentSource, /export const heroPoints/);
+  assert.match(contentSource, /প্রাকৃতিক মৌচাক থেকে সংগ্রহ/);
+  assert.match(contentSource, /সুন্দরবনের নানা বুনো ফুলের নেকটার/);
+  assert.match(contentSource, /স্বতন্ত্র স্বাদ, ঘ্রাণ ও প্রাকৃতিক রং/);
+  assert.match(contentSource, /পরিচ্ছন্নভাবে সংগ্রহ ও বোতলজাত/);
+  assert.match(contentSource, /সারা বাংলাদেশে হোম ডেলিভারি/);
+  assert.match(contentSource, /export const importantNotes/);
+  assert.match(contentSource, /tone: "warning"/);
+  assert.match(contentSource, /tone: "info"/);
+  assert.match(contentSource, /ডায়াবেটিস বা রক্তে শর্করার সমস্যা থাকলে চিকিৎসক বা পুষ্টিবিদের পরামর্শ নিন।/);
+  assert.match(contentSource, /প্রাকৃতিক শক্তির একটি সহজ উৎস হতে পারে/);
+  assert.match(contentSource, /মুরাদ পারভেজ/);
+  assert.match(sectionsSource, /nutritionistName/);
+});
+
+test("no visible price appears outside HoneyCheckout", () => {
+  const priced: Array<[string, string]> = [
+    ["content", contentSource],
+    ["layout", layoutSource],
+    ["sections", sectionsSource],
+    ["bar", barSource],
+    ["page", pageSource],
+  ];
+  for (const [name, source] of priced) {
+    assert.doesNotMatch(source, /৳/, `${name} must not render a price`);
+  }
+});
+
+test("honest media policy: no fabricated proof, no autoplay, no video without originals", () => {
+  const combined = `${contentSource}\n${layoutSource}\n${sectionsSource}\n${barSource}\n${pageSource}`;
+  assert.doesNotMatch(combined, /autoplay/i);
+  assert.doesNotMatch(combined, /<video/i);
+  assert.doesNotMatch(sectionsSource, /review/i);
+  assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
+  assert.match(sectionsSource, /fetchpriority="high"/i);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 1);
+});
+
+test("minimal campaign chrome links phone and WhatsApp without full layout", () => {
+  assert.match(contentSource, /tel:\+8801301636461/);
+  assert.match(contentSource, /https:\/\/wa\.me\/8801301636461/);
+  assert.match(layoutSource, /@assets\/mango-lover-logo\.avif/);
+  assert.match(layoutSource, /HONEY_CAMPAIGN_PHONE_HREF/);
+  assert.match(layoutSource, /HONEY_CAMPAIGN_WHATSAPP_HREF/);
+  assert.match(layoutSource, /aria-label="ফোনে অর্ডার করুন"/);
+  assert.match(layoutSource, /aria-label="WhatsApp-এ অর্ডার করুন"/);
+  assert.doesNotMatch(layoutSource, /components\/layout/);
+  assert.doesNotMatch(layoutSource, /CartProvider|useCart/);
+  assert.match(pageSource, /CampaignHeader/);
+  assert.match(pageSource, /CampaignFooter/);
+});
+
+test("sticky bar exposes three accessible actions and hides at checkout", () => {
+  assert.match(barSource, /অর্ডার করুন/);
+  assert.match(barSource, /HONEY_CAMPAIGN_PHONE_HREF/);
+  assert.match(barSource, /HONEY_CAMPAIGN_WHATSAPP_HREF/);
+  assert.ok((barSource.match(/aria-label=/g) ?? []).length >= 3);
+  assert.match(barSource, /IntersectionObserver/);
+  assert.match(barSource, /honey-checkout/);
+  assert.match(campaignCssSource, /env\(safe-area-inset-bottom\)/);
+  assert.match(pageSource, /MobileOrderBar/);
+});
+
+test("CTAs scroll to checkout, focus its heading, and track campaign events", () => {
+  assert.match(sectionsSource, /এখনই অর্ডার করুন/);
+  assert.match(sectionsSource, /অর্ডার করুন/);
+  assert.match(sectionsSource, /onOrderClick\(/);
+  assert.match(pageSource, /trackHoneyCampaignEvent\("campaign_view"/);
+  assert.match(pageSource, /trackHoneyCampaignEvent\("landing_cta_click"/);
+  assert.match(pageSource, /prefers-reduced-motion: reduce/);
+  assert.match(pageSource, /tabIndex=\{-1\}/);
+  assert.match(pageSource, /\.focus\(/);
+  assert.match(pageSource, /scrollIntoView/);
+  assert.match(pageSource, /sundarbans-honey-page/);
+});
+
+test("campaign typography and palette stay scoped off global tokens", () => {
+  assert.match(campaignCssSource, /\.sundarbans-honey-page/);
+  assert.match(campaignCssSource, /Hind Siliguri/);
+  assert.match(campaignCssSource, /--honey-forest/);
+  assert.match(campaignCssSource, /--honey-gold/);
+  assert.match(campaignCssSource, /--honey-brown/);
+  assert.match(campaignCssSource, /--honey-cream/);
+  assert.match(htmlSource, /Hind\+Siliguri/);
+});
+
+test("missing authentic media is documented per asset, not fabricated", () => {
+  for (const asset of [
+    "sundarbans-river-hero-v1.webp",
+    "sundarbans-hive-v1.webp",
+    "sundarbans-collection-v1.webp",
+    "sundarbans-collection-poster-v1.webp",
+    "sundarbans-collection-v1.mp4",
+    "sundarbans-collection-v1.webm",
+    "nutritionist-murad-parvez-v1.webp",
+  ]) {
+    assert.ok(attributionSource.includes(asset), `ATTRIBUTION.md must track ${asset}`);
+  }
+  assert.match(attributionSource, /pending/i);
 });
