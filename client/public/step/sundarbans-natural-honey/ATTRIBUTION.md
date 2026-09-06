@@ -13,6 +13,7 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 | Versioned filename | Subject | Status |
 |---|---|---|
 | `sundarbans-river-hero-v1.webp` | Sundarbans river/forest hero original, at least 2400px wide | pending — no original supplied |
+| `sundarbans-river-hero-mobile-v1.webp` | Mobile-only hero background (aerial river + boat illustration) | shipped — AI-generated file supplied by stakeholder 2026-09-07, used as-is; NOT an authentic photograph, never presented as proof of origin |
 | `sundarbans-hive-v1.webp` | Real natural hive photo | pending — no original supplied |
 | `sundarbans-collection-v1.webp` | Real honey collection photo | pending — no original supplied |
 | `sundarbans-collection-poster-v1.webp` | Poster frame for the collection video | pending — no original supplied |
@@ -23,7 +24,9 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 
 ## Processing log
 
-No files processed yet. When originals arrive, process per the Task 8 brief
+- 2026-09-07 `sundarbans-river-hero-mobile-v1.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 01_18_47 AM.webp` (1122×1402, 721 KB, AI-generated, contains baked-in "Shundarban" lettering). Processed with `cwebp -q 82 -metadata none -resize 1080 0` → 1080×1350, 314 KB, metadata stripped. Used as-is per stakeholder instruction; baked-in lettering left untouched. Mobile-only (`md:hidden`) background with forest scrim; desktop hero stays text-first. Authentic river/forest photograph still pending.
+
+No other files processed yet. When further originals arrive, process per the Task 8 brief
 (`cwebp -q 86 -metadata none` for stills, H.264/VP9 at max 1280px wide for
 video, poster extracted at 00:00:01) and record source, permission, and edits
 here.

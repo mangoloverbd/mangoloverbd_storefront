@@ -175,7 +175,13 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 1);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 2);
+});
+
+test("mobile hero uses the supplied river illustration as a background, desktop stays text-first", () => {
+  assert.match(sectionsSource, /sundarbans-river-hero-mobile-v1\.webp/);
+  assert.match(sectionsSource, /md:hidden/);
+  assert.match(sectionsSource, /aria-hidden="true"/);
 });
 
 test("minimal campaign chrome links phone and WhatsApp without full layout", () => {
@@ -229,6 +235,7 @@ test("campaign typography and palette stay scoped off global tokens", () => {
 test("missing authentic media is documented per asset, not fabricated", () => {
   for (const asset of [
     "sundarbans-river-hero-v1.webp",
+    "sundarbans-river-hero-mobile-v1.webp",
     "sundarbans-hive-v1.webp",
     "sundarbans-collection-v1.webp",
     "sundarbans-collection-poster-v1.webp",

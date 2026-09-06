@@ -77,8 +77,18 @@ function PointList({ points }: { points: HoneyNarrativePoint[] }) {
 export function DocumentarySections({ productImageUrl, onOrderClick }: DocumentarySectionsProps) {
   return (
     <>
-      <section aria-labelledby="honey-hero-heading" className="bg-[#19382d] text-[#fffaf0]">
-        <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+      <section aria-labelledby="honey-hero-heading" className="relative overflow-hidden bg-[#19382d] text-[#fffaf0]">
+        <div aria-hidden="true" className="absolute inset-0 md:hidden">
+          <img
+            src="/step/sundarbans-natural-honey/sundarbans-river-hero-mobile-v1.webp"
+            alt=""
+            className="h-full w-full object-cover"
+            fetchPriority="high"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#19382d]/85 via-[#19382d]/55 to-[#19382d]/90" />
+        </div>
+        <div className="relative mx-auto grid max-w-5xl items-center gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div>
             <p className="text-sm font-bold tracking-[0.16em] text-[#f5c456]">{heroEyebrow}</p>
             <h2 id="honey-hero-heading" className="mt-3 text-3xl font-bold leading-snug sm:text-4xl">
