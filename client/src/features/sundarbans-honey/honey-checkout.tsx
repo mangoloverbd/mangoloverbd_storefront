@@ -340,6 +340,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   }
 
   const showAvailabilityRecovery = status !== "ready" || errors.pack === AVAILABILITY_ERROR;
+  const packError = showAvailabilityRecovery ? AVAILABILITY_ERROR : errors.pack;
 
   return (
     <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-5 shadow-[0_24px_70px_rgba(50,35,16,0.10)] sm:p-8" aria-labelledby="honey-checkout-title">
@@ -374,7 +375,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
                       value={pack.variantId}
                       checked={selectedVariantId === pack.variantId}
                       disabled={status !== "ready"}
-                      {...fieldErrorProps("honey-pack", errors.pack)}
+                      {...fieldErrorProps("honey-pack", packError)}
                       onChange={() => {
                         beginCheckout();
                         setSelectedVariantId(pack.variantId);
@@ -395,10 +396,9 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
                 </label>
               ))}
             </div>
-            <InlineError id="honey-pack" error={showAvailabilityRecovery ? undefined : errors.pack} />
+            <InlineError id="honey-pack" error={packError} />
             {showAvailabilityRecovery ? (
               <div className="space-y-4 rounded-xl border border-[#b8872c] bg-[#fff7df] p-4">
-                <p className="text-sm font-semibold leading-6 text-[#654b2f]">{AVAILABILITY_ERROR}</p>
                 <div className="flex flex-wrap gap-3">
                   <button
                     type="button"

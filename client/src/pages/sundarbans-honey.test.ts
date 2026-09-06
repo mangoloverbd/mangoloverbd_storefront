@@ -72,6 +72,15 @@ test("validation focuses controls in explicit DOM order and gives every pack rad
   assert.doesNotMatch(checkoutSource, /Object\.keys\(fieldErrors\)/);
 });
 
+test("pack radios keep one rendered description in validation and availability recovery", () => {
+  assert.match(checkoutSource, /const packError = showAvailabilityRecovery \? AVAILABILITY_ERROR : errors\.pack;/);
+  assert.match(checkoutSource, /fieldErrorProps\("honey-pack", packError\)/);
+  assert.equal((checkoutSource.match(/<InlineError id="honey-pack"/g) ?? []).length, 1);
+  assert.match(checkoutSource, /<InlineError id="honey-pack" error=\{packError\}/);
+  assert.doesNotMatch(checkoutSource, /error=\{showAvailabilityRecovery \? undefined : errors\.pack\}/);
+  assert.doesNotMatch(checkoutSource, /id="honey-pack-error"/);
+});
+
 test("checkout analytics use product data but never customer fields", () => {
   assert.match(checkoutSource, /trackGoogleEcommerceEvent\("view_item"/);
   assert.match(checkoutSource, /trackGoogleEcommerceEvent\("select_item"/);
