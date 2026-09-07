@@ -3,12 +3,10 @@ export const HONEY_CAMPAIGN_PHONE_HREF = "tel:+8801301636461";
 export const HONEY_CAMPAIGN_WHATSAPP_HREF =
   `https://wa.me/8801301636461?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধু অর্ডার করতে চাই।")}`;
 
-export const heroEyebrow = "সুন্দরবনের প্রাকৃতিক চাকের মধু";
 export const heroHeadline = "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ";
 export const heroSubcopy =
   "মৌচাক থেকে বোতল পর্যন্ত—সুন্দরবনের বুনো ফুলের নেকটার থেকে সংগ্রহ করা মধু, যত্নে আপনার ঘরে।";
 export const heroCtaLabel = "বিস্তারিত জানুন";
-export const reviewSlotLabel = "রিভিউ ও রেটিং এখানে পরে যুক্ত হবে";
 
 export const trustRibbonItems = [
   { title: "সুন্দরবনের উৎস", text: "বুনো ফুলের নেকটার থেকে" },

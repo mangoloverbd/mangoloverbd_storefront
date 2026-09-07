@@ -12,7 +12,6 @@ import {
   founderHeading,
   founderSubcopy,
   heroCtaLabel,
-  heroEyebrow,
   heroSubcopy,
   importantNotes,
   importantNotesHeading,
@@ -21,7 +20,6 @@ import {
   nutritionistHeading,
   nutritionistName,
   nutritionistStatement,
-  reviewSlotLabel,
   trustRibbonItems,
   waysToEnjoyHeading,
   waysToEnjoyNote,
@@ -146,8 +144,6 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
     <>
       <section aria-labelledby="honey-hero-heading" className="border-b border-[#19382d]/25 bg-[#fbf4e8] text-[#19382d]">
         <div className="mx-auto max-w-4xl px-4 pb-8 pt-10 text-center sm:px-6 sm:pb-12 sm:pt-16">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9a711c]">{heroEyebrow}</p>
-          <p className="mt-5 text-xs tracking-wide text-[#9a711c]">{reviewSlotLabel}</p>
           <h2 id="honey-hero-heading" className="mx-auto mt-4 max-w-3xl">
             <img
               src="/step/sundarbans-natural-honey/sundarbans-honey-headline-v1.webp"
@@ -159,7 +155,7 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
               decoding="async"
             />
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
+          <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
           <div className="mt-6"><DetailsLink /></div>
           <div className="mx-auto mt-7 h-96 max-w-xl sm:h-[30rem]">
             <img

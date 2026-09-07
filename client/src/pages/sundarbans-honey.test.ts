@@ -177,7 +177,7 @@ test("hero is centered with a strong headline, details CTA, and product image", 
   assert.match(sectionsSource, /sundarbans-honey-hero-v2\.webp/);
   assert.match(sectionsSource, /object-contain/);
   assert.match(sectionsSource, /bg-\[#FFD60A\]/i);
-  assert.match(sectionsSource, /reviewSlotLabel/);
+  assert.doesNotMatch(sectionsSource, /reviewSlotLabel/);
   assert.doesNotMatch(sectionsSource, /heroPoints\.map/);
 });
 
