@@ -71,17 +71,31 @@ function DetailsLink() {
   );
 }
 
-function SectionHeading({ id, label, heading, description }: {
+function SectionHeading({ id, label, heading, description, headingImage }: {
   id: string;
   label: string;
   heading: string;
   description?: string;
+  headingImage?: {
+    src: string;
+    alt: string;
+  };
 }) {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-6 pt-12 text-center sm:px-6 sm:pt-16">
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9a711c]">{label}</p>
       <h2 id={id} className="mt-3 text-balance font-serif text-3xl font-medium leading-tight tracking-[-0.04em] text-[#19382d] sm:text-5xl">
-        {heading}
+        {headingImage ? (
+          <img
+            src={headingImage.src}
+            alt={headingImage.alt}
+            className="mx-auto h-auto w-full mix-blend-multiply"
+            width="2400"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : heading}
       </h2>
       {description ? <p className="mx-auto mt-4 max-w-xl leading-7 text-[#654b2f]">{description}</p> : null}
     </div>
@@ -151,7 +165,16 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
       <LogoCloudBlock items={trustRibbonItems} />
 
       <section id="honey-collection-reel" aria-labelledby="honey-collection-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading id="honey-collection-heading" label="বন থেকে বোতল পর্যন্ত" heading={collectionReelHeading} description={collectionReelSubcopy} />
+        <SectionHeading
+          id="honey-collection-heading"
+          label="বন থেকে বোতল পর্যন্ত"
+          heading={collectionReelHeading}
+          headingImage={{
+            src: "/step/sundarbans-natural-honey/sundarbans-honey-collection-heading-v1.webp",
+            alt: "বনের গল্প, বাস্তব ভিডিওতে",
+          }}
+          description={collectionReelSubcopy}
+        />
         <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
           <MediaSlot label="আপনার বাস্তব collection reel এখানে যুক্ত হবে" />
         </div>

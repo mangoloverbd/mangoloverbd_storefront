@@ -162,13 +162,18 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 3);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 4);
 });
 
 test("why-special section uses the real product image with concise callouts", () => {
   assert.match(sectionsSource, /honey-why-heading/);
   assert.match(sectionsSource, /whySpecialPoints\.slice/);
   assert.match(sectionsSource, /loading="lazy"/);
+});
+
+test("collection heading uses the supplied Bangla artwork", () => {
+  assert.match(sectionsSource, /sundarbans-honey-collection-heading-v1\.webp/);
+  assert.match(sectionsSource, /alt: "বনের গল্প, বাস্তব ভিডিওতে"/);
 });
 
 test("hero is centered with a strong headline, details CTA, and product image", () => {
