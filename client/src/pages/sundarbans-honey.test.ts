@@ -7,6 +7,7 @@ const checkoutPath = new URL("../features/sundarbans-honey/honey-checkout.tsx", 
 const contentPath = new URL("../features/sundarbans-honey/content.ts", import.meta.url);
 const layoutPath = new URL("../features/sundarbans-honey/campaign-layout.tsx", import.meta.url);
 const sectionsPath = new URL("../features/sundarbans-honey/documentary-sections.tsx", import.meta.url);
+const logoCloudPath = new URL("../components/ui/logo-cloud-3.tsx", import.meta.url);
 const barPath = new URL("../features/sundarbans-honey/mobile-order-bar.tsx", import.meta.url);
 const campaignCssPath = new URL("../index.css", import.meta.url);
 const htmlPath = new URL("../../index.html", import.meta.url);
@@ -22,6 +23,7 @@ function readOptional(path: URL) {
 const contentSource = readOptional(contentPath);
 const layoutSource = readOptional(layoutPath);
 const sectionsSource = readOptional(sectionsPath);
+const logoCloudSource = readOptional(logoCloudPath);
 const barSource = readOptional(barPath);
 const campaignCssSource = readOptional(campaignCssPath);
 const htmlSource = readOptional(htmlPath);
@@ -179,6 +181,16 @@ test("hero is centered with a strong headline, details CTA, and product image", 
   assert.match(sectionsSource, /bg-\[#FFD60A\]/i);
   assert.doesNotMatch(sectionsSource, /reviewSlotLabel/);
   assert.doesNotMatch(sectionsSource, /heroPoints\.map/);
+});
+
+test("trust ribbon uses the reusable reduced-motion marquee", () => {
+  assert.match(sectionsSource, /LogoCloudBlock/);
+  assert.match(logoCloudSource, /honey-trust-marquee/);
+  assert.match(logoCloudSource, /prefers-reduced-motion/);
+  assert.match(logoCloudSource, /aria-hidden/);
+  assert.match(contentSource, /বুনো ফুলের নেকটার থেকে সংগৃহীত মধু/);
+  assert.match(contentSource, /মৌচাক থেকে বোতল—প্রতিটি ধাপে যত্ন/);
+  assert.match(contentSource, /সারা দেশে সহজ ক্যাশ অন ডেলিভারি/);
 });
 
 test("minimal campaign chrome links phone and WhatsApp without full layout", () => {

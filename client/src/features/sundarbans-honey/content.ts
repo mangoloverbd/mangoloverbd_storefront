@@ -9,9 +9,9 @@ export const heroSubcopy =
 export const heroCtaLabel = "বিস্তারিত জানুন";
 
 export const trustRibbonItems = [
-  { title: "সুন্দরবনের উৎস", text: "বুনো ফুলের নেকটার থেকে" },
-  { title: "পরিষ্কারভাবে বোতলজাত", text: "সংগ্রহ থেকে বোতল পর্যন্ত যত্ন" },
-  { title: "হাতে পেয়ে মূল্য", text: "ক্যাশ অন ডেলিভারি" },
+  { title: "সুন্দরবনের উৎস", text: "বুনো ফুলের নেকটার থেকে সংগৃহীত মধু" },
+  { title: "পরিষ্কারভাবে বোতলজাত", text: "মৌচাক থেকে বোতল—প্রতিটি ধাপে যত্ন" },
+  { title: "হাতে পেয়ে মূল্য দিন", text: "সারা দেশে সহজ ক্যাশ অন ডেলিভারি" },
 ] as const;
 
 export const collectionReelHeading = "বনের গল্প, বাস্তব ভিডিওতে";

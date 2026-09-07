@@ -1,5 +1,6 @@
 import { TriangleAlert } from "lucide-react";
 
+import LogoCloudBlock from "@/components/ui/logo-cloud-3";
 import {
   collectionReelHeading,
   collectionReelSubcopy,
@@ -171,14 +172,7 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
         </div>
       </section>
 
-      <section aria-label="ম্যাংগো লাভারের প্রতিশ্রুতি" className="grid border-b border-[#19382d]/25 bg-[#19382d] text-[#fffaf0] sm:grid-cols-3">
-        {trustRibbonItems.map((item) => (
-          <div key={item.title} className="border-b border-[#fffaf0]/25 px-5 py-4 text-center last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
-            <strong className="block font-serif text-lg font-medium">{item.title}</strong>
-            <span className="mt-1 block text-xs text-[#f4ecd9]">{item.text}</span>
-          </div>
-        ))}
-      </section>
+      <LogoCloudBlock items={trustRibbonItems} />
 
       <section id="honey-collection-reel" aria-labelledby="honey-collection-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
         <SectionHeading id="honey-collection-heading" label="বন থেকে বোতল পর্যন্ত" heading={collectionReelHeading} description={collectionReelSubcopy} />
