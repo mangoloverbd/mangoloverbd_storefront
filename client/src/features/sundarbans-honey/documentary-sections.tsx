@@ -5,6 +5,7 @@ import {
   collectionReelSubcopy,
   comparisonHeading,
   faqHeading,
+  faqAnswers,
   faqQuestions,
   featuredPacksHeading,
   featuredPacksSubcopy,
@@ -76,7 +77,8 @@ function DetailsLink() {
   );
 }
 
-function SectionHeading({ label, heading, description }: {
+function SectionHeading({ id, label, heading, description }: {
+  id: string;
   label: string;
   heading: string;
   description?: string;
@@ -84,7 +86,7 @@ function SectionHeading({ label, heading, description }: {
   return (
     <div className="mx-auto max-w-3xl px-4 pb-6 pt-12 text-center sm:px-6 sm:pt-16">
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9a711c]">{label}</p>
-      <h2 className="mt-3 text-balance font-serif text-3xl font-medium leading-tight tracking-[-0.04em] text-[#19382d] sm:text-5xl">
+      <h2 id={id} className="mt-3 text-balance font-serif text-3xl font-medium leading-tight tracking-[-0.04em] text-[#19382d] sm:text-5xl">
         {heading}
       </h2>
       {description ? <p className="mx-auto mt-4 max-w-xl leading-7 text-[#654b2f]">{description}</p> : null}
@@ -176,15 +178,14 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
       </section>
 
       <section id="honey-collection-reel" aria-labelledby="honey-collection-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading label="বন থেকে বোতল পর্যন্ত" heading={collectionReelHeading} description={collectionReelSubcopy} />
+        <SectionHeading id="honey-collection-heading" label="বন থেকে বোতল পর্যন্ত" heading={collectionReelHeading} description={collectionReelSubcopy} />
         <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
           <MediaSlot label="আপনার বাস্তব collection reel এখানে যুক্ত হবে" />
-          <p id="honey-collection-heading" className="sr-only">{collectionReelHeading}</p>
         </div>
       </section>
 
       <section aria-labelledby="honey-packs-heading" className="border-b border-[#19382d]/25 bg-[#f5eff5]">
-        <SectionHeading label="আপনার জন্য প্যাক বেছে নিন" heading={featuredPacksHeading} description={featuredPacksSubcopy} />
+        <SectionHeading id="honey-packs-heading" label="আপনার জন্য প্যাক বেছে নিন" heading={featuredPacksHeading} description={featuredPacksSubcopy} />
         <div className="mx-auto max-w-3xl px-4 pb-12 sm:px-6 sm:pb-16">
           {packOptions.length ? (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -193,16 +194,15 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
           ) : (
             <p className="border-y border-[#19382d]/25 py-6 text-center text-[#654b2f]">প্যাকের তথ্য লোড হচ্ছে।</p>
           )}
-          <p id="honey-packs-heading" className="sr-only">{featuredPacksHeading}</p>
           <div className="mt-7 text-center"><OrderButton placement="featured_packs" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div>
           <p className="mt-4 text-center text-sm text-[#654b2f]">সারা বাংলাদেশে delivery ৳100 · কোনো অগ্রিম পেমেন্ট নেই</p>
         </div>
       </section>
 
       <section aria-labelledby="honey-why-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading label={whySpecialHeading} heading={whySpecialLead} />
+        <SectionHeading id="honey-why-heading" label={whySpecialHeading} heading={whySpecialLead} />
         <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 pb-12 sm:px-6 lg:grid-cols-[0.85fr_1.3fr_0.85fr] lg:pb-16">
-          <PointList points={whySpecialPoints.slice(0, 2)} />
+          <PointList points={whySpecialPoints.slice(0, 3)} />
           <div className="order-first grid min-h-72 place-items-center bg-[#bdd2c8] p-5 lg:order-none">
             {productImageUrl ? (
               <img
@@ -214,7 +214,7 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
               />
             ) : null}
           </div>
-          <PointList points={whySpecialPoints.slice(2, 4)} />
+          <PointList points={whySpecialPoints.slice(3)} />
         </div>
       </section>
 
@@ -228,13 +228,13 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
       </section>
 
       <section aria-labelledby="honey-who-heading" className="border-b border-[#19382d]/25 bg-[#fbf4e8]">
-        <SectionHeading label="পরিবারের জন্য" heading={whoCanConsumeHeading} description="বয়স ও শারীরিক অবস্থা অনুযায়ী পরিমিত পরিমাণে ব্যবহার করুন।" />
-        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><h2 id="honey-who-heading" className="sr-only">{whoCanConsumeHeading}</h2><PointList points={whoCanConsumePoints} /></div>
+        <SectionHeading id="honey-who-heading" label="পরিবারের জন্য" heading={whoCanConsumeHeading} description="বয়স ও শারীরিক অবস্থা অনুযায়ী পরিমিত পরিমাণে ব্যবহার করুন।" />
+        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><PointList points={whoCanConsumePoints} /></div>
       </section>
 
       <section aria-labelledby="honey-ways-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading label="দৈনন্দিন ব্যবহারে" heading={waysToEnjoyHeading} description={waysToEnjoyNote} />
-        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><h2 id="honey-ways-heading" className="sr-only">{waysToEnjoyHeading}</h2><PointList points={waysToEnjoyPoints} /><div className="mt-7 text-center"><OrderButton placement="content_mid" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div></div>
+        <SectionHeading id="honey-ways-heading" label="দৈনন্দিন ব্যবহারে" heading={waysToEnjoyHeading} description={waysToEnjoyNote} />
+        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><PointList points={waysToEnjoyPoints} /><div className="mt-7 text-center"><OrderButton placement="content_mid" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div></div>
       </section>
 
       <section aria-labelledby="honey-journey-heading" className="border-b border-[#19382d]/25 bg-[#19382d] text-[#fffaf0]">
@@ -257,14 +257,14 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
       </section>
 
       <section aria-labelledby="honey-why-brand-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading label="স্বচ্ছতার সঙ্গে" heading={whyMangoLoverHeading} description={comparisonHeading} />
-        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><h2 id="honey-why-brand-heading" className="sr-only">{whyMangoLoverHeading}</h2><PointList points={whyMangoLoverPoints} /><div className="mt-7 text-center"><OrderButton placement="content_bottom" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div></div>
+        <SectionHeading id="honey-why-brand-heading" label="স্বচ্ছতার সঙ্গে" heading={whyMangoLoverHeading} description={comparisonHeading} />
+        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16"><PointList points={whyMangoLoverPoints} /><div className="mt-7 text-center"><OrderButton placement="content_bottom" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div></div>
       </section>
 
       {/* Customer reviews intentionally omitted until genuine, approved reviews arrive. */}
       <section aria-labelledby="honey-faq-heading" className="border-b border-[#19382d]/25 bg-[#fbf4e8]">
-        <SectionHeading label="আপনার প্রশ্নের উত্তর" heading={faqHeading} />
-        <div className="mx-auto max-w-3xl px-4 pb-12 sm:px-6 sm:pb-16"><h2 id="honey-faq-heading" className="sr-only">{faqHeading}</h2><dl className="divide-y divide-[#19382d]/25 border-y border-[#19382d]/25">{faqQuestions.map((question) => <div key={question} className="flex items-center justify-between gap-5 py-5"><dt className="font-serif text-lg text-[#19382d]">{question}</dt><dd aria-hidden="true" className="text-2xl">+</dd></div>)}</dl></div>
+        <SectionHeading id="honey-faq-heading" label="আপনার প্রশ্নের উত্তর" heading={faqHeading} />
+        <div className="mx-auto max-w-3xl px-4 pb-12 sm:px-6 sm:pb-16"><div className="divide-y divide-[#19382d]/25 border-y border-[#19382d]/25">{faqQuestions.map((question, index) => <details key={question} className="group py-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-serif text-lg text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"><span>{question}</span><span aria-hidden="true" className="text-2xl transition-transform group-open:rotate-45">+</span></summary><p className="max-w-2xl pt-4 leading-7 text-[#654b2f]">{faqAnswers[index]}</p></details>)}</div></div>
       </section>
 
       <section aria-labelledby="honey-notes-heading" className="bg-[#fffdf8]">
