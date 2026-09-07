@@ -145,3 +145,43 @@
     animation-duration: 80s;
   }
 }
+
+.sundarbans-honey-page {
+  --honey-forest: #19382d;
+  --honey-forest-deep: #0f241c;
+  --honey-gold: #f5c456;
+  --honey-brown: #654b2f;
+  --honey-cream: #fffaf0;
+  font-family: "Hind Siliguri", "Inter", system-ui, sans-serif;
+}
+
+.sundarbans-honey-page .honey-order-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.625rem 1rem calc(0.625rem + env(safe-area-inset-bottom));
+  background: var(--honey-forest);
+  border-top: 1px solid rgba(245, 196, 86, 0.35);
+  transition: transform 0.25s ease;
+}
+
+.sundarbans-honey-page .honey-order-bar[data-hidden="true"] {
+  transform: translateY(110%);
+}
+
+@media (min-width: 768px) {
+  .sundarbans-honey-page .honey-order-bar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sundarbans-honey-page .honey-order-bar {
+    transition: none;
+  }
+}

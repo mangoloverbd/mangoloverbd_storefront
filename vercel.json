@@ -44,6 +44,15 @@
   ],
   "headers": [
     {
+      "source": "/step/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/((?!api(?:/|$)|assets(?:/|$)|.*\\.[^/]+$).*)",
       "headers": [
         {

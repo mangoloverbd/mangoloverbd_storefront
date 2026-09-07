@@ -1,3 +1,5 @@
+import { isGoogleOnlyCampaignPath } from "./campaign-routes.ts";
+
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;
@@ -7,6 +9,10 @@ declare global {
 
 export function getMetaPixelId() {
   return (import.meta as any).env?.VITE_META_PIXEL_ID as string | undefined;
+}
+
+export function isMetaAllowedOnCurrentRoute() {
+  return typeof window === "undefined" || !isGoogleOnlyCampaignPath(window.location.pathname);
 }
 
 function getCookie(name: string) {
@@ -58,6 +64,7 @@ async function getBrowserUserData() {
 }
 
 export function initMetaPixel() {
+  if (!isMetaAllowedOnCurrentRoute()) return;
   const pixelId = getMetaPixelId();
   if (!pixelId) return;
 
@@ -105,6 +112,7 @@ export function trackPixel(
   customData?: Record<string, unknown>,
   eventId?: string,
 ) {
+  if (!isMetaAllowedOnCurrentRoute()) return;
   if (typeof window === "undefined") return;
   const fbq = (window as any).fbq as undefined | ((...args: any[]) => void);
   if (!fbq) return;
@@ -120,6 +128,7 @@ export async function trackCapi(
   eventSourceUrl?: string,
 ) {
   try {
+    if (!isMetaAllowedOnCurrentRoute()) return;
     if (typeof window === "undefined") return;
 
     await fetch("/api/meta", {

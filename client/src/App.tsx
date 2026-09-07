@@ -10,8 +10,51 @@ import Home from "@/pages/home";
 import ProductPage from "@/pages/product";
 import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
+import SundarbansHoneyPage from "@/pages/sundarbans-honey";
+import SundarbansHoneyThankYouPage from "@/pages/sundarbans-honey-thank-you";
+import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+
+const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
+  "/step/sundarbans-natural-honey": "সুন্দরবনের প্রাকৃতিক মধু | ম্যাংগো লাভার",
+  "/step/sundarbans-natural-honey/thank-you": "অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
+};
+
+function CampaignMetadata({ location }: { location: string }) {
+  const pathname = location.endsWith("/") ? location.slice(0, -1) : location;
+  const pageTitle = CAMPAIGN_PAGE_TITLES[pathname];
+
+  useEffect(() => {
+    if (!pageTitle) {
+      return;
+    }
+
+    const previousTitle = document.title;
+    let robots = document.head.querySelector('meta[name="robots"]') as HTMLMetaElement | null;
+    const previousRobotsContent = robots?.getAttribute("content") ?? null;
+
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.name = "robots";
+      document.head.appendChild(robots);
+    }
+
+    document.title = pageTitle;
+    robots.content = "noindex, nofollow";
+
+    return () => {
+      document.title = previousTitle;
+      if (previousRobotsContent === null) {
+        robots.remove();
+      } else {
+        robots.content = previousRobotsContent;
+      }
+    };
+  }, [pageTitle]);
+
+  return null;
+}
 
 function PageTransition({ children }: { children: ReactNode }) {
   const isPresent = useIsPresent();
@@ -48,6 +91,7 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 function Router() {
   const [location] = useLocation();
+  const googleOnlyCampaign = isGoogleOnlyCampaignPath(location);
   const scrollPositions = useRef(new Map<string, number>());
   const currentLocation = useRef(location);
   const isHistoryNavigation = useRef(false);
@@ -62,12 +106,16 @@ function Router() {
   };
 
   useEffect(() => {
-    initMetaPixel();
-  }, []);
+    if (!googleOnlyCampaign) {
+      initMetaPixel();
+    }
+  }, [googleOnlyCampaign]);
 
   useEffect(() => {
-    trackMetaEvent({ eventName: "PageView", eventId: createEventId(), capi: true });
-  }, [location]);
+    if (!googleOnlyCampaign) {
+      trackMetaEvent({ eventName: "PageView", eventId: createEventId(), capi: true });
+    }
+  }, [googleOnlyCampaign, location]);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -149,37 +197,46 @@ function Router() {
   }, [location]);
 
   return (
-    <AnimatePresence>
-      <Switch location={location} key={location}>
-        <Route path="/">
-          <PageTransition>
-            <Home />
-          </PageTransition>
-        </Route>
-        <Route path="/products">
-          <PageTransition>
-            <ProductsPage />
-          </PageTransition>
-        </Route>
-        <Route path="/booking">
-          <PageTransition>
-            <BookingPage />
-          </PageTransition>
-        </Route>
-        <Route path="/product/:id">
-          {(params) => (
-            <PageTransition key={params.id}>
-              <ProductPage params={params} />
+    <>
+      <CampaignMetadata location={location} />
+      <AnimatePresence>
+        <Switch location={location} key={location}>
+          <Route path="/step/sundarbans-natural-honey/thank-you">
+            <PageTransition><SundarbansHoneyThankYouPage /></PageTransition>
+          </Route>
+          <Route path="/step/sundarbans-natural-honey">
+            <PageTransition><SundarbansHoneyPage /></PageTransition>
+          </Route>
+          <Route path="/">
+            <PageTransition>
+              <Home />
             </PageTransition>
-          )}
-        </Route>
-        <Route>
-          <PageTransition>
-            <NotFound />
-          </PageTransition>
-        </Route>
-      </Switch>
-    </AnimatePresence>
+          </Route>
+          <Route path="/products">
+            <PageTransition>
+              <ProductsPage />
+            </PageTransition>
+          </Route>
+          <Route path="/booking">
+            <PageTransition>
+              <BookingPage />
+            </PageTransition>
+          </Route>
+          <Route path="/product/:id">
+            {(params) => (
+              <PageTransition key={params.id}>
+                <ProductPage params={params} />
+              </PageTransition>
+            )}
+          </Route>
+          <Route>
+            <PageTransition>
+              <NotFound />
+            </PageTransition>
+          </Route>
+        </Switch>
+      </AnimatePresence>
+    </>
   );
 }
 

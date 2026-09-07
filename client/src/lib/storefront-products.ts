@@ -12,6 +12,8 @@ const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 // fresh poll reflects an edit within roughly this window — Shopify-like sync.
 export const STOREFRONT_POLL_INTERVAL_MS = 8000;
 
+export { isProductOrderable } from "./storefront-product-orderability";
+
 type StorefrontProductStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
 type ProductImage = string | {
@@ -122,28 +124,6 @@ export function setCachedStorefrontProduct(storage: StorefrontProductStorage | u
 
 export function removeCachedStorefrontProduct(storage: StorefrontProductStorage | undefined, slug: string) {
   storage?.removeItem(`${PRODUCT_CACHE_PREFIX}${slug}`);
-}
-
-export function isProductOrderable(product: StorefrontProduct | null | undefined) {
-  if (!product || product.available === false) {
-    return false;
-  }
-
-  if (typeof product.stock_quantity === "number" && product.stock_quantity <= 0) {
-    return false;
-  }
-
-  if (product.variants?.length) {
-    return product.variants.some((variant) => {
-      if (variant.available === false) {
-        return false;
-      }
-
-      return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
-    });
-  }
-
-  return true;
 }
 
 export function formatProductPrice(price: StorefrontProduct["price"]) {

@@ -14,6 +14,10 @@ export function serveStatic(app: Express) {
 
   // Set cache control headers for static files
   const setCustomHeaders = (req: Request, res: Response, next: NextFunction) => {
+    if (req.path === "/step" || req.path.startsWith("/step/")) {
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    }
+
     const mimeTypes: Record<string, string> = {
       '.js': 'application/javascript',
       '.mjs': 'application/javascript',
