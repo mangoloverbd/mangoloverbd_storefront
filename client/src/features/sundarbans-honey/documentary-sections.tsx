@@ -34,7 +34,6 @@ import {
 } from "./content";
 
 type DocumentarySectionsProps = {
-  productImageUrl: string | null;
   onOrderClick: (placement: string) => void;
 };
 
@@ -130,7 +129,7 @@ function MediaSlot({ label, dark = false }: { label: string; dark?: boolean }) {
   );
 }
 
-export function DocumentarySections({ productImageUrl, onOrderClick }: DocumentarySectionsProps) {
+export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) {
   return (
     <>
       <section aria-labelledby="honey-hero-heading" className="border-b border-[#19382d]/25 bg-[#fbf4e8] text-[#19382d]">
@@ -147,7 +146,7 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
             />
           </h2>
           <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
-          <div className="mx-auto mt-1 w-[76%] max-w-sm overflow-hidden rounded-xl border border-[#19382d]/20 bg-[#fbf4e8]">
+          <div className="mx-auto mt-1 w-[76%] max-w-sm overflow-hidden rounded-xl bg-[#fbf4e8]">
             <img
               src="/step/sundarbans-natural-honey/sundarbans-honey-hero-banner-v1.webp"
               alt=""
@@ -202,20 +201,21 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
             alt: "বনের স্বাদ, প্রাকৃতিক বৈচিত্র্য, এক বোতলে।",
           }}
         />
-        <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 pb-12 sm:px-6 lg:grid-cols-[0.85fr_1.3fr_0.85fr] lg:pb-16">
-          <PointList points={whySpecialPoints.slice(0, 3)} />
-          <div className="order-first grid min-h-72 place-items-center bg-[#bdd2c8] p-5 lg:order-none">
-            {productImageUrl ? (
-              <img
-                src={productImageUrl}
-                alt="সুন্দরবনের প্রাকৃতিক চাকের মধুর বোতল"
-                className="h-72 w-full object-contain"
-                loading="lazy"
-                decoding="async"
-              />
-            ) : null}
-          </div>
-          <PointList points={whySpecialPoints.slice(3)} />
+        <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
+          <img
+            src="/step/sundarbans-natural-honey/sundarbans-why-special-infographic-v2.webp"
+            alt="সুন্দরবনের চাকের মধু কেন বিশেষ: সুন্দরবনের বন ও ফুল, স্বতন্ত্র স্বাদ ও ঘ্রাণ, প্রাকৃতিক শর্করায় শক্তি, প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট যৌগ, প্রতিদিনের ব্যবহারে সহজ"
+            className="mx-auto h-auto w-full"
+            width="1254"
+            height="1254"
+            loading="lazy"
+            decoding="async"
+          />
+          <ul className="sr-only">
+            {whySpecialPoints.map((point) => (
+              <li key={point.title}>{point.title}: {point.text}</li>
+            ))}
+          </ul>
         </div>
       </section>
 
