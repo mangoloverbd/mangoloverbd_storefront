@@ -180,6 +180,7 @@ test("hero is centered with a strong headline, details CTA, and product image", 
   assert.match(sectionsSource, /heroCtaLabel/);
   assert.match(sectionsSource, /honey-hero-heading/);
   assert.match(sectionsSource, /sundarbans-honey-hero-v2\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-hero-banner-v1\.webp/);
   assert.match(sectionsSource, /object-contain/);
   assert.match(sectionsSource, /bg-\[#FFD60A\]/i);
   assert.doesNotMatch(sectionsSource, /reviewSlotLabel/);
