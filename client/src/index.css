@@ -155,6 +155,13 @@
   font-family: "Hind Siliguri", "Inter", system-ui, sans-serif;
 }
 
+.sundarbans-honey-page .honey-heading-heavy {
+  font-family: "Hind Siliguri", "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  -webkit-text-stroke: 0.45px currentColor;
+  paint-order: stroke fill;
+}
+
 .sundarbans-honey-page .honey-order-bar {
   position: fixed;
   left: 0.75rem;

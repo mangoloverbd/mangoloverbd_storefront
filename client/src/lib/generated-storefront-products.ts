@@ -154,19 +154,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "9acd9651-155f-44ab-86bd-f3a978b10035",
-        "attributes": {
-          "size": "৫০০ গ্রাম"
-        },
-        "price": 850,
-        "available": true
-      },
-      {
         "id": "e29a06b3-a32b-4f54-81f1-c37f439c1e2d",
         "attributes": {
           "size": "১ কেজি"
         },
         "price": 1600,
+        "available": true
+      },
+      {
+        "id": "9acd9651-155f-44ab-86bd-f3a978b10035",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 850,
         "available": true
       }
     ]
@@ -211,19 +211,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "0bf1a8d5-ba53-4ad0-b336-7d32541c7582",
-        "attributes": {
-          "size": "0.5KG"
-        },
-        "price": 800,
-        "available": true
-      },
-      {
         "id": "801cde55-42ff-4a9e-aeee-eb02b23a8f8d",
         "attributes": {
           "size": "1KG"
         },
         "price": 1600,
+        "available": true
+      },
+      {
+        "id": "0bf1a8d5-ba53-4ad0-b336-7d32541c7582",
+        "attributes": {
+          "size": "0.5KG"
+        },
+        "price": 800,
         "available": true
       }
     ]

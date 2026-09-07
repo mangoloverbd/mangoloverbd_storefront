@@ -115,7 +115,7 @@ export const nutritionistName = "মুরাদ পারভেজ";
 export const nutritionistStatement =
   "মধু কোনো রোগের ওষুধ নয়। তবে সুষম খাদ্যাভ্যাসের অংশ হিসেবে পরিমিত মধু প্রাকৃতিক শক্তির একটি সহজ উৎস হতে পারে। এতে বিভিন্ন প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট যৌগও পাওয়া যায়। শিশু, কর্মজীবী মানুষ ও বয়স্ক ব্যক্তি সবাই বয়স ও শারীরিক অবস্থা অনুযায়ী পরিমিত পরিমাণে মধু গ্রহণ করতে পারেন। পণ্য বিক্রির পাশাপাশি গ্রাহককে সঠিক তথ্য জানানোও আমাদের দায়িত্ব।";
 
-export const whyMangoLoverHeading = "কেন ম্যাংগো লাভার?";
+export const whyMangoLoverHeading = "Mango Lover vs অন্যান্য Brands";
 export const whyMangoLoverPoints: HoneyNarrativePoint[] = [
   {
     title: "উৎস সম্পর্কে স্বচ্ছ তথ্য",
@@ -144,7 +144,6 @@ export const whyMangoLoverPoints: HoneyNarrativePoint[] = [
 ];
 
 export const importantNotesHeading = "গুরুত্বপূর্ণ তথ্য";
-export const checkoutSectionHeading = "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন";
 
 // Reviews ship-gate (spec: Error and edge states). The review section is
 // intentionally omitted until BOTH hold: genuine supplied reviews with display

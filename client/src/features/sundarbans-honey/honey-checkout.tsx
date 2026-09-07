@@ -309,7 +309,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
 
   if (status === "loading") {
     return (
-      <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-6" aria-label="অর্ডারের তথ্য লোড হচ্ছে">
+      <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-label="অর্ডারের তথ্য লোড হচ্ছে">
         <div className="h-6 w-36 animate-pulse rounded bg-[#dfd2b5] motion-reduce:animate-none" />
         <div className="mt-4 h-12 w-full animate-pulse rounded-xl bg-[#ebe0c8] motion-reduce:animate-none" />
         <span className="sr-only">অর্ডারের তথ্য লোড হচ্ছে…</span>
@@ -321,29 +321,28 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const packError = showAvailabilityRecovery ? AVAILABILITY_ERROR : errors.pack;
 
   return (
-    <section className="rounded-3xl border border-[#d4c39c] bg-[#fffaf0] p-5 shadow-[0_24px_70px_rgba(50,35,16,0.10)] sm:p-8" aria-labelledby="honey-checkout-title">
+    <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="honey-checkout-heading">
       <div className="max-w-2xl">
-        <p className="text-sm font-bold tracking-[0.16em] text-[#936514]">সহজ অর্ডার</p>
-        <h2 id="honey-checkout-title" className="mt-2 text-3xl font-bold text-[#19382d]" tabIndex={-1}>
+        <h2 id="honey-checkout-heading" className="text-2xl font-bold text-[#19382d]" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
-        <p className="mt-3 leading-7 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন। সারা দেশে ডেলিভারি চার্জ ৳{HONEY_DELIVERY_CHARGE}।</p>
+        <p className="mt-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন। সারা দেশে ডেলিভারি চার্জ ৳{HONEY_DELIVERY_CHARGE}।</p>
       </div>
 
       <form
-        className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
+        className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
         onFocusCapture={beginCheckout}
         noValidate
       >
-        <div className="space-y-6">
+        <div className="space-y-5">
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#19382d]">প্যাক সাইজ বেছে নিন</legend>
             <div id="honey-pack" tabIndex={-1} className="grid gap-3 sm:grid-cols-2" {...fieldErrorProps("honey-pack", errors.pack)}>
               {packs.map((pack) => (
                 <label
                   key={pack.variantId}
-                  className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
+                    className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#c8b98f] bg-white px-4 py-3 has-[:checked]:border-[#285240] has-[:checked]:ring-2 has-[:checked]:ring-[#285240]/20"
                 >
                   <span className="flex items-center gap-3">
                     <input
@@ -485,23 +484,23 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           </div>
         </div>
 
-        <aside className="h-fit rounded-2xl bg-[#19382d] p-5 text-[#fffaf0] lg:sticky lg:top-6">
+        <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">
           <h3 className="text-xl font-bold">অর্ডার সারাংশ</h3>
-          <dl className="mt-5 space-y-3 text-sm">
+          <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="font-semibold">৳{HONEY_DELIVERY_CHARGE}</dd></div>
-            <div className="flex justify-between gap-4 border-t border-white/25 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#f5c456]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
+            <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
-          <p className="mt-5 rounded-xl bg-white/10 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
+          <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
 
           <div className="mt-5 min-h-6 text-sm" aria-live="polite" aria-atomic="true">
             {announcement}
           </div>
 
           {requestError ? (
-            <div className="mt-4 space-y-4 rounded-xl border border-[#f5c456]/50 bg-white/10 p-4">
+            <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">আপনার লেখা তথ্য রাখা হয়েছে। নিচের বোতামে আবার চেষ্টা করুন অথবা যোগাযোগ করুন।</p>
               <SupportActions placement="checkout_network_error" />
             </div>
@@ -510,7 +509,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           <Button
             type="submit"
             disabled={isPending || status !== "ready"}
-            className="mt-5 min-h-12 w-full rounded-xl bg-[#f5c456] text-base font-bold text-[#19382d] hover:bg-[#ffd675] focus-visible:ring-[#fffaf0] disabled:opacity-70"
+            className="mt-4 min-h-12 w-full rounded-xl border border-black bg-[#f5c456] text-base font-bold text-[#19382d] hover:bg-[#ffd675] focus-visible:ring-[#19382d] disabled:opacity-70"
           >
             {isPending ? (
               <><LoaderCircle className="size-5 animate-spin motion-reduce:animate-none" aria-hidden="true" /> অর্ডার পাঠানো হচ্ছে…</>

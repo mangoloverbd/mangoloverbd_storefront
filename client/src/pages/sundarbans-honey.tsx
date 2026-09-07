@@ -5,7 +5,6 @@ import {
   CampaignFooter,
   CampaignHeader,
 } from "@/features/sundarbans-honey/campaign-layout";
-import { checkoutSectionHeading } from "@/features/sundarbans-honey/content";
 import { DocumentarySections } from "@/features/sundarbans-honey/documentary-sections";
 import {
   HoneyCheckout,
@@ -74,24 +73,15 @@ export default function SundarbansHoneyPage() {
         <DocumentarySections
           onOrderClick={handleOrderClick}
         />
-        <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
-          <section id="honey-checkout" aria-labelledby="honey-checkout-heading" className="scroll-mt-20 pt-4">
-            <h2
-              id="honey-checkout-heading"
-              tabIndex={-1}
-              className="text-2xl font-bold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d] sm:text-3xl"
-            >
-              {checkoutSectionHeading}
-            </h2>
-            <div className="mt-6">
-              <HoneyCheckout
-                product={product}
-                status={checkoutStatus}
-                productQuery={productQuery}
-                inventoryQuery={inventoryQuery}
-                onRetry={() => void Promise.all([productQuery.refetch(), inventoryQuery.refetch()])}
-              />
-            </div>
+        <div className="mx-auto max-w-5xl px-4 pb-8 sm:px-6 sm:pb-10">
+          <section id="honey-checkout" aria-label="ক্যাশ অন ডেলিভারি অর্ডার" className="scroll-mt-20 pt-2">
+            <HoneyCheckout
+              product={product}
+              status={checkoutStatus}
+              productQuery={productQuery}
+              inventoryQuery={inventoryQuery}
+              onRetry={() => void Promise.all([productQuery.refetch(), inventoryQuery.refetch()])}
+            />
           </section>
         </div>
       </main>

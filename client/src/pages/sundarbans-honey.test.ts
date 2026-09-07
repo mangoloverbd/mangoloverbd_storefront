@@ -121,8 +121,8 @@ test("reference-inspired narrative renders the centered conversion sections in o
     "বনের গল্প, বাস্তব ভিডিওতে",
     "কেন সুন্দরবনের চাকের মধু বিশেষ?",
     "অর্ডারের আগে যা জানা দরকার",
-    "কেন ম্যাংগো লাভার?",
-    "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন",
+     "Mango Lover vs অন্যান্য Brands",
+     "আপনার প্রশ্নের উত্তর",
     "এক বছরের কম বয়সী শিশুকে মধু দেওয়া যাবে না।",
   ];
   for (const text of required) {
@@ -147,15 +147,47 @@ test("approved content data uses strong source, handling, and responsible copy",
   assert.match(contentSource, /মৌচাক থেকে বোতল পর্যন্ত/);
 });
 
-test("why Mango Lover section renders a neutral comparison matrix", () => {
-  assert.match(sectionsSource, /honey-comparison-matrix/);
-  assert.match(sectionsSource, /ম্যাংগো লাভার/);
-  assert.match(sectionsSource, /যা যাচাই করবেন/);
-  assert.match(sectionsSource, /whyMangoLoverPoints\.map/);
-  assert.match(sectionsSource, /role="row"/);
+test("why Mango Lover section renders the supplied comparison artwork", () => {
+  assert.match(sectionsSource, /mango-lover-vs-other-brands-v1\.webp/);
+  assert.match(sectionsSource, /alt="Mango Lover vs অন্যান্য Brands — পার্থক্যটা নিজেই দেখুন"/);
+  assert.doesNotMatch(sectionsSource, /ComparisonMatrix|honey-comparison-matrix/);
   assert.match(sectionsSource, /placement="content_bottom"/);
-  assert.match(sectionsSource, /উৎসের তথ্য যাচাই করুন/);
-  assert.doesNotMatch(sectionsSource, /অন্যরা জানায় না|অন্যদের নেই|ভেজাল|নিম্নমান/);
+  assert.match(contentSource, /Mango Lover vs অন্যান্য Brands/);
+});
+
+test("family and everyday-use points use an editorial mobile rail", () => {
+  assert.match(sectionsSource, /EditorialPointRail points=\{whoCanConsumePoints\}/);
+  assert.match(sectionsSource, /EditorialPointRail points=\{waysToEnjoyPoints\}/);
+  assert.match(sectionsSource, /overflow-x-auto/);
+  assert.match(sectionsSource, /snap-x snap-mandatory/);
+  assert.match(sectionsSource, /scroll-smooth/);
+  assert.match(sectionsSource, /min-w-\[82%\]/);
+  assert.match(sectionsSource, /aria-label="আগের কার্ড"/);
+  assert.match(sectionsSource, /aria-label="পরের কার্ড"/);
+  assert.match(sectionsSource, /scrollPoints/);
+});
+
+test("important notes are summarized inside the FAQ section", () => {
+  const faqSection = sectionsSource.slice(sectionsSource.indexOf('aria-labelledby="honey-faq-heading"'));
+  assert.match(faqSection, /<aside aria-labelledby="honey-notes-heading"/);
+  assert.match(faqSection, /importantNotes\.map/);
+  assert.doesNotMatch(faqSection, /<section aria-labelledby="honey-notes-heading"/);
+});
+
+test("FAQ disclosures animate accessibly and checkout uses a lighter card shell", () => {
+  assert.match(sectionsSource, /AnimatePresence/);
+  assert.match(sectionsSource, /aria-expanded=\{isOpen\}/);
+  assert.match(sectionsSource, /height: "auto"/);
+  assert.match(checkoutSource, /rounded-2xl/);
+  assert.doesNotMatch(checkoutSource, /shadow-\[0_24px_70px/);
+  assert.match(checkoutSource, /border border-black/);
+});
+
+test("checkout keeps its focus target without the removed campaign headings", () => {
+  assert.match(checkoutSource, /id="honey-checkout-heading"/);
+  assert.doesNotMatch(checkoutSource, /সহজ অর্ডার/);
+  assert.doesNotMatch(pageSource, /checkoutSectionHeading|সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন/);
+  assert.match(checkoutSource, /ক্যাশ অন ডেলিভারিতে অর্ডার করুন/);
 });
 
 test("hero has no price while checkout consumes API-backed options", () => {
@@ -165,14 +197,17 @@ test("hero has no price while checkout consumes API-backed options", () => {
   assert.doesNotMatch(sectionsSource, /featuredPacksHeading|featuredPacksSubcopy/);
 });
 
-test("honest media policy: no fabricated proof, no autoplay, no video without originals", () => {
+test("honest media policy: no fabricated proof, no autoplay, only approved native reels", () => {
   const combined = `${contentSource}\n${layoutSource}\n${sectionsSource}\n${barSource}\n${pageSource}`;
   assert.doesNotMatch(combined, /autoplay/i);
-  assert.doesNotMatch(combined, /<video/i);
+  assert.doesNotMatch(sectionsSource, /player\.cloudinary\.com\/embed/);
+  assert.equal(sectionsSource.match(/<video/g)?.length ?? 0, 1);
+  assert.match(sectionsSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
+  assert.match(sectionsSource, /preload="metadata"/);
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 7);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 9);
 });
 
 test("bundle showcase replaces the founder placeholder with supplied pack artwork", () => {
@@ -254,7 +289,7 @@ test("CTAs scroll to checkout, focus its heading, and track campaign events", ()
   assert.match(pageSource, /trackHoneyCampaignEvent\("campaign_view"/);
   assert.match(pageSource, /trackHoneyCampaignEvent\("landing_cta_click"/);
   assert.match(pageSource, /prefers-reduced-motion: reduce/);
-  assert.match(pageSource, /tabIndex=\{-1\}/);
+  assert.match(checkoutSource, /tabIndex=\{-1\}/);
   assert.match(pageSource, /\.focus\(/);
   assert.match(pageSource, /scrollIntoView/);
   assert.match(pageSource, /sundarbans-honey-page/);
@@ -263,6 +298,9 @@ test("CTAs scroll to checkout, focus its heading, and track campaign events", ()
 test("campaign typography and palette stay scoped off global tokens", () => {
   assert.match(campaignCssSource, /\.sundarbans-honey-page/);
   assert.match(campaignCssSource, /Hind Siliguri/);
+  assert.match(campaignCssSource, /honey-heading-heavy/);
+  assert.match(campaignCssSource, /font-weight: 700/);
+  assert.match(campaignCssSource, /-webkit-text-stroke: 0\.45px/);
   assert.match(campaignCssSource, /--honey-forest/);
   assert.match(campaignCssSource, /--honey-gold/);
   assert.match(campaignCssSource, /--honey-brown/);
