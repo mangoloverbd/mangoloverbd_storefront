@@ -198,9 +198,12 @@ export function trackGoogleInteractionEvent(
   if (!browserTarget) return null;
 
   const payload = { event, ...parameters };
-  browserTarget.dataLayer = browserTarget.dataLayer || [];
-  browserTarget.dataLayer.push(payload);
-  browserTarget.gtag?.("event", event, parameters);
+  if (browserTarget.gtag) {
+    browserTarget.gtag("event", event, parameters);
+  } else {
+    browserTarget.dataLayer = browserTarget.dataLayer || [];
+    browserTarget.dataLayer.push(payload);
+  }
 
   return payload;
 }
