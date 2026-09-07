@@ -178,11 +178,13 @@ export function trackGoogleEcommerceEvent(
     language: input.language ?? getCurrentLanguage(browserTarget),
   });
 
-  browserTarget.dataLayer = browserTarget.dataLayer || [];
-  browserTarget.dataLayer.push(payload);
-
   const { event: _event, ...gtagPayload } = payload;
-  browserTarget.gtag?.("event", event, gtagPayload);
+  if (browserTarget.gtag) {
+    browserTarget.gtag("event", event, gtagPayload);
+  } else {
+    browserTarget.dataLayer = browserTarget.dataLayer || [];
+    browserTarget.dataLayer.push(payload);
+  }
 
   return payload;
 }
