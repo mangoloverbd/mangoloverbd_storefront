@@ -18,7 +18,7 @@ const deliveryOptions = [
   { label: "Standard Delivery", bn: "সাধারণ ডেলিভারি", charge: 100 }
 ];
 
-const freeDeliveryThreshold = 2500;
+const freeDeliveryThreshold = 2600;
 
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
@@ -435,7 +435,7 @@ export default function OrderDialog({
                           ৳0
                         </span>
                         <span className="mt-3 block text-[9px] leading-5 text-black/45">
-                          Applied automatically for orders over ৳2500
+                          Applied automatically for orders over ৳2600
                         </span>
                       </div>
                     ) : (

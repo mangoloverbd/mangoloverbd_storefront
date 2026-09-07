@@ -208,7 +208,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="flex min-w-0 items-center gap-2 text-[8px] font-bold uppercase tracking-[0.12em] md:gap-4 md:text-[9px] md:tracking-[0.24em]"
             >
-              <span className="whitespace-nowrap">৳২৫০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি</span>
+              <span className="whitespace-nowrap">৳২৬০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি</span>
               <span className="h-3 w-px shrink-0 bg-[#163B33]/25" />
               <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
                 অফার শেষ হবে
