@@ -117,7 +117,7 @@ test("sends one direct GA4 ecommerce event without adding a duplicate dataLayer 
   ]);
 });
 
-test("pushes custom interactions to both dataLayer and direct GA4", () => {
+test("sends one direct GA4 custom interaction without adding a duplicate dataLayer event", () => {
   const gtagCalls: unknown[][] = [];
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
@@ -134,7 +134,7 @@ test("pushes custom interactions to both dataLayer and direct GA4", () => {
     campaign: "sundarbans_natural_honey",
     placement: "hero",
   });
-  assert.deepEqual(target.dataLayer, [payload]);
+  assert.deepEqual(target.dataLayer, []);
   assert.deepEqual(gtagCalls, [["event", "landing_cta_click", {
     campaign: "sundarbans_natural_honey",
     placement: "hero",
