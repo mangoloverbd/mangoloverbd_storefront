@@ -69,7 +69,7 @@ export function CampaignHeader() {
             label="ফোনে অর্ডার করুন"
             placement="header"
             event="phone_click"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#eab308] px-3.5 py-2 text-[#19382d] shadow-[0_2px_14px_rgba(234,179,8,0.45)] transition-colors hover:bg-[#f5c456] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#eab308]"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#eab308] px-3.5 py-2 text-[#19382d] transition-colors hover:bg-[#f5c456] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#eab308]"
           >
             <Phone className="size-4" strokeWidth={2.5} aria-hidden="true" />
             <span className="hidden text-[12px] font-bold uppercase tracking-[0.1em] min-[380px]:inline">
@@ -81,7 +81,7 @@ export function CampaignHeader() {
             label="WhatsApp-এ অর্ডার করুন"
             placement="header"
             event="whatsapp_click"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#25d366] px-3.5 py-2 text-[#06351d] shadow-[0_2px_14px_rgba(37,211,102,0.45)] transition-colors hover:bg-[#4be07f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366]"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#25d366] px-3.5 py-2 text-[#06351d] transition-colors hover:bg-[#4be07f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25d366]"
           >
             <WhatsAppBrandIcon className="size-4" />
             <span className="hidden text-[12px] font-bold uppercase tracking-[0.1em] min-[420px]:inline">
