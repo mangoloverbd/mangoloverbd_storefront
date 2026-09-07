@@ -366,7 +366,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
           <div className="mx-auto mt-0 grid max-w-4xl grid-cols-2 gap-3 sm:gap-5">
             <article className="rounded-[1.75rem] bg-transparent">
               <img
-                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-500g-v2.webp"
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-500g-v3.webp"
                 alt="সুন্দরবনের চাকের মধু ৫০০ গ্রামের প্যাক"
                 className="mx-auto h-auto w-full"
                 width="1024"
@@ -374,13 +374,13 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
                 loading="lazy"
                 decoding="async"
               />
-              <div className="flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
+              <div className="mt-3 flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
                 <OrderButton placement="bundle_500g" label="অর্ডার করুন" onOrderClick={onOrderClick} className="w-full justify-center gap-2 px-2 text-sm sm:w-auto sm:gap-6 sm:px-5 sm:text-base" />
               </div>
             </article>
             <article className="rounded-[1.75rem] bg-transparent">
               <img
-                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-1kg-v2.webp"
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-1kg-v3.webp"
                 alt="সুন্দরবনের চাকের মধু ১ কেজির প্যাক"
                 className="mx-auto h-auto w-full"
                 width="1024"
@@ -388,7 +388,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
                 loading="lazy"
                 decoding="async"
               />
-              <div className="flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
+              <div className="mt-3 flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
                 <OrderButton placement="bundle_1kg" label="অর্ডার করুন" onOrderClick={onOrderClick} className="w-full justify-center gap-2 px-2 text-sm sm:w-auto sm:gap-6 sm:px-5 sm:text-base" />
               </div>
             </article>

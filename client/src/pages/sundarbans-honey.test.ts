@@ -212,8 +212,8 @@ test("honest media policy: no fabricated proof, no autoplay, only approved nativ
 
 test("bundle showcase replaces the founder placeholder with supplied pack artwork", () => {
   assert.match(sectionsSource, /honey-bundle-showcase/);
-  assert.match(sectionsSource, /sundarbans-honey-bundle-500g-v2\.webp/);
-  assert.match(sectionsSource, /sundarbans-honey-bundle-1kg-v2\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-500g-v3\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-1kg-v3\.webp/);
   assert.match(sectionsSource, /placement=\"bundle_500g\"/);
   assert.match(sectionsSource, /placement=\"bundle_1kg\"/);
   assert.doesNotMatch(sectionsSource, /honey-founder-heading|founder video \/ portrait/);
