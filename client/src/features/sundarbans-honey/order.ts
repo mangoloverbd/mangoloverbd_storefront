@@ -110,11 +110,20 @@ export function calculateHoneyOrder(unitPrice: number, quantity: number): HoneyO
   };
 }
 
-export function buildHoneyAddress(streetAddress: string, district: string, upazila: string) {
+export function buildHoneyAddress(streetAddress: string, district = "", upazila = "") {
   const street = requiredTrimmedString(streetAddress, 300, "Street address");
-  const normalizedDistrict = requiredTrimmedString(district, 100, "District");
-  const normalizedUpazila = requiredTrimmedString(upazila, 100, "Upazila");
-  const address = `${street}, ${normalizedUpazila}, ${normalizedDistrict}`;
+  const parts = [street];
+  const normalizedUpazila = upazila.trim();
+  const normalizedDistrict = district.trim();
+  if (normalizedUpazila) {
+    if (normalizedUpazila.length > 100) throw new Error("Upazila is invalid");
+    parts.push(normalizedUpazila);
+  }
+  if (normalizedDistrict) {
+    if (normalizedDistrict.length > 100) throw new Error("District is invalid");
+    parts.push(normalizedDistrict);
+  }
+  const address = parts.join(", ");
   if (address.length > 500) throw new Error("Address is invalid");
   return address;
 }

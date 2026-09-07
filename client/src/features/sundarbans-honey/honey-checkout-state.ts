@@ -5,9 +5,7 @@ export type HoneyFieldName =
   | "quantity"
   | "name"
   | "phone"
-  | "address"
-  | "district"
-  | "upazila";
+  | "address";
 
 export type HoneyFieldErrors = Partial<Record<HoneyFieldName, string>>;
 
@@ -17,8 +15,6 @@ export const HONEY_FIELD_ORDER: readonly HoneyFieldName[] = [
   "name",
   "phone",
   "address",
-  "district",
-  "upazila",
 ];
 
 export function resolveHoneyCheckoutStatus(input: {

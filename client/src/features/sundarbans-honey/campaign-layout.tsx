@@ -69,7 +69,7 @@ export function CampaignHeader() {
             label="ফোনে অর্ডার করুন"
             placement="header"
             event="phone_click"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#f5c456] px-3.5 py-2 text-[#19382d] shadow-[0_2px_14px_rgba(245,196,86,0.45)] transition-colors hover:bg-[#ffd970] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c456]"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full bg-[#eab308] px-3.5 py-2 text-[#19382d] shadow-[0_2px_14px_rgba(234,179,8,0.45)] transition-colors hover:bg-[#f5c456] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#eab308]"
           >
             <Phone className="size-4" strokeWidth={2.5} aria-hidden="true" />
             <span className="hidden text-[12px] font-bold uppercase tracking-[0.1em] min-[380px]:inline">
@@ -96,7 +96,7 @@ export function CampaignHeader() {
 
 export function CampaignFooter() {
   return (
-    <footer className="border-t border-[#19382d]/20 bg-[#fcbb14] text-[#19382d]">
+    <footer className="border-t border-[#19382d]/20 bg-[#eab308] text-[#19382d]">
       <div className="mx-auto max-w-5xl px-4 py-7 text-center sm:px-6 sm:py-9">
         <h2
           className="mx-auto max-w-full text-[clamp(1.15rem,5.65vw,2.25rem)] font-semibold leading-tight tracking-[-0.03em]"

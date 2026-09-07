@@ -50,12 +50,12 @@ test("campaign checkout polls the fixed live product and inventory with snapshot
   assert.doesNotMatch(pageSource, /unitPrice:\s*(?:800|1600)/);
 });
 
-test("embedded checkout has pack, quantity, local location, and accessible Bangla validation controls", () => {
+test("embedded checkout has pack, quantity, and accessible Bangla validation controls", () => {
   assert.match(checkoutSource, /export function HoneyCheckout/);
   assert.match(checkoutSource, /type="radio"/);
   assert.match(checkoutSource, /name="quantity"/);
-  assert.equal((checkoutSource.match(/<LocationCombobox/g) ?? []).length, 2);
-  assert.match(checkoutSource, /getUpazilas\(districtId\)/);
+  assert.doesNotMatch(checkoutSource, /<LocationCombobox/);
+  assert.doesNotMatch(checkoutSource, /getUpazilas|DISTRICTS|districtId|upazilaId/);
   assert.match(checkoutSource, /\^\\d\{11\}\$/);
   assert.match(checkoutSource, /aria-describedby/);
   assert.match(checkoutSource, /aria-live="polite"/);
@@ -166,8 +166,8 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
 
 test("bundle showcase replaces the founder placeholder with supplied pack artwork", () => {
   assert.match(sectionsSource, /honey-bundle-showcase/);
-  assert.match(sectionsSource, /sundarbans-honey-bundle-500g-v1\.webp/);
-  assert.match(sectionsSource, /sundarbans-honey-bundle-1kg-v1\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-500g-v2\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-1kg-v2\.webp/);
   assert.match(sectionsSource, /placement=\"bundle_500g\"/);
   assert.match(sectionsSource, /placement=\"bundle_1kg\"/);
   assert.doesNotMatch(sectionsSource, /honey-founder-heading|founder video \/ portrait/);
@@ -192,7 +192,7 @@ test("hero is centered with a strong headline, details CTA, and product image", 
   assert.match(sectionsSource, /sundarbans-honey-hero-v2\.webp/);
   assert.match(sectionsSource, /sundarbans-honey-hero-banner-v1\.webp/);
   assert.match(sectionsSource, /object-contain/);
-  assert.match(sectionsSource, /bg-\[#FFD60A\]/i);
+  assert.match(sectionsSource, /bg-\[#EAB308\]/i);
   assert.doesNotMatch(sectionsSource, /reviewSlotLabel/);
   assert.doesNotMatch(sectionsSource, /heroPoints\.map/);
 });

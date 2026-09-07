@@ -50,7 +50,7 @@ function OrderButton({
     <button
       type="button"
       onClick={() => onOrderClick(placement)}
-      className={`inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#ffd60a] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d] ${className ?? ""}`}
+      className={`inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#eab308] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d] ${className ?? ""}`}
     >
       <span>{label}</span>
       <span aria-hidden="true" className="text-xl leading-none">→</span>
@@ -62,7 +62,7 @@ function DetailsLink() {
   return (
     <a
       href="#honey-collection-reel"
-      className="inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#ffd60a] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
+      className="inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#eab308] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
     >
       <span>{heroCtaLabel}</span>
       <span aria-hidden="true" className="text-xl leading-none">→</span>
@@ -224,7 +224,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
           <div className="mx-auto mt-0 grid max-w-4xl grid-cols-2 gap-3 sm:gap-5">
             <article className="rounded-[1.75rem] bg-transparent">
               <img
-                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-500g-v1.webp"
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-500g-v2.webp"
                 alt="সুন্দরবনের চাকের মধু ৫০০ গ্রামের প্যাক"
                 className="mx-auto h-auto w-full"
                 width="1024"
@@ -238,7 +238,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
             </article>
             <article className="rounded-[1.75rem] bg-transparent">
               <img
-                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-1kg-v1.webp"
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-1kg-v2.webp"
                 alt="সুন্দরবনের চাকের মধু ১ কেজির প্যাক"
                 className="mx-auto h-auto w-full"
                 width="1024"

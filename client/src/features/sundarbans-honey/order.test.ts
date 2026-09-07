@@ -93,11 +93,12 @@ test("rejects unsafe, fractional, non-positive, and over-limit price or quantity
   assert.throws(() => calculateHoneyOrder(10_000_000, 2));
 });
 
-test("builds the combined address in street, upazila, district order", () => {
+test("builds the combined address with optional upazila and district", () => {
   assert.equal(buildHoneyAddress("বাড়ি ১২, রোড ৩", "ঢাকা", "সাভার"), "বাড়ি ১২, রোড ৩, সাভার, ঢাকা");
   assert.equal(buildHoneyAddress("  House 12  ", " Dhaka ", " Savar "), "House 12, Savar, Dhaka");
-  assert.throws(() => buildHoneyAddress("", "Dhaka", "Savar"));
-  assert.throws(() => buildHoneyAddress("House 12", "Dhaka", "  "));
+  assert.equal(buildHoneyAddress("বাড়ি ১২, রোড ৩, সাভার, ঢাকা"), "বাড়ি ১২, রোড ৩, সাভার, ঢাকা");
+  assert.throws(() => buildHoneyAddress(""));
+  assert.throws(() => buildHoneyAddress("  "));
 });
 
 test("builds an allowlisted Google-only order payload from the selected live pack", () => {

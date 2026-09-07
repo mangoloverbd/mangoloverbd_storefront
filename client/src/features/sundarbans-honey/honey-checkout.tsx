@@ -14,8 +14,6 @@ import {
   trackGoogleEcommerceEvent,
 } from "@/lib/google-analytics";
 
-import { DISTRICTS, getUpazilas } from "./location-data";
-import { LocationCombobox } from "./location-combobox";
 import {
   getFirstHoneyInvalidField,
   getHoneyFocusTargetId,
@@ -61,16 +59,12 @@ type CheckoutFields = {
   name: string;
   phone: string;
   address: string;
-  districtId: string;
-  upazilaId: string;
   selectedVariantId: string;
   quantity: number;
 };
 
 function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): HoneyFieldErrors {
   const errors: HoneyFieldErrors = {};
-  const district = DISTRICTS.find((option) => option.id === fields.districtId);
-  const upazila = getUpazilas(fields.districtId).find((option) => option.id === fields.upazilaId);
 
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120) {
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
@@ -81,8 +75,6 @@ function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): Honey
   if (fields.address.trim().split(/\s+/).filter(Boolean).length < 3 || fields.address.trim().length > 300) {
     errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
   }
-  if (!district) errors.district = "জেলা বেছে নিন।";
-  if (!upazila) errors.upazila = "থানা / উপজেলা বেছে নিন।";
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId)) {
     errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
   }
@@ -144,8 +136,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [districtId, setDistrictId] = useState("");
-  const [upazilaId, setUpazilaId] = useState("");
   const [errors, setErrors] = useState<HoneyFieldErrors>({});
   const [announcement, setAnnouncement] = useState("");
   const [requestError, setRequestError] = useState(false);
@@ -155,7 +145,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const beganCheckoutRef = useRef(false);
   const selectedPack = packs.find(({ variantId }) => variantId === selectedVariantId);
   const presentedPack = status === "ready" ? selectedPack : null;
-  const upazilas = getUpazilas(districtId);
   const totals = presentedPack
     ? calculateHoneyOrder(
         presentedPack.unitPrice,
@@ -233,7 +222,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     event.preventDefault();
     if (submittingRef.current) return;
 
-    const fields = { name, phone, address, districtId, upazilaId, selectedVariantId, quantity };
+    const fields = { name, phone, address, selectedVariantId, quantity };
     const nextErrors = getFieldErrors(fields, packs);
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
@@ -284,18 +273,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         return;
       }
 
-      const district = DISTRICTS.find((option) => option.id === districtId);
-      const upazila = getUpazilas(districtId).find((option) => option.id === upazilaId);
-      if (!district || !upazila) {
-        const locationErrors = getFieldErrors(fields, freshPacks);
-        setErrors(locationErrors);
-        setAnnouncement(Object.values(locationErrors)[0] ?? "ঠিকানা আবার যাচাই করুন।");
-        focusFirstInvalidField(locationErrors);
-        trackCheckoutError("validation");
-        return;
-      }
-
-      const combinedAddress = buildHoneyAddress(address, district.nameBn, upazila.nameBn);
+      const combinedAddress = buildHoneyAddress(address);
       const payload: HoneyOrderPayload = {
         ...buildHoneyOrderPayload({
           productName: refreshedProduct.name,
@@ -504,39 +482,6 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
               {...fieldErrorProps("honey-address", errors.address)}
             />
             <InlineError id="honey-address" error={errors.address} />
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <LocationCombobox
-              id="honey-district"
-              label="জেলা"
-              placeholder="জেলা বেছে নিন"
-              searchPlaceholder="জেলা খুঁজুন..."
-              emptyLabel="কোনো জেলা পাওয়া যায়নি।"
-              options={DISTRICTS}
-              value={districtId}
-              error={errors.district}
-              onChange={(value) => {
-                setDistrictId(value);
-                setUpazilaId("");
-                setErrors((current) => ({ ...current, district: undefined, upazila: undefined }));
-              }}
-            />
-            <LocationCombobox
-              id="honey-upazila"
-              label="থানা / উপজেলা"
-              placeholder={districtId ? "থানা / উপজেলা বেছে নিন" : "আগে জেলা বেছে নিন"}
-              searchPlaceholder="থানা / উপজেলা খুঁজুন..."
-              emptyLabel="কোনো থানা / উপজেলা পাওয়া যায়নি।"
-              options={upazilas}
-              value={upazilaId}
-              disabled={!districtId}
-              error={errors.upazila}
-              onChange={(value) => {
-                setUpazilaId(value);
-                setErrors((current) => ({ ...current, upazila: undefined }));
-              }}
-            />
           </div>
         </div>
 

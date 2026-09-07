@@ -47,7 +47,7 @@ test("snapshot first paint remains ready only while live queries have not failed
 
 test("focus follows visual DOM order rather than error insertion order", () => {
   assert.equal(getHoneyFocusTargetId({
-    upazila: "required",
+    address: "required",
     phone: "invalid",
     quantity: "invalid",
   }, "pack-b", ["pack-a", "pack-b"]), "honey-quantity");
