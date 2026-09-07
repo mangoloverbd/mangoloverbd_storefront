@@ -10,7 +10,6 @@ import {
   faqHeading,
   faqAnswers,
   faqQuestions,
-  heroCtaLabel,
   heroSubcopy,
   importantNotes,
   importantNotesHeading,
@@ -56,18 +55,6 @@ function OrderButton({
       <span>{label}</span>
       <span aria-hidden="true" className="text-xl leading-none">→</span>
     </button>
-  );
-}
-
-function DetailsLink() {
-  return (
-    <a
-      href="#honey-collection-reel"
-      className="inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#eab308] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
-    >
-      <span>{heroCtaLabel}</span>
-      <span aria-hidden="true" className="text-xl leading-none">→</span>
-    </a>
   );
 }
 
@@ -315,7 +302,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
               decoding="async"
             />
           </div>
-          <div className="mt-3"><DetailsLink /></div>
+          <div className="mt-3"><OrderButton placement="hero" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div>
           <div className="mx-auto mt-7 h-96 max-w-xl sm:h-[30rem]">
             <img
               src="/step/sundarbans-natural-honey/sundarbans-honey-hero-v2.webp"

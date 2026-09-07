@@ -6,7 +6,6 @@ export const HONEY_CAMPAIGN_WHATSAPP_HREF =
 export const heroHeadline = "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ";
 export const heroSubcopy =
   "মৌচাক থেকে বোতল পর্যন্ত—সুন্দরবনের বুনো ফুলের নেকটার থেকে সংগ্রহ করা মধু, যত্নে আপনার ঘরে।";
-export const heroCtaLabel = "বিস্তারিত জানুন";
 
 export const trustRibbonItems = [
   { title: "সুন্দরবনের উৎস", text: "বুনো ফুলের নেকটার থেকে সংগৃহীত মধু" },

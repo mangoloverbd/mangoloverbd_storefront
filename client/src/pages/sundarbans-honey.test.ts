@@ -232,8 +232,8 @@ test("collection heading uses the supplied Bangla artwork", () => {
   assert.match(sectionsSource, /alt: "বনের গল্প, বাস্তব ভিডিওতে"/);
 });
 
-test("hero is centered with a strong headline, details CTA, and product image", () => {
-  assert.match(sectionsSource, /heroCtaLabel/);
+test("hero is centered with a strong headline, order CTA, and product image", () => {
+  assert.match(sectionsSource, /placement="hero"/);
   assert.match(sectionsSource, /honey-hero-heading/);
   assert.match(sectionsSource, /sundarbans-honey-hero-v2\.webp/);
   assert.match(sectionsSource, /sundarbans-honey-hero-banner-v1\.webp/);

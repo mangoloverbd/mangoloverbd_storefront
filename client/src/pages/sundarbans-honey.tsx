@@ -56,11 +56,12 @@ export default function SundarbansHoneyPage() {
 
   const handleOrderClick = useCallback((placement: string) => {
     trackHoneyCampaignEvent("landing_cta_click", { placement });
+    const target = document.getElementById("honey-checkout");
     const heading = document.getElementById("honey-checkout-heading");
-    if (!heading) return;
+    if (!target) return;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    heading.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    window.setTimeout(() => heading.focus({ preventScroll: true }), reduceMotion ? 0 : 450);
+    target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    window.setTimeout(() => heading?.focus({ preventScroll: true }), reduceMotion ? 0 : 450);
   }, []);
 
   return (
