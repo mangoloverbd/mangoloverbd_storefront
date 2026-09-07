@@ -8,8 +8,6 @@ import {
   faqHeading,
   faqAnswers,
   faqQuestions,
-  featuredPacksHeading,
-  featuredPacksSubcopy,
   founderHeading,
   founderSubcopy,
   heroCtaLabel,
@@ -34,11 +32,9 @@ import {
   whySpecialPoints,
   type HoneyNarrativePoint,
 } from "./content";
-import type { HoneyPackOption } from "./order";
 
 type DocumentarySectionsProps = {
   productImageUrl: string | null;
-  packOptions: HoneyPackOption[];
   onOrderClick: (placement: string) => void;
 };
 
@@ -120,27 +116,7 @@ function MediaSlot({ label, dark = false }: { label: string; dark?: boolean }) {
   );
 }
 
-function PackCard({ pack, active }: { pack: HoneyPackOption; active: boolean }) {
-  return (
-    <article className={active
-      ? "border-2 border-[#19382d] bg-[#ffd60a] p-4"
-      : "border border-[#19382d]/25 bg-[#fffdf8] p-4"}
-    >
-      <div className="grid min-h-24 place-items-center bg-[#f1eee7] text-center">
-        <span className="font-serif text-2xl text-[#19382d]">{pack.label}</span>
-      </div>
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <div>
-          <h3 className="font-bold text-[#19382d]">{pack.label}</h3>
-          <p className="mt-1 text-sm text-[#654b2f]">{active ? "সবচেয়ে সহজ শুরু" : "পরিবারের জন্য"}</p>
-        </div>
-        <strong className="text-lg text-[#19382d]">৳{pack.unitPrice.toLocaleString("en-BD")}</strong>
-      </div>
-    </article>
-  );
-}
-
-export function DocumentarySections({ productImageUrl, packOptions, onOrderClick }: DocumentarySectionsProps) {
+export function DocumentarySections({ productImageUrl, onOrderClick }: DocumentarySectionsProps) {
   return (
     <>
       <section aria-labelledby="honey-hero-heading" className="border-b border-[#19382d]/25 bg-[#fbf4e8] text-[#19382d]">
@@ -178,21 +154,6 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
         <SectionHeading id="honey-collection-heading" label="বন থেকে বোতল পর্যন্ত" heading={collectionReelHeading} description={collectionReelSubcopy} />
         <div className="mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
           <MediaSlot label="আপনার বাস্তব collection reel এখানে যুক্ত হবে" />
-        </div>
-      </section>
-
-      <section aria-labelledby="honey-packs-heading" className="border-b border-[#19382d]/25 bg-[#f5eff5]">
-        <SectionHeading id="honey-packs-heading" label="আপনার জন্য প্যাক বেছে নিন" heading={featuredPacksHeading} description={featuredPacksSubcopy} />
-        <div className="mx-auto max-w-3xl px-4 pb-12 sm:px-6 sm:pb-16">
-          {packOptions.length ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {packOptions.map((pack, index) => <PackCard key={pack.variantId} pack={pack} active={index === 0} />)}
-            </div>
-          ) : (
-            <p className="border-y border-[#19382d]/25 py-6 text-center text-[#654b2f]">প্যাকের তথ্য লোড হচ্ছে।</p>
-          )}
-          <div className="mt-7 text-center"><OrderButton placement="featured_packs" label="অর্ডার করুন" onOrderClick={onOrderClick} /></div>
-          <p className="mt-4 text-center text-sm text-[#654b2f]">সারা বাংলাদেশে delivery ৳100 · কোনো অগ্রিম পেমেন্ট নেই</p>
         </div>
       </section>
 

@@ -119,7 +119,6 @@ test("reference-inspired narrative renders the centered conversion sections in o
   const required = [
     "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ",
     "বনের গল্প, বাস্তব ভিডিওতে",
-    "আপনার জন্য প্যাক বেছে নিন",
     "কেন সুন্দরবনের চাকের মধু বিশেষ?",
     "ম্যাংগো লাভারের গল্প",
     "অর্ডারের আগে যা জানা দরকার",
@@ -149,12 +148,11 @@ test("approved content data uses strong source, handling, and responsible copy",
   assert.match(contentSource, /মৌচাক থেকে বোতল পর্যন্ত/);
 });
 
-test("hero has no price while featured packs consume API-backed options", () => {
+test("hero has no price while checkout consumes API-backed options", () => {
   const heroSource = sectionsSource.slice(0, sectionsSource.indexOf("honey-collection-reel"));
   assert.doesNotMatch(heroSource, /৳/);
-  assert.match(sectionsSource, /packOptions/);
-  assert.match(sectionsSource, /pack\.unitPrice/);
   assert.match(checkoutSource, /৳/);
+  assert.doesNotMatch(sectionsSource, /featuredPacksHeading|featuredPacksSubcopy/);
 });
 
 test("honest media policy: no fabricated proof, no autoplay, no video without originals", () => {

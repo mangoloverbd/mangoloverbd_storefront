@@ -17,9 +17,6 @@ export const trustRibbonItems = [
 export const collectionReelHeading = "বনের গল্প, বাস্তব ভিডিওতে";
 export const collectionReelSubcopy =
   "বাস্তব সংগ্রহের ফুটেজে দেখুন—কোথা থেকে আসে মধু, আর কীভাবে পৌঁছে যায় আপনার ঘরে।";
-export const featuredPacksHeading = "আপনার জন্য প্যাক বেছে নিন";
-export const featuredPacksSubcopy =
-  "প্রথমবারের জন্য 500g, পরিবারের জন্য 1kg—আপনার প্রয়োজন অনুযায়ী বেছে নিন।";
 export const whySpecialLead = "বনের স্বাদ, প্রাকৃতিক বৈচিত্র্য, এক বোতলে।";
 export const founderHeading = "পণ্যের পেছনের মানুষটির সঙ্গে পরিচিত হোন";
 export const founderSubcopy =

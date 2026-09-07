@@ -76,7 +76,6 @@ export default function SundarbansHoneyPage() {
         </h1>
         <DocumentarySections
           productImageUrl={productImageUrl}
-          packOptions={product ? getHoneyPackOptions(product) : []}
           onOrderClick={handleOrderClick}
         />
         <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
