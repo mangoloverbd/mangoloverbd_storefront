@@ -1,6 +1,7 @@
 import { TriangleAlert } from "lucide-react";
 
 import LogoCloudBlock from "@/components/ui/logo-cloud-3";
+import { MovingBorder } from "@/components/ui/moving-border";
 import {
   collectionReelHeading,
   collectionReelSubcopy,
@@ -147,16 +148,25 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
             />
           </h2>
           <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
-          <img
-            src="/step/sundarbans-natural-honey/sundarbans-honey-hero-banner-v1.webp"
-            alt=""
-            aria-hidden="true"
-            className="mx-auto mt-1 h-auto w-[76%] max-w-sm mix-blend-multiply"
-            width="2400"
-            height="802"
-            loading="lazy"
-            decoding="async"
-          />
+          <div className="relative mx-auto mt-1 w-[76%] max-w-sm overflow-hidden rounded-xl p-[2px]">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
+              <MovingBorder duration={4200} rx="12%" ry="12%">
+                <div className="h-16 w-16 rounded-full bg-[radial-gradient(circle,#fff7b2_0%,#f59e0b_42%,transparent_70%)] opacity-90" />
+              </MovingBorder>
+            </div>
+            <div className="relative overflow-hidden rounded-[10px] bg-[#fbf4e8]">
+              <img
+                src="/step/sundarbans-natural-honey/sundarbans-honey-hero-banner-v1.webp"
+                alt=""
+                aria-hidden="true"
+                className="h-auto w-full mix-blend-multiply"
+                width="2400"
+                height="802"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
           <div className="mt-3"><DetailsLink /></div>
           <div className="mx-auto mt-7 h-96 max-w-xl sm:h-[30rem]">
             <img
