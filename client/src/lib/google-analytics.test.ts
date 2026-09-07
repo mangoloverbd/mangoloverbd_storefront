@@ -71,7 +71,7 @@ test("builds a flat dataLayer event with page metadata", () => {
   });
 });
 
-test("pushes clean dataLayer objects and sends direct GA4 ecommerce events", () => {
+test("sends one direct GA4 ecommerce event without adding a duplicate dataLayer event", () => {
   const gtagCalls: unknown[][] = [];
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
@@ -90,29 +90,7 @@ test("pushes clean dataLayer objects and sends direct GA4 ecommerce events", () 
     target,
   );
 
-  assert.deepEqual(target.dataLayer, [
-    {
-      event: "begin_checkout",
-      page_type: "checkout",
-      page_title: "Checkout | Mango Lover BD",
-      page_url: "https://mangoloverbd.vercel.app/checkout",
-      page_path: "/checkout",
-      page_language: "en",
-      logged_in: false,
-      customer_id: null,
-      currency: "BDT",
-      value: 1850,
-      items: [
-        {
-          item_id: "mango-himsagar",
-          item_name: "Himsagar Mango",
-          item_brand: "Mango Lover BD",
-          price: 1850,
-          quantity: 1,
-        },
-      ],
-    },
-  ]);
+  assert.deepEqual(target.dataLayer, []);
   assert.deepEqual(gtagCalls, [
     ["event", "begin_checkout", {
       page_type: "checkout",
