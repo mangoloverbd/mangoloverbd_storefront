@@ -19,7 +19,11 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 | `sundarbans-honey-hero-banner-v1.webp` | Wide premium honey banner supplied as a design graphic | shipped — supplied by stakeholder 2026-09-07, used as decorative hero art; the baked-in “lab tested” wording is not independently verified proof |
 | `sundarbans-honey-headline-v1.webp` | Bangla hero headline artwork supplied as a wide design graphic | shipped — supplied by stakeholder 2026-09-07, used as decorative text artwork; not a product-origin, packaging, credential, or review claim |
 | `sundarbans-honey-collection-heading-v1.webp` | Bangla collection-section heading artwork supplied as a wide design graphic | shipped — supplied by stakeholder 2026-09-07, used as decorative text artwork; not a collection-proof or origin claim |
+| `sundarbans-why-special-heading-v1.webp` | Bangla "why special" section heading artwork supplied as a wide design graphic | shipped — supplied by stakeholder 2026-09-07, used as decorative text artwork replacing the heading copy; same wording kept as alt text and code fallback |
+| `sundarbans-why-special-infographic-v2.webp` | "Why special" infographic (honey bottle + box render, bees, honeycomb, 5 Bangla points) | shipped — supplied design graphic by stakeholder 2026-09-07. Bottle/box are illustrative recreations, NOT real packaging photos. Baked-in Bangla copy mirrored in alt text plus a screen-reader-only list beside the image. |
 | `sundarbans-why-special-infographic-v1.webp` | "Why special" infographic (hive, bees, 5 Bangla points, illustrative bottle + box render) | shipped — AI-generated file supplied by stakeholder 2026-09-07. Bottle/box are illustrative recreations, NOT real packaging photos; real bottle photo stays the live catalog image. Baked-in Bangla copy mirrored in a screen-reader-only list beside the image. |
+| `sundarbans-honey-bundle-500g-v1.webp` | 500g honey bundle promotional graphic | shipped — supplied design graphic by stakeholder 2026-09-07, used as promotional artwork; baked-in price is visual copy and checkout remains live |
+| `sundarbans-honey-bundle-1kg-v1.webp` | 1kg honey bundle promotional graphic | shipped — supplied design graphic by stakeholder 2026-09-07, used as promotional artwork; baked-in price is visual copy and checkout remains live |
 | `sundarbans-hive-v1.webp` | Real natural hive photo | pending — no original supplied |
 | `sundarbans-collection-v1.webp` | Real honey collection photo | pending — no original supplied |
 | `sundarbans-collection-poster-v1.webp` | Poster frame for the collection video | pending — no original supplied |
@@ -37,12 +41,15 @@ the Merchant Suite catalog API. It is not duplicated in `client/public`.
 - 2026-09-07 `sundarbans-honey-hero-banner-v1.webp`: source `~/Downloads/Untitled design (16).webp` (6400×2138, 394 KB, supplied design graphic). Resized to 2400×802 and processed with `cwebp -q 90 -metadata none` → 2400×802, 75 KB. Placed below the hero supporting sentence as decorative artwork; baked-in claims are not independently verified.
 - 2026-09-07 `sundarbans-honey-headline-v1.webp`: source `~/Downloads/Untitled design (16).webp` (6400×2131, 525 KB, supplied design graphic). Resized to 2400×800 and processed with `cwebp -q 90 -metadata none` → 2400×800, 104 KB. Used as the hero heading artwork with accessible alt text.
 - 2026-09-07 `sundarbans-honey-collection-heading-v1.webp`: source `~/Downloads/Picflow Images Sep 7/Untitled design (17).webp` (6400×2131, 415 KB, supplied design graphic). Resized to 2400×800 and processed with `cwebp -q 90 -metadata none` → 2400×800, 86 KB. Used as the collection-section heading artwork with accessible alt text.
+- 2026-09-07 `sundarbans-why-special-heading-v1.webp`: source `~/Downloads/Untitled design (18).webp` (6400×2131, 454 KB, supplied design graphic). Resized to 2400×800 and processed with `cwebp -q 90 -metadata none` → 2400×800, 95 KB. Briefly removed then restored the same day per stakeholder request; used as the "why special" heading artwork replacing the heading copy, same wording kept as alt text and code fallback.
+- 2026-09-07 `sundarbans-why-special-infographic-v2.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 08_35_29 PM.webp` (1254×1254, 428 KB, supplied design graphic, transparent WebP). Processed with `cwebp -q 86 -metadata none` → 1254×1254 kept, 300 KB, metadata stripped. Replaces the whole "why special" text section with the single infographic; baked-in Bangla copy mirrored in alt text plus an sr-only list. Bottle/box are illustrative recreations, NOT real packaging photos.
 - 2026-09-07 `sundarbans-river-hero-mobile-v1.webp`: source `~/Downloads/ChatGPT Image Sep 7, 2026, 01_18_47 AM.webp` (1122×1402, AI-generated, baked-in "Shundarban" lettering). Shipped briefly as mobile-only background, then superseded by the honeycomb hero per stakeholder instruction; file deleted. Entry kept for history. Authentic river/forest photograph still pending.
 
 No other files processed yet. When further originals arrive, process per the Task 8 brief
 (`cwebp -q 86 -metadata none` for stills, H.264/VP9 at max 1280px wide for
 video, poster extracted at 00:00:01) and record source, permission, and edits
 here.
+
 
 ## Reviews ship-gate (explicit approval required)
 

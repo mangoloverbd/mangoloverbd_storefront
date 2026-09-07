@@ -120,7 +120,6 @@ test("reference-inspired narrative renders the centered conversion sections in o
     "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ",
     "বনের গল্প, বাস্তব ভিডিওতে",
     "কেন সুন্দরবনের চাকের মধু বিশেষ?",
-    "ম্যাংগো লাভারের গল্প",
     "অর্ডারের আগে যা জানা দরকার",
     "কেন ম্যাংগো লাভার?",
     "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন",
@@ -162,13 +161,24 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 5);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 7);
 });
 
-test("why-special section uses the real product image with concise callouts", () => {
+test("bundle showcase replaces the founder placeholder with supplied pack artwork", () => {
+  assert.match(sectionsSource, /honey-bundle-showcase/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-500g-v1\.webp/);
+  assert.match(sectionsSource, /sundarbans-honey-bundle-1kg-v1\.webp/);
+  assert.match(sectionsSource, /placement=\"bundle_500g\"/);
+  assert.match(sectionsSource, /placement=\"bundle_1kg\"/);
+  assert.doesNotMatch(sectionsSource, /honey-founder-heading|founder video \/ portrait/);
+});
+
+test("why-special section renders the supplied infographic with a text mirror", () => {
   assert.match(sectionsSource, /honey-why-heading/);
-  assert.match(sectionsSource, /whySpecialPoints\.slice/);
+  assert.match(sectionsSource, /sundarbans-why-special-infographic-v2\.webp/);
+  assert.match(sectionsSource, /whySpecialPoints\.map/);
   assert.match(sectionsSource, /loading="lazy"/);
+  assert.doesNotMatch(sectionsSource, /whySpecialPoints\.slice/);
 });
 
 test("collection heading uses the supplied Bangla artwork", () => {
@@ -201,10 +211,14 @@ test("minimal campaign chrome links phone and WhatsApp without full layout", () 
   assert.match(contentSource, /tel:\+8801301636461/);
   assert.match(contentSource, /https:\/\/wa\.me\/8801301636461/);
   assert.match(layoutSource, /@assets\/mango-lover-logo\.avif/);
+  assert.match(layoutSource, /কোনো কিছু জানতে কিংবা/);
+  assert.match(layoutSource, / সরাসরি অর্ডার করতে যোগাযোগ করুন/);
+  assert.match(layoutSource, /fontFamily: "'KaiumSimanto', serif"/);
+  assert.doesNotMatch(layoutSource, /sundarbans-honey-footer-contact-v1\.webp/);
   assert.match(layoutSource, /HONEY_CAMPAIGN_PHONE_HREF/);
   assert.match(layoutSource, /HONEY_CAMPAIGN_WHATSAPP_HREF/);
-  assert.match(layoutSource, /aria-label="ফোনে অর্ডার করুন"/);
-  assert.match(layoutSource, /aria-label="WhatsApp-এ অর্ডার করুন"/);
+  assert.match(layoutSource, /label="ফোনে অর্ডার করুন"/);
+  assert.match(layoutSource, /label="WhatsApp-এ অর্ডার করুন"/);
   assert.doesNotMatch(layoutSource, /components\/layout/);
   assert.doesNotMatch(layoutSource, /CartProvider|useCart/);
   assert.match(pageSource, /CampaignHeader/);

@@ -20,7 +20,6 @@ import {
   fetchStorefrontProduct,
   fetchStorefrontProductInventory,
   findGeneratedStorefrontProduct,
-  getProductImage,
   mergeInventory,
 } from "@/lib/storefront-products";
 
@@ -65,8 +64,6 @@ export default function SundarbansHoneyPage() {
     window.setTimeout(() => heading.focus({ preventScroll: true }), reduceMotion ? 0 : 450);
   }, []);
 
-  const productImageUrl = product ? (getProductImage(product) ?? null) : null;
-
   return (
     <div className="sundarbans-honey-page min-h-screen bg-[#f4ecd9]">
       <CampaignHeader />
@@ -75,7 +72,6 @@ export default function SundarbansHoneyPage() {
           সুন্দরবনের প্রাকৃতিক মধু
         </h1>
         <DocumentarySections
-          productImageUrl={productImageUrl}
           onOrderClick={handleOrderClick}
         />
         <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">

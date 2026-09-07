@@ -8,8 +8,6 @@ import {
   faqHeading,
   faqAnswers,
   faqQuestions,
-  founderHeading,
-  founderSubcopy,
   heroCtaLabel,
   heroSubcopy,
   importantNotes,
@@ -41,16 +39,18 @@ function OrderButton({
   placement,
   label,
   onOrderClick,
+  className,
 }: {
   placement: string;
   label: string;
   onOrderClick: (placement: string) => void;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       onClick={() => onOrderClick(placement)}
-      className="inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#ffd60a] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d]"
+      className={`inline-flex min-h-12 items-center justify-between gap-6 border border-[#19382d] bg-[#ffd60a] px-5 py-3 text-base font-bold text-[#19382d] shadow-[3px_3px_0_#19382d] transition-transform hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#19382d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#19382d] ${className ?? ""}`}
     >
       <span>{label}</span>
       <span aria-hidden="true" className="text-xl leading-none">→</span>
@@ -191,7 +191,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
         </div>
       </section>
 
-      <section aria-labelledby="honey-why-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
+      <section aria-labelledby="honey-why-heading" className="bg-[#fffdf8]">
         <SectionHeading
           id="honey-why-heading"
           label={whySpecialHeading}
@@ -219,12 +219,38 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
         </div>
       </section>
 
-      <section aria-labelledby="honey-founder-heading" className="grid border-b border-[#19382d]/25 bg-[#19382d] text-[#fffaf0] lg:grid-cols-2">
-        <MediaSlot label="আপনার founder video / portrait এখানে যুক্ত হবে" dark />
-        <div className="px-5 py-12 sm:px-10 sm:py-16">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#f5c456]">ম্যাংগো লাভারের গল্প</p>
-          <h2 id="honey-founder-heading" className="mt-4 max-w-xl text-balance font-serif text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-5xl">{founderHeading}</h2>
-          <p className="mt-5 max-w-lg leading-8 text-[#f4ecd9]">{founderSubcopy}</p>
+      <section id="honey-bundle-showcase" className="border-b border-[#19382d]/25 bg-[#fffdf7]">
+        <div className="mx-auto max-w-5xl px-4 pb-12 pt-0 sm:px-6 sm:pb-16 sm:pt-0">
+          <div className="mx-auto mt-0 grid max-w-4xl grid-cols-2 gap-3 sm:gap-5">
+            <article className="rounded-[1.75rem] bg-transparent">
+              <img
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-500g-v1.webp"
+                alt="সুন্দরবনের চাকের মধু ৫০০ গ্রামের প্যাক"
+                className="mx-auto h-auto w-full"
+                width="1024"
+                height="1536"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
+                <OrderButton placement="bundle_500g" label="অর্ডার করুন" onOrderClick={onOrderClick} className="w-full justify-center gap-2 px-2 text-sm sm:w-auto sm:gap-6 sm:px-5 sm:text-base" />
+              </div>
+            </article>
+            <article className="rounded-[1.75rem] bg-transparent">
+              <img
+                src="/step/sundarbans-natural-honey/sundarbans-honey-bundle-1kg-v1.webp"
+                alt="সুন্দরবনের চাকের মধু ১ কেজির প্যাক"
+                className="mx-auto h-auto w-full"
+                width="1024"
+                height="1536"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="flex justify-center px-1 pb-3 sm:px-4 sm:pb-5">
+                <OrderButton placement="bundle_1kg" label="অর্ডার করুন" onOrderClick={onOrderClick} className="w-full justify-center gap-2 px-2 text-sm sm:w-auto sm:gap-6 sm:px-5 sm:text-base" />
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
