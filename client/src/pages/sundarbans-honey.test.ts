@@ -162,7 +162,7 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 2);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 3);
 });
 
 test("why-special section uses the real product image with concise callouts", () => {

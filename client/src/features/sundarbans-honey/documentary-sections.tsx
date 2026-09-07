@@ -13,7 +13,6 @@ import {
   founderSubcopy,
   heroCtaLabel,
   heroEyebrow,
-  heroHeadline,
   heroSubcopy,
   importantNotes,
   importantNotesHeading,
@@ -149,8 +148,16 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
         <div className="mx-auto max-w-4xl px-4 pb-8 pt-10 text-center sm:px-6 sm:pb-12 sm:pt-16">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#9a711c]">{heroEyebrow}</p>
           <p className="mt-5 text-xs tracking-wide text-[#9a711c]">{reviewSlotLabel}</p>
-          <h2 id="honey-hero-heading" className="mx-auto mt-4 max-w-3xl text-balance font-serif text-4xl font-medium leading-[0.98] tracking-[-0.06em] sm:text-6xl">
-            {heroHeadline}
+          <h2 id="honey-hero-heading" className="mx-auto mt-4 max-w-3xl">
+            <img
+              src="/step/sundarbans-natural-honey/sundarbans-honey-headline-v1.webp"
+              alt="সুন্দরবনের প্রাকৃতিক চাকের মধু"
+              className="h-auto w-full mix-blend-multiply"
+              width="2400"
+              height="800"
+              fetchPriority="high"
+              decoding="async"
+            />
           </h2>
           <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
           <div className="mt-6"><DetailsLink /></div>
