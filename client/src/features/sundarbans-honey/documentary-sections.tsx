@@ -154,17 +154,17 @@ export function DocumentarySections({ productImageUrl, packOptions, onOrderClick
           </h2>
           <p className="mx-auto mt-5 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
           <div className="mt-6"><DetailsLink /></div>
-          {productImageUrl ? (
-            <div className="mx-auto mt-7 h-80 max-w-lg sm:h-[26rem]">
-              <img
-                src={productImageUrl}
-                alt="সুন্দরবনের প্রাকৃতিক চাকের মধুর বোতল"
-                className="h-full w-full object-contain"
-                fetchPriority="high"
-                decoding="async"
-              />
-            </div>
-          ) : null}
+          <div className="mx-auto mt-7 h-96 max-w-xl sm:h-[30rem]">
+            <img
+              src="/step/sundarbans-natural-honey/sundarbans-honey-hero-v2.webp"
+              alt="সুন্দরবনের প্রাকৃতিক চাকের মধুর বোতল, মৌচাক ও মৌমাছি"
+              className="h-full w-full object-contain"
+              fetchPriority="high"
+              decoding="async"
+              width="1122"
+              height="1402"
+            />
+          </div>
         </div>
       </section>
 
