@@ -149,7 +149,7 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
           </h2>
           <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
           <div className="relative mx-auto mt-1 w-[76%] max-w-sm overflow-hidden rounded-xl p-[2px]">
-            <div className="pointer-events-none absolute inset-[2px] overflow-hidden rounded-[10px]">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
               <MovingBorder duration={4200} rx="12%" ry="12%">
                 <div className="h-16 w-16 rounded-full bg-[radial-gradient(circle,#fff7b2_0%,#f59e0b_42%,transparent_70%)] opacity-90" />
               </MovingBorder>
