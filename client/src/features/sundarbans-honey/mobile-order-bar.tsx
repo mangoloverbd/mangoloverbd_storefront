@@ -1,6 +1,7 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { WhatsAppBrandIcon } from "./campaign-layout";
 import {
   HONEY_CAMPAIGN_PHONE_HREF,
   HONEY_CAMPAIGN_WHATSAPP_HREF,
@@ -27,31 +28,33 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
       role="group"
       aria-label="দ্রুত অর্ডার"
     >
-      <button
-        type="button"
-        aria-label="অর্ডার করুন"
-        onClick={() => onOrderClick("sticky_bar")}
-        className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-[#f5c456] px-4 text-lg font-bold text-[#19382d] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fffaf0]"
-      >
-        অর্ডার করুন
-      </button>
       <a
         href={HONEY_CAMPAIGN_WHATSAPP_HREF}
         aria-label="WhatsApp-এ অর্ডার করুন"
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackHoneyCampaignEvent("whatsapp_click", { placement: "sticky_bar" })}
-        className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-xl bg-[#187d48] px-3 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fffaf0]"
+        className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
-        <MessageCircle className="size-5" aria-hidden="true" />
+        <WhatsAppBrandIcon className="h-5 w-5" />
+        <span>হোয়াটসঅ্যাপ</span>
       </a>
+      <button
+        type="button"
+        aria-label="অর্ডার করুন"
+        onClick={() => onOrderClick("sticky_bar")}
+        className="h-12 flex-1 rounded-full bg-[#f5c456] px-4 text-lg font-bold text-[#19382d] shadow-[0_4px_16px_rgba(245,196,86,0.4)] transition-colors hover:bg-[#ffd970] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c456]"
+      >
+        অর্ডার করুন
+      </button>
       <a
         href={HONEY_CAMPAIGN_PHONE_HREF}
         aria-label="ফোনে অর্ডার করুন"
         onClick={() => trackHoneyCampaignEvent("phone_click", { placement: "sticky_bar" })}
-        className="inline-flex min-h-12 min-w-12 items-center justify-center rounded-xl border border-[#fffaf0]/40 px-3 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fffaf0]"
+        className="flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
-        <Phone className="size-5" aria-hidden="true" />
+        <Phone className="h-5 w-5" aria-hidden="true" />
+        <span>কল করুন</span>
       </a>
     </div>
   );
