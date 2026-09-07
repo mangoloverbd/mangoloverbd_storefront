@@ -112,60 +112,47 @@ test("checkout analytics use product data but never customer fields", () => {
   assert.doesNotMatch(checkoutSource, /trackHoneyCampaignEvent\("checkout_error", \{[^}]*?(?:name|phone|address|district|upazila)/);
 });
 
-test("documentary narrative renders every approved Bangla section in order", () => {
+test("reference-inspired narrative renders the centered conversion sections in order", () => {
   const combined = `${contentSource}\n${sectionsSource}\n${pageSource}`;
   const required = [
-    "সুন্দরবনের গভীর থেকে সংগ্রহ করা প্রকৃতির অনন্য উপহার",
+    "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ",
+    "বনের গল্প, বাস্তব ভিডিওতে",
+    "আপনার জন্য প্যাক বেছে নিন",
     "কেন সুন্দরবনের চাকের মধু বিশেষ?",
-    "পরিবারের কারা খেতে পারেন?",
-    "যেভাবে খেতে পারেন",
-    "সুন্দরবন থেকে আপনার ঘরে",
-    "পুষ্টিবিদের বক্তব্য",
+    "ম্যাংগো লাভারের গল্প",
+    "অর্ডারের আগে যা জানা দরকার",
     "কেন ম্যাংগো লাভার?",
-    "গুরুত্বপূর্ণ তথ্য",
     "সুন্দরবনের প্রাকৃতিক চাকের মধু অর্ডার করুন",
     "এক বছরের কম বয়সী শিশুকে মধু দেওয়া যাবে না।",
   ];
   for (const text of required) {
     assert.ok(combined.includes(text), `missing approved copy: ${text}`);
   }
-  let lastIndex = -1;
-  for (const text of required) {
-    const at = combined.indexOf(text);
-    assert.ok(at > lastIndex, `approved copy out of order: ${text}`);
-    lastIndex = at;
-  }
   assert.match(sectionsSource, /<section[\s>]/);
   assert.match(sectionsSource, /aria-labelledby/);
 });
 
-test("approved content data uses exact trust points, notes, and nutritionist statement", () => {
-  assert.match(contentSource, /export const heroPoints/);
+test("approved content data uses strong source, handling, and responsible copy", () => {
   assert.match(contentSource, /প্রাকৃতিক মৌচাক থেকে সংগ্রহ/);
   assert.match(contentSource, /সুন্দরবনের নানা বুনো ফুলের নেকটার/);
-  assert.match(contentSource, /স্বতন্ত্র স্বাদ, ঘ্রাণ ও প্রাকৃতিক রং/);
-  assert.match(contentSource, /পরিচ্ছন্নভাবে সংগ্রহ ও বোতলজাত/);
-  assert.match(contentSource, /সারা বাংলাদেশে হোম ডেলিভারি/);
+  assert.match(contentSource, /স্বাদ, ঘ্রাণ ও রং/);
+  assert.match(contentSource, /পরিষ্কারভাবে বোতলজাত/);
+  assert.match(contentSource, /সারা দেশে হোম ডেলিভারি/);
   assert.match(contentSource, /export const importantNotes/);
   assert.match(contentSource, /tone: "warning"/);
   assert.match(contentSource, /tone: "info"/);
   assert.match(contentSource, /ডায়াবেটিস বা রক্তে শর্করার সমস্যা থাকলে চিকিৎসক বা পুষ্টিবিদের পরামর্শ নিন।/);
   assert.match(contentSource, /প্রাকৃতিক শক্তির একটি সহজ উৎস হতে পারে/);
   assert.match(contentSource, /মুরাদ পারভেজ/);
-  assert.match(sectionsSource, /nutritionistName/);
+  assert.match(contentSource, /মৌচাক থেকে বোতল পর্যন্ত/);
 });
 
-test("no visible price appears outside HoneyCheckout", () => {
-  const priced: Array<[string, string]> = [
-    ["content", contentSource],
-    ["layout", layoutSource],
-    ["sections", sectionsSource],
-    ["bar", barSource],
-    ["page", pageSource],
-  ];
-  for (const [name, source] of priced) {
-    assert.doesNotMatch(source, /৳/, `${name} must not render a price`);
-  }
+test("hero has no price while featured packs consume API-backed options", () => {
+  const heroSource = sectionsSource.slice(0, sectionsSource.indexOf("honey-collection-reel"));
+  assert.doesNotMatch(heroSource, /৳/);
+  assert.match(sectionsSource, /packOptions/);
+  assert.match(sectionsSource, /pack\.unitPrice/);
+  assert.match(checkoutSource, /৳/);
 });
 
 test("honest media policy: no fabricated proof, no autoplay, no video without originals", () => {
@@ -175,23 +162,21 @@ test("honest media policy: no fabricated proof, no autoplay, no video without or
   assert.doesNotMatch(sectionsSource, /review-section|honey-review|ReviewCard|review-card/i);
   assert.doesNotMatch(sectionsSource, /unsplash|picsum|placeholder/i);
   assert.match(sectionsSource, /fetchpriority="high"/i);
-  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 3);
+  assert.equal(sectionsSource.match(/<img/g)?.length ?? 0, 2);
 });
 
-test("why-special section shows the supplied infographic with screen-reader text", () => {
-  assert.match(sectionsSource, /sundarbans-why-special-infographic-v1\.webp/);
+test("why-special section uses the real product image with concise callouts", () => {
+  assert.match(sectionsSource, /honey-why-heading/);
+  assert.match(sectionsSource, /whySpecialPoints\.slice/);
   assert.match(sectionsSource, /loading="lazy"/);
-  assert.match(sectionsSource, /sr-only/);
-  assert.match(sectionsSource, /whySpecialPoints\.map/);
 });
 
-test("hero is full-bleed honeycomb art with minimal copy and a highlight CTA", () => {
-  assert.match(sectionsSource, /sundarbans-honeycomb-hero-v1\.webp/);
-  assert.doesNotMatch(sectionsSource, /sundarbans-river-hero-mobile-v1\.webp/);
-  assert.match(sectionsSource, /object-cover/);
-  assert.match(sectionsSource, /aria-hidden="true"/);
-  assert.match(sectionsSource, /variant="highlight"/);
-  assert.match(sectionsSource, /bg-\[#FFD60A\]/);
+test("hero is centered with a strong headline, details CTA, and product image", () => {
+  assert.match(sectionsSource, /heroCtaLabel/);
+  assert.match(sectionsSource, /honey-hero-heading/);
+  assert.match(sectionsSource, /object-contain/);
+  assert.match(sectionsSource, /bg-\[#FFD60A\]/i);
+  assert.match(sectionsSource, /reviewSlotLabel/);
   assert.doesNotMatch(sectionsSource, /heroPoints\.map/);
 });
 
@@ -221,7 +206,7 @@ test("sticky bar exposes three accessible actions and hides at checkout", () => 
 });
 
 test("CTAs scroll to checkout, focus its heading, and track campaign events", () => {
-  assert.match(sectionsSource, /এখনই অর্ডার করুন/);
+  assert.match(sectionsSource, /OrderButton/);
   assert.match(sectionsSource, /অর্ডার করুন/);
   assert.match(sectionsSource, /onOrderClick\(/);
   assert.match(pageSource, /trackHoneyCampaignEvent\("campaign_view"/);

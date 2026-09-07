@@ -4,17 +4,36 @@ export const HONEY_CAMPAIGN_WHATSAPP_HREF =
   `https://wa.me/8801301636461?text=${encodeURIComponent("সুন্দরবনের প্রাকৃতিক মধু অর্ডার করতে চাই।")}`;
 
 export const heroEyebrow = "সুন্দরবনের প্রাকৃতিক চাকের মধু";
-export const heroHeadline = "সুন্দরবনের গভীর থেকে সংগ্রহ করা প্রকৃতির অনন্য উপহার";
+export const heroHeadline = "সুন্দরবনের চাকের মধু—প্রকৃতির আসল স্বাদ";
 export const heroSubcopy =
-  "ঘন সবুজ বনের বুনো ফুল থেকে মৌমাছির সংগ্রহ করা মধু—পরিচ্ছন্নভাবে সংগ্রহ করে সরাসরি আপনার ঘরে পৌঁছে দিই।";
+  "মৌচাক থেকে বোতল পর্যন্ত—সুন্দরবনের বুনো ফুলের নেকটার থেকে সংগ্রহ করা মধু, যত্নে আপনার ঘরে।";
+export const heroCtaLabel = "বিস্তারিত জানুন";
+export const reviewSlotLabel = "রিভিউ ও রেটিং এখানে পরে যুক্ত হবে";
 
-export const heroPoints = [
-  "প্রাকৃতিক মৌচাক থেকে সংগ্রহ",
-  "সুন্দরবনের নানা বুনো ফুলের নেকটার",
-  "স্বতন্ত্র স্বাদ, ঘ্রাণ ও প্রাকৃতিক রং",
-  "পরিচ্ছন্নভাবে সংগ্রহ ও বোতলজাত",
-  "সারা বাংলাদেশে হোম ডেলিভারি",
-];
+export const trustRibbonItems = [
+  { title: "সুন্দরবনের উৎস", text: "বুনো ফুলের নেকটার থেকে" },
+  { title: "পরিষ্কারভাবে বোতলজাত", text: "সংগ্রহ থেকে বোতল পর্যন্ত যত্ন" },
+  { title: "হাতে পেয়ে মূল্য", text: "ক্যাশ অন ডেলিভারি" },
+] as const;
+
+export const collectionReelHeading = "বনের গল্প, বাস্তব ভিডিওতে";
+export const collectionReelSubcopy =
+  "বাস্তব সংগ্রহের ফুটেজে দেখুন—কোথা থেকে আসে মধু, আর কীভাবে পৌঁছে যায় আপনার ঘরে।";
+export const featuredPacksHeading = "আপনার জন্য প্যাক বেছে নিন";
+export const featuredPacksSubcopy =
+  "প্রথমবারের জন্য 500g, পরিবারের জন্য 1kg—আপনার প্রয়োজন অনুযায়ী বেছে নিন।";
+export const whySpecialLead = "বনের স্বাদ, প্রাকৃতিক বৈচিত্র্য, এক বোতলে।";
+export const founderHeading = "পণ্যের পেছনের মানুষটির সঙ্গে পরিচিত হোন";
+export const founderSubcopy =
+  "কেন এই উৎস বেছে নিয়েছি, কীভাবে মান বজায় রাখি, এবং গ্রাহকের কাছে আমাদের দায়িত্ব কী—জানুন আমাদের গল্পে।";
+export const faqHeading = "অর্ডারের আগে যা জানা দরকার";
+export const faqQuestions = [
+  "মধু কতদিন ভালো থাকবে?",
+  "এক বছরের বেশি বয়সী শিশুরা কি খেতে পারবে?",
+  "মধু জমে গেলে কি সমস্যা?",
+  "কীভাবে সংরক্ষণ করবো?",
+] as const;
+export const comparisonHeading = "পার্থক্যটা নিজেই দেখুন";
 
 export type HoneyNarrativePoint = {
   title: string;

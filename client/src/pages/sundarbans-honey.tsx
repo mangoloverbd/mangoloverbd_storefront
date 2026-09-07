@@ -74,7 +74,11 @@ export default function SundarbansHoneyPage() {
         <h1 id="sundarbans-honey-title" className="sr-only">
           সুন্দরবনের প্রাকৃতিক মধু
         </h1>
-        <DocumentarySections productImageUrl={productImageUrl} onOrderClick={handleOrderClick} />
+        <DocumentarySections
+          productImageUrl={productImageUrl}
+          packOptions={product ? getHoneyPackOptions(product) : []}
+          onOrderClick={handleOrderClick}
+        />
         <div className="mx-auto max-w-5xl px-4 pb-16 sm:px-6">
           <section id="honey-checkout" aria-labelledby="honey-checkout-heading" className="scroll-mt-20 pt-4">
             <h2
