@@ -17,7 +17,7 @@ export default function LogoCloudBlock({ items }: LogoCloudBlockProps) {
   return (
     <section
       aria-label="ম্যাংগো লাভারের প্রতিশ্রুতি"
-      className="flex w-full flex-col items-center overflow-hidden border-b border-[#19382d]/25 bg-[#FBBB14] px-4 py-4 text-[#19382d]"
+      className="flex w-full items-center overflow-hidden border-b border-[#19382d]/25 bg-[#FBBB14] px-4 py-3 text-[#19382d]"
     >
       <style>{`
         @keyframes honey-trust-marquee {
@@ -37,28 +37,23 @@ export default function LogoCloudBlock({ items }: LogoCloudBlockProps) {
         }
       `}</style>
 
-      <div className="w-full max-w-5xl text-center">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#19382d]">
-          বিশ্বাস করে অর্ডার করার ৩টি কারণ
-        </p>
-
-        <div className="honey-trust-mask relative mt-3 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+      <div className="w-full text-center">
+        <div className="honey-trust-mask relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <div className="honey-trust-track flex w-max items-stretch">
             {[...items, ...items].map(({ title, text }, index) => {
               const Icon = itemIcons[index % itemIcons.length];
               return (
                 <div
                   key={`${title}-${index}`}
-                  className="flex w-[15rem] shrink-0 items-center gap-2.5 border-r border-[#19382d]/25 px-5 text-left last:border-r-0 sm:w-[18rem]"
+                  className="flex shrink-0 items-center gap-2 border-r border-[#19382d]/25 px-5 text-left last:border-r-0"
                   aria-hidden={index >= items.length ? "true" : undefined}
                 >
                   <Icon className="size-5 shrink-0 text-[#19382d]" aria-hidden="true" />
-                  <div>
-                    <strong className="block font-serif text-base font-medium tracking-tight">
-                      {title}
-                    </strong>
-                    <span className="mt-0.5 block text-xs leading-5 text-[#19382d]/80">{text}</span>
-                  </div>
+                  <p className="whitespace-nowrap text-sm leading-5">
+                    <strong className="font-serif font-medium tracking-tight">{title}</strong>
+                    <span className="px-2 text-[#19382d]/50" aria-hidden="true">·</span>
+                    <span className="text-[#19382d]/80">{text}</span>
+                  </p>
                 </div>
               );
             })}
