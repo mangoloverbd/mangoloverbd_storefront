@@ -147,6 +147,16 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
             />
           </h2>
           <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
+          <img
+            src="/step/sundarbans-natural-honey/sundarbans-honey-headline-v1.webp"
+            alt=""
+            aria-hidden="true"
+            className="mx-auto mt-3 h-auto w-full max-w-2xl mix-blend-multiply"
+            width="2400"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
           <div className="mt-6"><DetailsLink /></div>
           <div className="mx-auto mt-7 h-96 max-w-xl sm:h-[30rem]">
             <img
