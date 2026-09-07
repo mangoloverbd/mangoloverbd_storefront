@@ -147,6 +147,17 @@ test("approved content data uses strong source, handling, and responsible copy",
   assert.match(contentSource, /মৌচাক থেকে বোতল পর্যন্ত/);
 });
 
+test("why Mango Lover section renders a neutral comparison matrix", () => {
+  assert.match(sectionsSource, /honey-comparison-matrix/);
+  assert.match(sectionsSource, /ম্যাংগো লাভার/);
+  assert.match(sectionsSource, /যা যাচাই করবেন/);
+  assert.match(sectionsSource, /whyMangoLoverPoints\.map/);
+  assert.match(sectionsSource, /role="row"/);
+  assert.match(sectionsSource, /placement="content_bottom"/);
+  assert.match(sectionsSource, /উৎসের তথ্য যাচাই করুন/);
+  assert.doesNotMatch(sectionsSource, /অন্যরা জানায় না|অন্যদের নেই|ভেজাল|নিম্নমান/);
+});
+
 test("hero has no price while checkout consumes API-backed options", () => {
   const heroSource = sectionsSource.slice(0, sectionsSource.indexOf("honey-collection-reel"));
   assert.doesNotMatch(heroSource, /৳/);
