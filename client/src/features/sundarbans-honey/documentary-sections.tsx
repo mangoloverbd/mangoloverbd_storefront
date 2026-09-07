@@ -149,7 +149,7 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
           </h2>
           <p className="mx-auto mt-0 max-w-2xl leading-8 text-[#654b2f]">{heroSubcopy}</p>
           <div className="relative mx-auto mt-1 w-[76%] max-w-sm overflow-hidden rounded-xl p-[2px]">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl">
+            <div className="pointer-events-none absolute inset-[2px] overflow-hidden rounded-[10px]">
               <MovingBorder duration={4200} rx="12%" ry="12%">
                 <div className="h-16 w-16 rounded-full bg-[radial-gradient(circle,#fff7b2_0%,#f59e0b_42%,transparent_70%)] opacity-90" />
               </MovingBorder>
@@ -201,7 +201,15 @@ export function DocumentarySections({ productImageUrl, onOrderClick }: Documenta
       </section>
 
       <section aria-labelledby="honey-why-heading" className="border-b border-[#19382d]/25 bg-[#fffdf8]">
-        <SectionHeading id="honey-why-heading" label={whySpecialHeading} heading={whySpecialLead} />
+        <SectionHeading
+          id="honey-why-heading"
+          label={whySpecialHeading}
+          heading={whySpecialLead}
+          headingImage={{
+            src: "/step/sundarbans-natural-honey/sundarbans-why-special-heading-v1.webp",
+            alt: "বনের স্বাদ, প্রাকৃতিক বৈচিত্র্য, এক বোতলে।",
+          }}
+        />
         <div className="mx-auto grid max-w-5xl items-center gap-8 px-4 pb-12 sm:px-6 lg:grid-cols-[0.85fr_1.3fr_0.85fr] lg:pb-16">
           <PointList points={whySpecialPoints.slice(0, 3)} />
           <div className="order-first grid min-h-72 place-items-center bg-[#bdd2c8] p-5 lg:order-none">
