@@ -77,7 +77,7 @@ test("Honey Nut campaign uses responsible food positioning and guide FAQs", () =
 });
 
 test("Honey Nut quality section uses a Swiss editorial layout", () => {
-  assert.match(sectionsSource, /QUALITY \/ 05/);
+  assert.doesNotMatch(sectionsSource, /QUALITY \/ 05/);
   assert.match(sectionsSource, /honey-nut-quality-packaging-v2\.webp/);
   assert.match(sectionsSource, /String\(index \+ 1\)\.padStart\(2, "0"\)/);
   assert.match(sectionsSource, /lg:grid-cols-\[0\.85fr_1\.15fr\]/);
