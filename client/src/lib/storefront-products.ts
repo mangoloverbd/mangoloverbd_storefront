@@ -1,7 +1,9 @@
-export const STOREFRONT_ID = import.meta.env.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
+const storefrontEnv = import.meta.env ?? {};
+
+export const STOREFRONT_ID = storefrontEnv.VITE_STOREFRONT_ID ?? "2a155750-b11a-4ff2-a7ff-4e26daac46ef";
 const PRODUCTION_MERCHANT_SUITE_URL = "https://admin.mangolover.com.bd";
-const configuredMerchantSuiteUrl = (import.meta.env.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
-const MERCHANT_SUITE_URL = import.meta.env.PROD
+const configuredMerchantSuiteUrl = (storefrontEnv.VITE_MERCHANT_SUITE_URL ?? "").replace(/\/$/, "");
+const MERCHANT_SUITE_URL = storefrontEnv.PROD
   ? PRODUCTION_MERCHANT_SUITE_URL
   : configuredMerchantSuiteUrl;
 export const STOREFRONT_API_BASE = `${MERCHANT_SUITE_URL}/api/public/v1/storefronts/${STOREFRONT_ID}`;
@@ -16,7 +18,7 @@ export const STOREFRONT_CATALOG_QUERY_OPTIONS = {
   refetchOnMount: "always" as const,
 };
 
-export { isProductOrderable } from "./storefront-product-orderability";
+export { isProductOrderable } from "./storefront-product-orderability.ts";
 
 type StorefrontProductStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
@@ -28,6 +30,7 @@ type ProductImage = string | {
   alt_text?: string | null;
   sort_order?: number;
   is_primary?: boolean;
+  sources?: Partial<Record<"320" | "640" | "960", string>>;
 };
 
 export type StorefrontVariant = {
@@ -204,18 +207,36 @@ export async function fetchStorefrontProducts() {
   return (data.products || []) as StorefrontProduct[];
 }
 
+function isStorefrontProductPayload(value: unknown, slug: string): value is StorefrontProduct {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+
+  const product = value as Record<string, unknown>;
+  return typeof product.name === "string" && product.name.trim().length > 0
+    && typeof product.slug === "string" && product.slug === slug;
+}
+
 export async function fetchStorefrontProduct(slug: string) {
-  const res = await fetch(`${STOREFRONT_API_BASE}/products/${slug}`, {
+  const res = await fetch(`${STOREFRONT_API_BASE}/products/${encodeURIComponent(slug)}`, {
     headers: STOREFRONT_FETCH_HEADERS,
     cache: "no-store",
   });
+
+  if (res.status === 404) {
+    return null;
+  }
 
   if (!res.ok) {
     throw new Error("Could not load product.");
   }
 
-  const data = await res.json();
-  return (data.product || null) as StorefrontProduct | null;
+  const data = await res.json() as { product?: unknown } | null;
+  if (!isStorefrontProductPayload(data?.product, slug)) {
+    throw new Error("Could not load product.");
+  }
+
+  return data.product;
 }
 
 export type StorefrontInventoryVariant = {

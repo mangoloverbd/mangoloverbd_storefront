@@ -194,7 +194,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     // off-screen slide while the track is being dragged.
     setActiveReelVideo((active) => (active === null || active === currentReel ? active : null));
   }, [currentReel]);
-  const { data: merchantProduct, isFetched, isError, refetch } = useQuery({
+  const { data: merchantProduct, isFetched, isFetchedAfterMount, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
     enabled: Boolean(slug),
@@ -216,7 +216,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   });
 
   const generatedProduct = findGeneratedStorefrontProduct(generatedStorefrontProducts, slug);
-  const product = mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
+  const productMissingFromMerchant = isFetchedAfterMount && merchantProduct === null;
+  const product = productMissingFromMerchant
+    ? null
+    : mergeInventory(merchantProduct ?? cachedProduct, merchantInventory?.inventory) || generatedProduct;
 
   const relatedSource =
     catalogProducts && catalogProducts.length ? catalogProducts : generatedStorefrontProducts;
@@ -261,8 +264,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     quantity: 1,
   }), [product?.id, product?.name, product?.slug, slug, selectedBundle.amount, selectedBundle.title, selectedVariant?.id]);
   const productImage = product?.image_url || "";
-  const merchantAvailabilityKnown = isFetched || isError;
-  const merchantProductUnavailable = merchantAvailabilityKnown && (!merchantProduct || merchantProduct.available === false);
+  const merchantAvailabilityKnown = isFetched && merchantProduct !== undefined;
+  const merchantProductUnavailable = productMissingFromMerchant || merchantProduct?.available === false;
   const inventoryUnavailable = merchantInventory?.inventory ? !isProductOrderable(product) : false;
   const merchantUnavailable = merchantProductUnavailable || inventoryUnavailable;
   const isUnavailable = availabilityBlocked || merchantUnavailable;
@@ -316,16 +319,19 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [displayImage]);
 
   useEffect(() => {
-    if (!isFetched) return;
+    if (!isFetchedAfterMount) return;
 
-    if (merchantProduct && isProductOrderable(merchantProduct)) {
-      setCachedStorefrontProduct(window.localStorage, merchantProduct);
-      setCachedProduct(merchantProduct);
+    if (merchantProduct === null) {
+      removeCachedStorefrontProduct(window.localStorage, slug);
+      setCachedProduct(null);
       return;
     }
 
-    removeCachedStorefrontProduct(window.localStorage, slug);
-  }, [isFetched, merchantProduct, slug]);
+    if (merchantProduct) {
+      setCachedStorefrontProduct(window.localStorage, merchantProduct);
+      setCachedProduct(merchantProduct);
+    }
+  }, [isFetchedAfterMount, merchantProduct, slug]);
 
   useEffect(() => {
     if (isLoading || !product) return;

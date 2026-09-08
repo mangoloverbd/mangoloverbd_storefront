@@ -47,6 +47,14 @@ test("does not mark a live product unavailable while inventory is still loading"
   assert.match(productSource, /const inventoryUnavailable = merchantInventory\?\.inventory \? !isProductOrderable\(product\) : false/);
 });
 
+test("only clears stale product data after the Merchant Suite confirms a 404", () => {
+  assert.match(productSource, /isFetchedAfterMount/);
+  assert.match(productSource, /const productMissingFromMerchant = isFetchedAfterMount && merchantProduct === null/);
+  assert.match(productSource, /const product = productMissingFromMerchant\s*\? null\s*:/);
+  assert.match(productSource, /if \(merchantProduct === null\) \{[\s\S]*?removeCachedStorefrontProduct\(window\.localStorage, slug\);[\s\S]*?setCachedProduct\(null\);/);
+  assert.doesNotMatch(productSource, /const merchantAvailabilityKnown = isFetched \|\| isError/);
+});
+
 test("lets customers choose a quantity for cart and direct checkout", () => {
   assert.match(productSource, /const \[quantity, setQuantity\] = useState\(1\)/);
   assert.match(productSource, /aria-label="Decrease quantity"/);

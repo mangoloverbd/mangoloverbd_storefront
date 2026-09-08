@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
+import { fetchStorefrontProduct, findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
 
 test("matches product names without case sensitivity", () => {
   const products = [
@@ -117,4 +117,50 @@ test("returns null for corrupt cached storefront products", () => {
   };
 
   assert.equal(getCachedStorefrontProduct(localStorageLike, "cached"), null);
+});
+
+test("returns null only when the public product endpoint confirms a 404", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response("missing", { status: 404 });
+
+    assert.equal(await fetchStorefrontProduct("seasonal-mango"), null);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("keeps a 500 distinguishable from a confirmed missing product", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response("upstream error", { status: 500 });
+
+    await assert.rejects(() => fetchStorefrontProduct("active-mango"), /Could not load product/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("does not treat a malformed 200 product response as confirmed absence", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({ product: {} }), { status: 200 });
+
+    await assert.rejects(() => fetchStorefrontProduct("active-mango"), /Could not load product/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("does not accept a 200 response for a different product slug", async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => new Response(JSON.stringify({
+      product: { name: "Different mango", slug: "different-mango" },
+    }), { status: 200 });
+
+    await assert.rejects(() => fetchStorefrontProduct("active-mango"), /Could not load product/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
