@@ -15,6 +15,7 @@ const sectionsSource = readSource("../features/honey-nut/documentary-sections.ts
 const contentSource = readSource("../features/honey-nut/content.ts");
 const stylesSource = readSource("../features/honey-nut/campaign.css");
 const mobileBarSource = readSource("../features/honey-nut/mobile-order-bar.tsx");
+const layoutSource = readSource("../features/honey-nut/campaign-layout.tsx");
 const campaignSource = `${sectionsSource}\n${contentSource}`;
 
 const requiredAssets = [
@@ -83,4 +84,14 @@ test("Honey Nut mobile sticky bar mirrors Kalojira's three-action behavior", () 
   assert.match(mobileBarSource, /placement: "sticky_bar"/);
   assert.match(stylesSource, /safe-area-inset-bottom/);
   assert.match(stylesSource, /honey-nut-order-bar\[data-hidden="true"\]/);
+});
+
+test("Honey Nut header and footer mirror the Kalojira campaign chrome", () => {
+  assert.match(layoutSource, /border-\[#19382d\]\/10 bg-\[#faf3e6\]/);
+  assert.match(layoutSource, /bg-\[#eab308\] text-\[#19382d\]/);
+  assert.match(layoutSource, /কোনো কিছু জানতে কিংবা/);
+  assert.match(layoutSource, /Privacy Policy/);
+  assert.match(layoutSource, /border-\[#19382d\]\/15/);
+  assert.match(layoutSource, /হানি নাট পেজ/);
+  assert.doesNotMatch(layoutSource, /Honey Nut — Selected/);
 });
