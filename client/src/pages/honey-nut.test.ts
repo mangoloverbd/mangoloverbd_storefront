@@ -95,3 +95,12 @@ test("Honey Nut header and footer mirror the Kalojira campaign chrome", () => {
   assert.match(layoutSource, /হানি নাট পেজ/);
   assert.doesNotMatch(layoutSource, /Honey Nut — Selected/);
 });
+
+test("Honey Nut reuses the exact WhatsApp icon and places gallery before checkout", () => {
+  assert.match(layoutSource, /from "@\/features\/kalojira-mixed\/campaign-layout"/);
+  const galleryPosition = pageSource.indexOf("<ProductGallery />");
+  const checkoutPosition = pageSource.indexOf('id="honey-nut-checkout"');
+  assert.ok(galleryPosition >= 0);
+  assert.ok(checkoutPosition >= 0);
+  assert.ok(galleryPosition < checkoutPosition);
+});
