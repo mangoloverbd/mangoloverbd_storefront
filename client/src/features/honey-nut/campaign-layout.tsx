@@ -84,7 +84,7 @@ export function CampaignFooter() {
   return (
     <footer className="border-t border-[#19382d]/20 bg-[#eab308] text-[#19382d]">
       <div className="mx-auto max-w-5xl px-4 py-7 text-center sm:px-6 sm:py-9">
-        <h2 className="honey-nut-heading mx-auto max-w-full text-[clamp(1.15rem,5.65vw,2.25rem)] leading-tight tracking-[-0.03em]">
+        <h2 className="mx-auto max-w-full text-[clamp(1.15rem,5.65vw,2.25rem)] font-extrabold leading-tight tracking-[-0.03em]" style={{ fontFamily: "'KaiumSimanto', serif" }}>
           <span className="block sm:inline">কোনো কিছু জানতে কিংবা</span>
           <span className="block sm:inline"> সরাসরি অর্ডার করতে যোগাযোগ করুন</span>
         </h2>

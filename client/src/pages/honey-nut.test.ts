@@ -30,7 +30,8 @@ const requiredAssets = [
   "honey-nut-ingredient-sunflower-seed-v1.webp",
   "honey-nut-ingredient-black-raisin-v1.webp",
   "honey-nut-ingredient-white-sesame-v1.webp",
-  "honey-nut-gallery-open-jar-v1.webp",
+  "honey-nut-gallery-jar-v1.webp",
+  "honey-nut-gallery-jar-v2.webp",
   "honey-nut-gallery-spoon-v1.webp",
   "honey-nut-gallery-mix-v1.webp",
   "honey-nut-routine-v1.webp",
@@ -106,6 +107,7 @@ test("Honey Nut header and footer mirror the Kalojira campaign chrome", () => {
   assert.match(layoutSource, /border-\[#19382d\]\/15/);
   assert.match(layoutSource, /হানি নাট পেজ/);
   assert.doesNotMatch(layoutSource, /Honey Nut — Selected/);
+  assert.match(layoutSource, /fontFamily: "'KaiumSimanto', serif"/);
 });
 
 test("Honey Nut reuses the exact WhatsApp icon and places gallery before checkout", () => {
