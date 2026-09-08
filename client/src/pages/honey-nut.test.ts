@@ -34,7 +34,7 @@ const requiredAssets = [
   "honey-nut-gallery-spoon-v1.webp",
   "honey-nut-gallery-mix-v1.webp",
   "honey-nut-routine-v1.webp",
-  "honey-nut-quality-packaging-v1.webp",
+  "honey-nut-quality-packaging-v2.webp",
   "honey-nut-nutritionist-murad-parvez-v1.webp",
 ] as const;
 
@@ -74,6 +74,14 @@ test("Honey Nut campaign uses responsible food positioning and guide FAQs", () =
   assert.match(contentSource, /অ্যালার্জি/);
   assert.match(contentSource, /ঠান্ডা ও শুষ্ক স্থানে/);
   assert.match(contentSource, /১ কেজি/);
+});
+
+test("Honey Nut quality section uses a Swiss editorial layout", () => {
+  assert.match(sectionsSource, /QUALITY \/ 05/);
+  assert.match(sectionsSource, /honey-nut-quality-packaging-v2\.webp/);
+  assert.match(sectionsSource, /String\(index \+ 1\)\.padStart\(2, "0"\)/);
+  assert.match(sectionsSource, /lg:grid-cols-\[0\.85fr_1\.15fr\]/);
+  assert.match(sectionsSource, /grid-cols-\[2\.5rem_1fr\]/);
 });
 
 test("Honey Nut titles use the normal Bengali font stack", () => {
