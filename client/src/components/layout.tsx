@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, ArrowRight, Globe, Clock, ShieldCheck, ShoppingBag, X, Plus, Minus } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Globe, ShieldCheck, ShoppingBag, X, Plus, Minus } from "lucide-react";
 import { Box as ReiconBox, MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -72,7 +72,6 @@ function HomeDuotoneIcon({ className }: { className?: string }) {
 }
 
 const DHAKA_TIME_ZONE = "Asia/Dhaka";
-const SECONDS_PER_DAY = 24 * 60 * 60;
 
 const MENU_ITEMS = [
   { label: "Home", href: "/" },
@@ -114,7 +113,7 @@ const DESKTOP_COLLECTIONS = [
 const pad = (value: number) => value.toString().padStart(2, "0");
 
 // Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
-// clock and the sale countdown both follow the shop's own day.
+// footer clock follows the shop's own day.
 function dhakaClock(now: Date) {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: DHAKA_TIME_ZONE,
@@ -127,14 +126,6 @@ function dhakaClock(now: Date) {
   return { hours: value("hour"), minutes: value("minute"), seconds: value("second") };
 }
 
-// The sale rolls over at midnight Bangladesh time, so there is no hardcoded end
-// date here to go stale. Swap this for a dashboard-driven deadline if the sale
-// ever needs a fixed one.
-function saleCountdown({ hours, minutes, seconds }: ReturnType<typeof dhakaClock>) {
-  const remaining = SECONDS_PER_DAY - (hours * 3600 + minutes * 60 + seconds);
-  return `${pad(Math.floor(remaining / 3600))}:${pad(Math.floor((remaining % 3600) / 60))}:${pad(remaining % 60)}`;
-}
-
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [location, setLocation] = useLocation();
@@ -143,7 +134,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [openMenuItem, setOpenMenuItem] = useState<string | null>(null);
   const [mobileMenuPage, setMobileMenuPage] = useState<"main" | "collections">("main");
   const [time, setTime] = useState('');
-  const [countdown, setCountdown] = useState('');
   const { setIsOpen: setCartOpen, itemCount } = useCart();
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
@@ -190,7 +180,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const tick = () => {
       const clock = dhakaClock(new Date());
       setTime(`${pad(clock.hours)}:${pad(clock.minutes)}`);
-      setCountdown(saleCountdown(clock));
     };
 
     tick();
@@ -202,36 +191,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Announcement Bar */}
-      <div className="border-b border-[#163B33]/15 bg-[#FBBB14] px-4 md:px-16">
-        <div className="mx-auto flex h-9 max-w-[1440px] items-center justify-center gap-3 text-[#163B33] md:justify-between">
-          <div className="hidden items-center gap-2.5 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
-            <span aria-hidden="true" className="text-[13px] leading-none">🥭</span>
-              <span>আমের মৌসুম</span>
-            </div>
+      <div className="border-b border-black bg-brand-ivory px-0 text-black sm:px-10 lg:px-16">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="overflow-hidden py-2.5" aria-label="Free shipping announcement">
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="flex min-w-0 items-center gap-2 text-[8px] font-bold uppercase tracking-[0.12em] md:gap-4 md:text-[9px] md:tracking-[0.24em]"
+              className="flex w-max items-center whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] sm:text-xs"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: 18, ease: "linear", repeat: Infinity }}
             >
-              <span className="whitespace-nowrap">৳২৬০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি</span>
-              <span className="h-3 w-px shrink-0 bg-[#163B33]/25" />
-              <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap">
-                অফার শেষ হবে
-                <span className="rounded-[3px] bg-[#163B33] px-1.5 py-0.5 tabular-nums tracking-[0.08em] text-[#FBBB14]">
-                  {countdown}
-                </span>
-              </span>
+              {[0, 1].map((copy) => (
+                <div key={copy} aria-hidden={copy === 1} className="flex shrink-0 items-center gap-4 pr-16">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#e53935]" aria-hidden="true" />
+                  <span>Free shipping on orders over <strong className="text-[#e53935]">৳2600</strong></span>
+                  <span aria-hidden="true" className="text-black/25">—</span>
+                  <Link href="/products">
+                    <a className="underline decoration-[#e53935] decoration-2 underline-offset-4 transition-colors hover:text-[#e53935]">Shop now</a>
+                  </Link>
+                </div>
+              ))}
             </motion.div>
-            <div className="hidden items-center gap-2 text-[9px] font-bold uppercase tracking-[0.34em] md:flex">
-              <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#163B33]/60" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#163B33]" />
-              </span>
-              <span>ঢাকা {time}</span>
-            </div>
           </div>
         </div>
+      </div>
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-[#f6f6f6] backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-20 md:gap-8 md:px-10 lg:px-16">
