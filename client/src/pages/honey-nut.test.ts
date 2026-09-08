@@ -108,3 +108,10 @@ test("Honey Nut reuses the exact WhatsApp icon and places gallery before checkou
   assert.ok(checkoutPosition >= 0);
   assert.ok(galleryPosition < checkoutPosition);
 });
+
+test("Honey Nut ingredient cards use the Swiss horizontal mobile rail", () => {
+  assert.match(sectionsSource, /function IngredientRail/);
+  assert.match(sectionsSource, /String\(index \+ 1\)\.padStart\(2, "0"\)/);
+  assert.match(sectionsSource, /className="[^"]*sm:hidden/);
+  assert.match(sectionsSource, /className="hidden sm:grid/);
+});
