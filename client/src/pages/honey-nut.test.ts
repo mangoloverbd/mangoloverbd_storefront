@@ -113,5 +113,7 @@ test("Honey Nut ingredient cards use the Swiss horizontal mobile rail", () => {
   assert.match(sectionsSource, /function IngredientRail/);
   assert.match(sectionsSource, /String\(index \+ 1\)\.padStart\(2, "0"\)/);
   assert.match(sectionsSource, /className="[^"]*sm:hidden/);
+  assert.match(sectionsSource, /min-w-\[70%\]/);
+  assert.match(sectionsSource, /gap-3 overflow-x-auto/);
   assert.match(sectionsSource, /className="hidden sm:grid/);
 });
