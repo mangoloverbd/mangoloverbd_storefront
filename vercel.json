@@ -1,44 +1,35 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/product/stepprs-massage-insoles",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/massage-insoles",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/4-in-1-makeup-pen",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/bordeaux",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/plum-veil",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/rosy-bloom",
-      "destination": "/products",
-      "permanent": true
+      "destination": "/api/legacy-gone"
     },
     {
       "source": "/product/mauve-nude",
-      "destination": "/products",
-      "permanent": true
-    }
-  ],
-  "rewrites": [
+      "destination": "/api/legacy-gone"
+    },
     {
-      "source": "/((?!api(?:/|$)|assets(?:/|$)|.*\\.[^/]+$).*)",
+      "source": "/((?!api(?:/|$)|assets(?:/|$)|product(?:/|$)|.*\\.[^/]+$).*)",
       "destination": "/"
     }
   ],
