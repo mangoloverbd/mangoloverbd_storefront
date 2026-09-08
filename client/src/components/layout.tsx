@@ -191,7 +191,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Announcement Bar */}
-      <div className="border-b border-black bg-brand-ivory px-0 text-black sm:px-10 lg:px-16">
+      <div className="border-b border-black bg-[#FBBB14] px-0 text-black sm:px-10 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
           <div className="overflow-hidden py-2.5" aria-label="Free shipping announcement">
             <motion.div
