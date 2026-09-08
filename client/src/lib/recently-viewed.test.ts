@@ -45,6 +45,13 @@ test("ignores malformed and invalid stored values", () => {
   );
 });
 
+test("deduplicates persisted history before rendering", () => {
+  assert.deepEqual(
+    readRecentlyViewedSlugs(createStorage({ [RECENTLY_VIEWED_STORAGE_KEY]: JSON.stringify(["same", "same", "other"]) })),
+    ["same", "other"],
+  );
+});
+
 test("maps current catalog products in stored order and excludes the open product", () => {
   const products = [{ slug: "new" }, { slug: "open" }, { slug: "old" }] as Array<{ slug: string }>;
 

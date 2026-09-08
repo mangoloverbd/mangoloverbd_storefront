@@ -16,7 +16,9 @@ function parseSlugs(value: string | null): string[] {
     const parsed = JSON.parse(value);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed.filter((slug): slug is string => typeof slug === "string" && slug.trim().length > 0);
+    return Array.from(
+      new Set(parsed.filter((slug): slug is string => typeof slug === "string" && slug.trim().length > 0)),
+    );
   } catch {
     return [];
   }
