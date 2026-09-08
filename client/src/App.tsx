@@ -12,6 +12,8 @@ import ProductsPage from "@/pages/products";
 import BookingPage from "@/pages/booking";
 import SundarbansHoneyPage from "@/pages/sundarbans-honey";
 import SundarbansHoneyThankYouPage from "@/pages/sundarbans-honey-thank-you";
+import KalojiraMixedPage from "@/pages/kalojira-mixed";
+import KalojiraMixedThankYouPage from "@/pages/kalojira-mixed-thank-you";
 import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -19,6 +21,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
   "/step/sundarbans-natural-honey": "সুন্দরবনের প্রাকৃতিক মধু | ম্যাংগো লাভার",
   "/step/sundarbans-natural-honey/thank-you": "অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
+  "/step/kalojira-mixed": "কালোজিরা মিক্সড | ম্যাংগো লাভার",
+  "/step/kalojira-mixed/thank-you": "কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
 };
 
 function CampaignMetadata({ location }: { location: string }) {
@@ -206,6 +210,12 @@ function Router() {
           </Route>
           <Route path="/step/sundarbans-natural-honey">
             <PageTransition><SundarbansHoneyPage /></PageTransition>
+          </Route>
+          <Route path="/step/kalojira-mixed/thank-you">
+            <PageTransition><KalojiraMixedThankYouPage /></PageTransition>
+          </Route>
+          <Route path="/step/kalojira-mixed">
+            <PageTransition><KalojiraMixedPage /></PageTransition>
           </Route>
           <Route path="/">
             <PageTransition>

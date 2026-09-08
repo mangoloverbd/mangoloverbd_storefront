@@ -19,6 +19,7 @@ const fallbackSlugs = [
   "chia-seed",
   "pure-ghee",
   "sundarbans-natural-honey",
+  "kalojira-mixed",
   "black-seed-flower-honey",
 ];
 
