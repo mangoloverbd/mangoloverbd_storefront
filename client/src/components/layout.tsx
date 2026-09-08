@@ -191,25 +191,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
       {/* Announcement Bar */}
-      <div className="border-b border-black bg-[#FBBB14] px-0 text-black sm:px-10 lg:px-16">
+      <div className="border-b border-black bg-[#FBBB14] px-4 text-black sm:px-10 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
-          <div className="overflow-hidden py-2.5" aria-label="Free shipping announcement">
-            <motion.div
-              className="flex w-max items-center whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.12em] sm:text-xs"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: 18, ease: "linear", repeat: Infinity }}
-            >
-              {[0, 1].map((copy) => (
-                <div key={copy} aria-hidden={copy === 1} className="flex shrink-0 items-center gap-4 pr-16">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#e53935]" aria-hidden="true" />
-                  <span>Free shipping on orders over <strong className="text-[#e53935]">৳2600</strong></span>
-                  <span aria-hidden="true" className="text-black/25">—</span>
-                  <Link href="/products">
-                    <a className="underline decoration-[#e53935] decoration-2 underline-offset-4 transition-colors hover:text-[#e53935]">Shop now</a>
-                  </Link>
-                </div>
-              ))}
-            </motion.div>
+          <div className="flex min-h-[42px] items-center justify-center overflow-hidden py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.12em] sm:text-xs" aria-label="Free shipping announcement">
+            <p className="whitespace-nowrap">
+              Free shipping on orders over <strong className="text-[#163B33]">৳2600</strong> <span aria-hidden="true">—</span>{" "}
+              <Link href="/products">
+                <a className="underline decoration-[#e53935] decoration-2 underline-offset-4 transition-colors hover:text-[#e53935]">Shop now</a>
+              </Link>
+            </p>
           </div>
         </div>
       </div>
