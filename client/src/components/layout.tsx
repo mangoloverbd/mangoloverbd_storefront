@@ -9,7 +9,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
-import { fetchStorefrontProducts, getProductImage, searchStorefrontProducts } from "@/lib/storefront-products";
+import {
+  fetchStorefrontProducts,
+  getProductImage,
+  searchStorefrontProducts,
+  STOREFRONT_CATALOG_QUERY_OPTIONS,
+} from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 
 function BagIcon({ className }: { className?: string }) {
@@ -143,6 +148,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    ...STOREFRONT_CATALOG_QUERY_OPTIONS,
     initialData: generatedStorefrontProducts,
     initialDataUpdatedAt: 0,
     enabled: isSearchOpen || isOpen,

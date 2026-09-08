@@ -11,6 +11,7 @@ import {
   formatProductPriceRange,
   mergeInventory,
   searchStorefrontProducts,
+  STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
@@ -81,6 +82,7 @@ export default function ProductsPage() {
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    ...STOREFRONT_CATALOG_QUERY_OPTIONS,
     initialData: generatedStorefrontProducts,
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,

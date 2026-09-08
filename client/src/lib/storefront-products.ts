@@ -11,6 +11,10 @@ const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 // The Suite's inventory feed purges its cache the moment stock changes, so a
 // fresh poll reflects an edit within roughly this window — Shopify-like sync.
 export const STOREFRONT_POLL_INTERVAL_MS = 8000;
+export const STOREFRONT_CATALOG_QUERY_OPTIONS = {
+  staleTime: 0,
+  refetchOnMount: "always" as const,
+};
 
 export { isProductOrderable } from "./storefront-product-orderability";
 

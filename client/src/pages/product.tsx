@@ -28,6 +28,7 @@ import {
   mergeInventory,
   removeCachedStorefrontProduct,
   setCachedStorefrontProduct,
+  STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
@@ -199,6 +200,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const { data: catalogProducts } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    ...STOREFRONT_CATALOG_QUERY_OPTIONS,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
 

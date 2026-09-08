@@ -4,6 +4,7 @@ import {
   formatProductPriceRange,
   getProductImage,
   getProductNumericId,
+  STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
 } from "@/lib/storefront-products";
 import { useQuery } from "@tanstack/react-query";
@@ -87,6 +88,7 @@ export default function Home() {
   } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
+    ...STOREFRONT_CATALOG_QUERY_OPTIONS,
     initialData: generatedStorefrontProducts,
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
