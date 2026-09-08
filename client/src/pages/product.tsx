@@ -6,6 +6,7 @@ import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } f
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import HomeProductCard from "@/components/home-product-card";
 import { useCart } from "@/contexts/cart-context";
 import Layout from "@/components/layout";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
@@ -19,7 +20,6 @@ import {
   fetchStorefrontProducts,
   findGeneratedStorefrontProduct,
   formatProductPrice,
-  formatProductPriceRange,
   getCachedStorefrontProduct,
   getProductGallery,
   getProductImage,
@@ -1055,29 +1055,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
             className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4"
           >
             {relatedProducts.map((p) => (
-              <motion.article
-                key={p.slug}
-                variants={reveal}
-                transition={transition}
-                className="group bg-[#f6f6f6]"
-              >
-                <Link href={`/product/${p.slug}`} className="block h-full">
-                  <div className="aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
-                    <img
-                      src={optimizedImage(p.image_url)}
-                      alt={p.name ?? ""}
-                      loading="lazy"
-                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="space-y-2 pl-0 pr-3 pb-4 pt-3 md:pl-0 md:pr-4 md:pb-5">
-                    <h3 className="line-clamp-2 min-h-[2.4em] text-sm font-bold uppercase leading-tight tracking-[0.06em] md:min-h-[2.35em] md:text-base md:tracking-[0.08em]">
-                      {p.name}
-                    </h3>
-                    <p className="mt-4 whitespace-nowrap text-sm font-normal tracking-[0.02em] md:text-xl">{formatProductPriceRange(p)}</p>
-                  </div>
-                </Link>
-              </motion.article>
+              <HomeProductCard key={p.slug} product={p} />
             ))}
           </motion.div>
         </motion.div>
