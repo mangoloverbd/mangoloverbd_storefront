@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout";
 import HomeProductCard from "@/components/home-product-card";
+import RecentlyViewed from "@/components/recently-viewed";
 import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
@@ -95,6 +96,8 @@ export default function ProductsPage() {
             ))}
           </div>
         )}
+
+        <RecentlyViewed products={products ?? generatedStorefrontProducts} />
       </div>
     </Layout>
   );

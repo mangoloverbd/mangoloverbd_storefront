@@ -1,5 +1,6 @@
 import Layout from "@/components/layout";
 import HomeProductCard from "@/components/home-product-card";
+import RecentlyViewed from "@/components/recently-viewed";
 import {
   fetchStorefrontProducts,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
@@ -614,6 +615,8 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </section>
+
+      <RecentlyViewed products={homepageProducts} />
 
     </Layout>
   );
