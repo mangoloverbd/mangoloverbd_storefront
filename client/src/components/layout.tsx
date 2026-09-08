@@ -193,7 +193,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Announcement Bar */}
       <div className="border-b border-black bg-[#FBBB14] px-4 text-black sm:px-10 lg:px-16">
         <div className="mx-auto max-w-[1440px]">
-          <div className="flex min-h-[42px] items-center justify-center overflow-hidden py-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.12em] sm:text-xs" aria-label="Free shipping announcement">
+          <div className="flex min-h-[34px] items-center justify-center overflow-hidden py-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.12em] sm:min-h-[42px] sm:py-2.5 sm:text-xs" aria-label="Free shipping announcement">
             <p className="whitespace-nowrap">
               Free shipping on orders over <strong className="text-[#163B33]">৳2600</strong> <span aria-hidden="true">—</span>{" "}
               <Link href="/products">
