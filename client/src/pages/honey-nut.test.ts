@@ -13,6 +13,8 @@ function readSource(path: string) {
 const pageSource = readSource("./honey-nut.tsx");
 const sectionsSource = readSource("../features/honey-nut/documentary-sections.tsx");
 const contentSource = readSource("../features/honey-nut/content.ts");
+const stylesSource = readSource("../features/honey-nut/campaign.css");
+const mobileBarSource = readSource("../features/honey-nut/mobile-order-bar.tsx");
 const campaignSource = `${sectionsSource}\n${contentSource}`;
 
 const requiredAssets = [
@@ -67,4 +69,18 @@ test("Honey Nut campaign uses responsible food positioning and guide FAQs", () =
   assert.match(contentSource, /অ্যালার্জি/);
   assert.match(contentSource, /ঠান্ডা ও শুষ্ক স্থানে/);
   assert.match(contentSource, /১ কেজি/);
+});
+
+test("Honey Nut titles use the normal Bengali font stack", () => {
+  assert.match(stylesSource, /Hind Siliguri.*Inter.*system-ui/);
+  assert.doesNotMatch(stylesSource, /KaiumSimanto/);
+});
+
+test("Honey Nut mobile sticky bar mirrors Kalojira's three-action behavior", () => {
+  assert.match(mobileBarSource, /IntersectionObserver/);
+  assert.match(mobileBarSource, /data-hidden/);
+  assert.match(mobileBarSource, /WhatsAppBrandIcon/);
+  assert.match(mobileBarSource, /placement: "sticky_bar"/);
+  assert.match(stylesSource, /safe-area-inset-bottom/);
+  assert.match(stylesSource, /honey-nut-order-bar\[data-hidden="true"\]/);
 });
