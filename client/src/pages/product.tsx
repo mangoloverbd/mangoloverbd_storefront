@@ -860,16 +860,16 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   </p>
                                 ))}
                                 {item.details?.length ? (
-                                  <ul className="space-y-1 text-center">
-                                    {item.details.map((detail) => (
-                                      <li
-                                        key={detail}
-                                         className="flex items-center justify-center gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
-                                      >
-                                        <span className="h-1 w-1 shrink-0 rounded-full bg-brand-gold" />
-                                        {detail}
-                                      </li>
-                                    ))}
+                                   <ul className="mx-auto max-w-[720px] space-y-1 text-center">
+                                     {item.details.map((detail) => (
+                                       <li
+                                         key={detail}
+                                          className="mx-auto grid w-fit max-w-full grid-cols-[0.75rem_minmax(0,1fr)] items-start gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
+                                       >
+                                         <span className="mt-[0.7em] h-1.5 w-1.5 shrink-0 rotate-45 rounded-[1px] bg-brand-gold" />
+                                         <span>{detail}</span>
+                                       </li>
+                                     ))}
                                   </ul>
                                 ) : null}
                               </div>

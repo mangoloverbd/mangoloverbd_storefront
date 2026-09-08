@@ -3,7 +3,7 @@ import { test } from "node:test";
 
 import { getProductDetailSections } from "./product-details.ts";
 
-test("curates detailed source content for all five regular products", () => {
+test("curates detailed source content for regular products", () => {
   const cases = [
     {
       slug: "beetroot-powder",
@@ -50,6 +50,18 @@ test("curates detailed source content for all five regular products", () => {
       labels: ["বিবরণ", "উপাদানসমূহ", "সম্ভাব্য উপকারিতা", "খাওয়ার সময় ও নিয়ম", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
       expected: ["দুধ", "মসৃণ টেক্সচার", "রান্না"],
       minimumCharacters: 1900,
+    },
+    {
+      slug: "black-seed-flower-honey",
+      labels: ["বিবরণ", "উপাদানসমূহ", "সম্ভাব্য উপকারিতা", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
+      expected: ["কালোজিরা ফুলের মধু", "প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট", "দানা তৈরি"],
+      minimumCharacters: 1250,
+    },
+    {
+      slug: "sundarbans-natural-honey",
+      labels: ["বিবরণ", "উপাদানসমূহ", "সম্ভাব্য উপকারিতা", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
+      expected: ["সুন্দরবনের", "প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট", "দানা তৈরি"],
+      minimumCharacters: 1250,
     },
   ];
 
