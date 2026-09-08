@@ -21,7 +21,7 @@ const campaignSource = `${sectionsSource}\n${contentSource}`;
 const requiredAssets = [
   "honey-nut-hero-v1.webp",
   "honey-nut-nutrition-flatlay-v1.webp",
-  "honey-nut-ingredient-honey-v1.webp",
+  "honey-nut-ingredient-honey-v2.webp",
   "honey-nut-ingredient-almond-v1.webp",
   "honey-nut-ingredient-cashew-v1.webp",
   "honey-nut-ingredient-walnut-v1.webp",
@@ -58,6 +58,7 @@ test("Honey Nut campaign renders all supplied assets and ingredients", () => {
   assert.match(sectionsSource, /murad-parvez/);
   assert.match(sectionsSource, /honey-nut-nutritionist-murad-parvez-v1\.webp/);
   assert.doesNotMatch(sectionsSource, /kalojira-mixed-expert-murad-parvez/);
+  assert.match(contentSource, /honey-nut-ingredient-honey-v2\.webp/);
   assert.match(sectionsSource, /TestimonialsSection/);
 });
 

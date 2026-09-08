@@ -9,7 +9,7 @@ export const heroTrustPoints = ["৯টি নির্বাচিত উপা
 
 export type HoneyNutIngredient = { name: string; image: string; note: string; category: string };
 export const ingredients: HoneyNutIngredient[] = [
-  { name: "লিচুফুলের মধু", image: "honey-nut-ingredient-honey-v1.webp", category: "প্রাকৃতিক মিষ্টতা", note: "প্রাকৃতিক মিষ্টতা এবং পুরো মিশ্রণের স্বাদ ও texture তৈরি করে।" },
+  { name: "লিচুফুলের মধু", image: "honey-nut-ingredient-honey-v2.webp", category: "প্রাকৃতিক মিষ্টতা", note: "প্রাকৃতিক মিষ্টতা এবং পুরো মিশ্রণের স্বাদ ও texture তৈরি করে।" },
   { name: "কাঠবাদাম", image: "honey-nut-ingredient-almond-v1.webp", category: "বাদাম", note: "Vitamin E, healthy fat এবং উদ্ভিজ্জ প্রোটিনের পরিচিত উৎস।" },
   { name: "কাজুবাদাম", image: "honey-nut-ingredient-cashew-v1.webp", category: "বাদাম", note: "স্বাদ ও texture-এর পাশাপাশি Copper, Magnesium এবং mineral যোগ করে।" },
   { name: "আখরোট", image: "honey-nut-ingredient-walnut-v1.webp", category: "বাদাম", note: "Omega-3 fatty acid-এর উদ্ভিজ্জ উৎস হিসেবে পরিচিত।" },
