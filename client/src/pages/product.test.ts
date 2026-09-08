@@ -73,6 +73,14 @@ test("highlights the বৈশিষ্ট্য label with the existing yellow 
   );
 });
 
+test("keeps detail-list markers fixed beside wrapped text", () => {
+  assert.match(productSource, /grid-cols-\[0\.75rem_minmax\(0,1fr\)\]/);
+  assert.match(productSource, /items-start/);
+  assert.match(productSource, /rotate-45/);
+  assert.match(productSource, /bg-brand-gold/);
+  assert.doesNotMatch(productSource, /h-1 w-1 shrink-0 rounded-full bg-brand-gold/);
+});
+
 test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel/);
   assert.match(productSource, /ref=\{reelRef\}/);
