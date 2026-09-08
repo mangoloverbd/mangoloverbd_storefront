@@ -35,6 +35,7 @@ const requiredAssets = [
   "honey-nut-gallery-mix-v1.webp",
   "honey-nut-routine-v1.webp",
   "honey-nut-quality-packaging-v1.webp",
+  "honey-nut-nutritionist-murad-parvez-v1.webp",
 ] as const;
 
 const ingredients = ["লিচুফুলের মধু", "কাঠবাদাম", "কাজুবাদাম", "আখরোট", "পেস্তা বাদাম", "থাই বাদাম", "সূর্যমুখী বীজ", "কালো কিসমিস", "সাদা তিল"];
@@ -55,6 +56,8 @@ test("Honey Nut campaign renders all supplied assets and ingredients", () => {
     assert.ok(contentSource.includes(ingredient), `missing ingredient: ${ingredient}`);
   }
   assert.match(sectionsSource, /murad-parvez/);
+  assert.match(sectionsSource, /honey-nut-nutritionist-murad-parvez-v1\.webp/);
+  assert.doesNotMatch(sectionsSource, /kalojira-mixed-expert-murad-parvez/);
   assert.match(sectionsSource, /TestimonialsSection/);
 });
 
