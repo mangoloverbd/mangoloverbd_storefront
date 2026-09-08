@@ -77,6 +77,7 @@ export default function RecentlyViewed({ products, excludeSlug, className = "" }
             <button
               type="button"
               aria-label="Previous recently viewed products"
+              aria-controls="recently-viewed-products"
               onClick={() => scrollByPage(-1)}
               disabled={!canScrollLeft}
               className="flex h-9 w-9 items-center justify-center border border-black/20 text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black md:h-11 md:w-11"
@@ -86,6 +87,7 @@ export default function RecentlyViewed({ products, excludeSlug, className = "" }
             <button
               type="button"
               aria-label="Next recently viewed products"
+              aria-controls="recently-viewed-products"
               onClick={() => scrollByPage(1)}
               disabled={!canScrollRight}
               className="flex h-9 w-9 items-center justify-center border border-black/20 text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-black md:h-11 md:w-11"
