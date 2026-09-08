@@ -7,6 +7,7 @@ import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import HomeProductCard from "@/components/home-product-card";
+import RecentlyViewed from "@/components/recently-viewed";
 import { useCart } from "@/contexts/cart-context";
 import Layout from "@/components/layout";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
@@ -33,6 +34,7 @@ import {
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { recordRecentlyViewedSlug } from "@/lib/recently-viewed";
 
 // Use the direct catalog image URL. Vercel's image optimizer currently
 // rejects these Supabase URLs in production (INVALID_IMAGE_OPTIMIZE_REQUEST),
@@ -212,6 +214,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const relatedProducts = relatedSource
     .filter((p) => p.slug !== product?.slug)
     .slice(0, 8);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !product?.slug) return;
+    recordRecentlyViewedSlug(window.localStorage, product.slug);
+  }, [product?.slug]);
+
   const bundles = (() => {
     const variants = product?.variants?.filter((variant) => {
       if (variant.available === false) return false;
@@ -1060,6 +1068,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           </motion.div>
         </motion.div>
       </section>
+
+      <RecentlyViewed products={relatedSource} excludeSlug={product?.slug} />
 
       <OrderDialog open={orderOpen} onOpenChange={setOrderOpen} bundle={orderBundle} />
     </Layout>
