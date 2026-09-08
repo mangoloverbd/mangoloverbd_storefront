@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 
 const HERO_IMAGES = [
   {
-    src: "/hero_mobile_no_makeup.webp",
+    src: "/ChatGPT Image Sep 8, 2026, 02_08_34 PM.webp",
     alt: "",
-    fit: "cover",
+    fit: "contain",
   },
   {
     src: "/hf_20260311_145847_43310d40-2ddd-4227-9283-2c3fe9830d15.webp",
@@ -62,12 +62,12 @@ export default function Hero() {
   }, [emblaApi, syncActiveImage]);
 
   return (
-    <section className="relative w-full bg-brand-ivory px-0 pt-0 pb-12 overflow-hidden md:px-16 md:pt-8 md:pb-16">
+    <section className="relative w-full px-0 pt-0 pb-12 overflow-hidden md:px-16 md:pt-8 md:pb-16">
       <motion.div
         initial={{ scale: 1.1, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mx-auto aspect-square w-full max-w-[min(100%,780px)] overflow-hidden bg-[#f6f6f6] md:max-w-[min(100%,880px)]"
+        className="relative mx-auto aspect-square w-full max-w-[min(100%,780px)] overflow-hidden md:max-w-[min(100%,880px)]"
       >
         <div ref={emblaRef} className="h-full overflow-hidden">
           <div className="flex h-full touch-pan-y">
@@ -89,9 +89,6 @@ export default function Hero() {
             ))}
           </div>
         </div>
-        <div className="absolute inset-0 border border-black/10 pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 z-10 h-28 bg-gradient-to-t from-black/18 to-transparent pointer-events-none" />
-
         <div className="absolute inset-x-0 bottom-5 z-20 flex justify-center">
           <div className="flex items-center gap-3 border border-white/20 bg-black/15 px-4 py-3 backdrop-blur-sm rounded-[8px]">
             {HERO_IMAGES.map((image, idx) => (
