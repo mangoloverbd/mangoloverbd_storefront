@@ -4,7 +4,6 @@ import { ChevronDown, ChevronLeft, ChevronRight, TriangleAlert } from "lucide-re
 import { useEffect, useId, useRef, useState } from "react";
 
 import { TestimonialsSection } from "@/components/ui/testimonials-3";
-import { demoReviews } from "@/features/kalojira-mixed/content";
 
 import {
   faqAnswers,
@@ -15,6 +14,7 @@ import {
   heroHeadline,
   heroSubcopy,
   heroTrustPoints,
+  honeyNutReviews,
   importantNotes,
   ingredients,
   nutritionGroups,
@@ -66,7 +66,8 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 }
 
 const HONEY_NUT_GALLERY = [
-  { src: "/step/honey-nut/honey-nut-gallery-open-jar-v1.webp", alt: "খোলা জারে Honey Nut" },
+  { src: "/step/honey-nut/honey-nut-gallery-jar-v1.webp", alt: "সাদা ব্যাকগ্রাউন্ডে Honey Nut-এর সিলড জার" },
+  { src: "/step/honey-nut/honey-nut-gallery-jar-v2.webp", alt: "গোল্ডেন ক্যাপসহ Honey Nut-এর কাচের জার" },
   { src: "/step/honey-nut/honey-nut-gallery-spoon-v1.webp", alt: "চামচে Honey Nut" },
   { src: "/step/honey-nut/honey-nut-gallery-mix-v1.webp", alt: "Honey Nut-এর বাদাম ও বীজের close-up" },
 ] as const;
@@ -102,7 +103,7 @@ export function DocumentarySections({ onOrderClick }: DocumentarySectionsProps) 
 
     <section aria-labelledby="honey-nut-quality-heading" className="bg-[#fbf4e8] px-4 py-10 text-[#3d211a] sm:px-6 sm:py-16"><div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-14"><div><h2 id="honey-nut-quality-heading" className="honey-nut-heading text-3xl leading-tight sm:text-5xl">{qualityHeading}</h2><p className="mt-5 max-w-md text-base leading-7 text-[#6c5145]">বাছাই থেকে প্যাকেজিং—প্রতিটি ধাপে মান ও যত্নকে গুরুত্ব দেওয়া হয়েছে।</p><ol className="mt-8 border-t border-[#5b3b18]/20">{qualityPoints.map((point, index) => <li key={point} className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-[#5b3b18]/20 py-4"><span className="font-serif text-xl text-[#d99a2b]">{String(index + 1).padStart(2, "0")}</span><span className="text-sm font-semibold leading-6 text-[#3d211a]">{point}</span></li>)}</ol></div><div className="overflow-hidden border border-[#3d211a]/15 bg-white p-2 shadow-[10px_10px_0_#d99a2b]"><img src="/step/honey-nut/honey-nut-quality-packaging-v2.webp" alt="Honey Nut jar, মধু ও বাদামের পরিবেশন" className="h-auto max-h-[520px] w-full object-cover object-center" width="1536" height="1024" loading="lazy" /></div></div></section>
 
-    <section aria-labelledby="honey-nut-reviews-heading" className="border-b border-[#5b3b18]/25 bg-[#fbf4e8] px-4 py-8 sm:px-6 sm:py-12"><div className="mx-auto max-w-5xl"><SectionIntro label="ক্রেতাদের অভিজ্ঞতা" heading="যারা ব্যবহার করছেন, তাদের কথা" /><h2 id="honey-nut-reviews-heading" className="sr-only">Honey Nut customer reviews</h2><TestimonialsSection testimonials={demoReviews.map((review) => ({ quote: review.text, name: review.name, role: "Honey Nut", company: "ম্যাংগো লাভার" }))} className="mt-12" /></div></section>
+    <section aria-labelledby="honey-nut-reviews-heading" className="border-b border-[#5b3b18]/25 bg-[#fbf4e8] px-4 py-8 sm:px-6 sm:py-12"><div className="mx-auto max-w-5xl"><SectionIntro label="ক্রেতাদের অভিজ্ঞতা" heading="যারা ব্যবহার করছেন, তাদের কথা" /><h2 id="honey-nut-reviews-heading" className="sr-only">Honey Nut customer reviews</h2><TestimonialsSection testimonials={[...honeyNutReviews]} className="mt-12" /></div></section>
 
     <section aria-labelledby="honey-nut-faq-heading" className="bg-[#fff8ee] px-4 py-8 sm:px-6 sm:py-12"><div className="mx-auto max-w-5xl"><SectionIntro label="অর্ডারের আগে" heading={faqHeading} /><div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]"><div className="rounded-[1.5rem] border border-[#3d211a]/12 bg-white px-5">{faqQuestions.map((question, index) => <FaqItem key={question} question={question} answer={faqAnswers[index]} />)}</div><aside className="rounded-[1.5rem] bg-[#3d211a] p-6 text-[#fff8ee]"><h2 className="honey-nut-heading text-2xl">মনে রাখুন</h2><ul className="mt-5 space-y-3">{importantNotes.map((note) => <li key={note} className="flex gap-3 text-sm leading-6 text-[#fff8ee]/80"><TriangleAlert className="mt-1 size-4 shrink-0 text-[#f0d2a0]" aria-hidden="true" />{note}</li>)}</ul></aside></div><div className="mt-8 text-center"><OrderButton placement="content_bottom" label="Honey Nut অর্ডার করুন" onOrderClick={onOrderClick} /></div></div></section>
 
