@@ -79,6 +79,15 @@ function getMerchantSlug(slug: string) {
   return slug || "";
 }
 
+const BENGALI_DIGITS = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"] as const;
+
+function toBengaliNumeral(value: number) {
+  return String(value)
+    .split("")
+    .map((digit) => BENGALI_DIGITS[Number(digit)] ?? digit)
+    .join("");
+}
+
 function formatTimelineDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -860,16 +869,21 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   </p>
                                 ))}
                                 {item.details?.length ? (
-                                  <ul className="space-y-1 text-center">
-                                    {item.details.map((detail) => (
-                                      <li
-                                        key={detail}
-                                         className="flex items-center justify-center gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
-                                      >
-                                        <span className="h-1 w-1 shrink-0 rounded-full bg-brand-gold" />
-                                        {detail}
-                                      </li>
-                                    ))}
+                                   <ul className="mx-auto max-w-[720px] space-y-1 text-center">
+                                     {item.details.map((detail, detailIndex) => (
+                                       <li
+                                         key={detail}
+                                          className="mx-auto grid w-fit max-w-full grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-2 text-[13px] uppercase tracking-[0.03em] font-medium leading-6 text-black/70"
+                                       >
+                                         <span
+                                           className="w-6 text-right font-normal tabular-nums text-brand-gold"
+                                           style={{ fontFamily: "inherit" }}
+                                         >
+                                           {toBengaliNumeral(detailIndex + 1)}.
+                                         </span>
+                                         <span>{detail}</span>
+                                       </li>
+                                     ))}
                                   </ul>
                                 ) : null}
                               </div>

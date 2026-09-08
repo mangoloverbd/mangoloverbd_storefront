@@ -73,6 +73,18 @@ test("highlights the বৈশিষ্ট্য label with the existing yellow 
   );
 });
 
+test("uses aligned Bengali numbering in the normal detail-list font", () => {
+  assert.match(productSource, /const BENGALI_DIGITS = \[/);
+  assert.match(productSource, /function toBengaliNumeral\(value: number\)/);
+  assert.match(productSource, /toBengaliNumeral\(detailIndex \+ 1\)/);
+  assert.match(productSource, /grid-cols-\[1\.5rem_minmax\(0,1fr\)\]/);
+  assert.match(productSource, /items-start/);
+  assert.match(productSource, /fontFamily: "inherit"/);
+  assert.match(productSource, /text-brand-gold/);
+  assert.doesNotMatch(productSource, /rotate-45/);
+  assert.doesNotMatch(productSource, /rounded-full bg-brand-gold/);
+});
+
 test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel/);
   assert.match(productSource, /ref=\{reelRef\}/);
