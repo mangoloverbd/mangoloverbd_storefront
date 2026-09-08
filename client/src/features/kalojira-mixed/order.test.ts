@@ -40,8 +40,8 @@ test("calculates Kalojira order totals with home delivery", () => {
     unitPrice: 1600,
     quantity: 1,
     subtotal: 1600,
-    deliveryCharge: 100,
-    total: 1700,
+    deliveryCharge: 0,
+    total: 1600,
   });
 });
 
@@ -64,8 +64,8 @@ test("builds COD payload and persists only safe confirmation data", () => {
     quantity: 1,
     unitPrice: 1600,
     subtotal: 1600,
-    deliveryCharge: 100,
-    total: 1700,
+    deliveryCharge: 0,
+    total: 1600,
   }), true);
   assert.ok(storage.getItem(KALOJIRA_CONFIRMATION_KEY));
   assert.equal(readKalojiraOrderConfirmation(storage)?.orderRef, "ORD-123");

@@ -125,7 +125,7 @@ export default function KalojiraMixedThankYouPage() {
           </div>
           <div className="flex items-center justify-between gap-4 border-b border-[#eee4cf] py-4">
             <dt className="text-[#654b2f]">ডেলিভারি</dt>
-            <dd className="font-semibold"><Money value={confirmation.deliveryCharge} /></dd>
+            <dd className="font-semibold">{confirmation.deliveryCharge === 0 ? "ফ্রি" : <Money value={confirmation.deliveryCharge} />}</dd>
           </div>
           <div className="flex items-center justify-between gap-4 py-4 text-lg">
             <dt className="font-bold">মোট</dt>

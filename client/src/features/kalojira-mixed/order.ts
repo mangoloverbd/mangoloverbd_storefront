@@ -1,7 +1,7 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 
-export const KALOJIRA_DELIVERY_CHARGE = 100;
+export const KALOJIRA_DELIVERY_CHARGE = 0;
 export const KALOJIRA_CONFIRMATION_KEY = "kalojira-mixed-order-confirmation-v1";
 
 const MAX_PRICE = 10_000_000;
@@ -19,7 +19,7 @@ export type KalojiraOrderTotals = {
   unitPrice: number;
   quantity: number;
   subtotal: number;
-  deliveryCharge: 100;
+  deliveryCharge: 0;
   total: number;
 };
 
@@ -28,7 +28,7 @@ export type KalojiraOrderPayload = {
   bundleDetails: string;
   bundlePrice: number;
   quantity: number;
-  deliveryCharge: 100;
+  deliveryCharge: 0;
   customerName: string;
   phone: string;
   address: string;
@@ -43,7 +43,7 @@ export type KalojiraOrderConfirmation = {
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  deliveryCharge: 100;
+  deliveryCharge: 0;
   total: number;
 };
 

@@ -328,10 +328,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   return (
     <section className="rounded-2xl border border-[#d4c39c] bg-[#fffdf7] p-4 sm:p-6" aria-labelledby="kalojira-checkout-heading">
       <div className="max-w-2xl">
-        <h2 id="kalojira-checkout-heading" className="text-2xl font-bold text-[#19382d]" tabIndex={-1}>
+        <h2 id="kalojira-checkout-heading" className="text-2xl font-extrabold text-[#19382d]" tabIndex={-1}>
           ক্যাশ অন ডেলিভারিতে অর্ডার করুন
         </h2>
-        <p className="mt-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন। সারা দেশে ডেলিভারি চার্জ ৳{KALOJIRA_DELIVERY_CHARGE}।</p>
+        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-[#654b2f]">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন।<span className="rounded-full bg-[#187d48] px-3 py-1 text-xs font-bold text-white">সারা দেশে ডেলিভারি ফ্রি</span></p>
       </div>
 
       <form
@@ -373,7 +373,13 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                     <bdi dir="ltr" className="whitespace-nowrap text-lg font-bold leading-tight tracking-normal text-[#19382d]">{pack.label}</bdi>
                   </span>
                   {status === "ready" ? (
-                    <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
+                    <span className="flex flex-col items-end gap-1.5">
+                      <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
+                      {pack.label.includes("কেজি") ? (
+                        <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳460</span>
+                      ) : null}
+                      <span className="rounded-full bg-[#187d48]/10 px-2.5 py-0.5 text-[11px] font-bold text-[#187d48]">ডেলিভারি ফ্রি</span>
+                    </span>
                   ) : null}
                 </label>
               ))}
@@ -490,12 +496,12 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">
-          <h3 className="text-xl font-bold">অর্ডার সারাংশ</h3>
+          <h3 className="text-xl font-extrabold">অর্ডার সারাংশ</h3>
           <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
-            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="font-semibold">৳{KALOJIRA_DELIVERY_CHARGE}</dd></div>
+            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">ফ্রি</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
           <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-sm leading-6">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>

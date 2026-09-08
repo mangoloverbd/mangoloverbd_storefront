@@ -47,6 +47,12 @@ test("campaign hero uses the supplied image without a background or frame", () =
   assert.doesNotMatch(sectionsSource, /overflow-hidden rounded-\[2rem\] bg-\[#f0c5a5\]\/35/);
 });
 
+test("campaign sections use compact vertical spacing", () => {
+  assert.doesNotMatch(sectionsSource, /py-14 sm:py-20/);
+  assert.match(sectionsSource, /py-8 sm:px-6 sm:py-12/);
+  assert.match(sectionsSource, /py-4 sm:px-6 sm:py-8/);
+});
+
 test("campaign keeps claims honest and FAQ controls accessible", () => {
   assert.match(contentSource, /ওষুধ নয়/);
   assert.match(sectionsSource, /aria-expanded=\{open\}/);
@@ -69,6 +75,9 @@ test("campaign chrome mirrors the Sundarbans header and sticky order bar", () =>
   assert.match(layoutSource, /Facebook পেজ/);
   assert.match(layoutSource, /fontFamily: "'KaiumSimanto', serif"/);
   assert.match(layoutSource, /bg-\[#0f241c\]/);
+  assert.match(layoutSource, /font-extrabold leading-tight/);
+  assert.match(campaignCssSource, /font-weight: 800/);
+  assert.match(campaignCssSource, /-webkit-text-stroke: 0\.45px/);
 });
 
 test("ingredient cards use the Sundarbans editorial Swiss rail treatment", () => {
@@ -99,6 +108,16 @@ test("review section uses the supplied testimonial card treatment without fake p
   assert.doesNotMatch(testimonialsSource, /unavatar\.io|unsplash\.com/);
 });
 
+test("checkout offers free delivery and a save badge on the 1kg pack", () => {
+  assert.match(checkoutSource, /সারা দেশে ডেলিভারি ফ্রি/);
+  assert.ok((checkoutSource.match(/ডেলিভারি ফ্রি/g) ?? []).length >= 2, "free delivery shows in header and on both pack options");
+  assert.match(checkoutSource, /pack\.label\.includes\("কেজি"\)/);
+  assert.match(checkoutSource, /Save ৳460/);
+  assert.match(checkoutSource, />ফ্রি</);
+  assert.doesNotMatch(checkoutSource, /ডেলিভারি চার্জ ৳/);
+  assert.match(contentSource, /হোম ডেলিভারি সম্পূর্ণ ফ্রি/);
+});
+
 test("product gallery sits immediately above checkout with product-page mobile controls", () => {
   assert.match(sectionsSource, /export function ProductGallery\(\)/);
   assert.match(sectionsSource, /md:hidden/);
@@ -110,7 +129,7 @@ test("product gallery sits immediately above checkout with product-page mobile c
 
 test("product gallery stays minimal and follows the product-page image treatment", () => {
   assert.match(sectionsSource, /bg-brand-ivory/);
-  assert.match(sectionsSource, /bg-brand-ivory px-4 py-8/);
+  assert.match(sectionsSource, /bg-brand-ivory px-4 py-4/);
   assert.match(sectionsSource, /rounded-\[8px\] bg-\[#f6f6f6\]/);
   assert.match(sectionsSource, /hidden md:block/);
   assert.match(sectionsSource, /mt-3 grid grid-cols-2 gap-3/);
