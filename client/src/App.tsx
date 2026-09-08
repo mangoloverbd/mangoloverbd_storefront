@@ -14,6 +14,8 @@ import SundarbansHoneyPage from "@/pages/sundarbans-honey";
 import SundarbansHoneyThankYouPage from "@/pages/sundarbans-honey-thank-you";
 import KalojiraMixedPage from "@/pages/kalojira-mixed";
 import KalojiraMixedThankYouPage from "@/pages/kalojira-mixed-thank-you";
+import HoneyNutPage from "@/pages/honey-nut";
+import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
 import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -23,6 +25,8 @@ const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
   "/step/sundarbans-natural-honey/thank-you": "অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
   "/step/kalojira-mixed": "কালোজিরা মিক্সড | ম্যাংগো লাভার",
   "/step/kalojira-mixed/thank-you": "কালোজিরা মিক্সড অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
+  "/step/honey-nut": "হানি নাট | ম্যাংগো লাভার",
+  "/step/honey-nut/thank-you": "হানি নাট অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
 };
 
 function CampaignMetadata({ location }: { location: string }) {
@@ -216,6 +220,12 @@ function Router() {
           </Route>
           <Route path="/step/kalojira-mixed">
             <PageTransition><KalojiraMixedPage /></PageTransition>
+          </Route>
+          <Route path="/step/honey-nut/thank-you">
+            <PageTransition><HoneyNutThankYouPage /></PageTransition>
+          </Route>
+          <Route path="/step/honey-nut">
+            <PageTransition><HoneyNutPage /></PageTransition>
           </Route>
           <Route path="/">
             <PageTransition>

@@ -13,6 +13,7 @@ function readSource(path: string) {
 const pageSource = readSource("./honey-nut.tsx");
 const sectionsSource = readSource("../features/honey-nut/documentary-sections.tsx");
 const contentSource = readSource("../features/honey-nut/content.ts");
+const campaignSource = `${sectionsSource}\n${contentSource}`;
 
 const requiredAssets = [
   "honey-nut-hero-v1.webp",
@@ -45,7 +46,7 @@ test("Honey Nut campaign uses the live product and inventory APIs", () => {
 
 test("Honey Nut campaign renders all supplied assets and ingredients", () => {
   for (const asset of requiredAssets) {
-    assert.match(sectionsSource, new RegExp(asset.replaceAll(".", "\\.")), `missing asset: ${asset}`);
+    assert.match(campaignSource, new RegExp(asset.replaceAll(".", "\\.")), `missing asset: ${asset}`);
   }
   for (const ingredient of ingredients) {
     assert.ok(contentSource.includes(ingredient), `missing ingredient: ${ingredient}`);
@@ -58,7 +59,7 @@ test("Honey Nut campaign keeps FAQ and CTA interactions accessible", () => {
   assert.match(sectionsSource, /aria-expanded=\{open\}/);
   assert.match(sectionsSource, /aria-controls=\{answerId\}/);
   assert.match(sectionsSource, /prefers-reduced-motion/);
-  assert.match(sectionsSource, /honey-nut-checkout/);
+  assert.match(pageSource, /honey-nut-checkout/);
 });
 
 test("Honey Nut campaign uses responsible food positioning and guide FAQs", () => {

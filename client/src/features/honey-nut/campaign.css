@@ -1,0 +1,22 @@
+.honey-nut-page {
+  --honey-gold: #d99a2b;
+  --honey-cream: #fff8ee;
+  --honey-brown: #3d211a;
+  --honey-green: #5b793e;
+  --honey-peach: #f0d2a0;
+}
+
+.honey-nut-heading {
+  font-family: "KaiumSimanto", "Noto Sans Bengali", sans-serif;
+  font-weight: 800;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .honey-nut-page *,
+  .honey-nut-page *::before,
+  .honey-nut-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
