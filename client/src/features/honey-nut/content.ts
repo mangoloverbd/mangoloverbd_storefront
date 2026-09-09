@@ -13,7 +13,7 @@ export const ingredients: HoneyNutIngredient[] = [
   { name: "কাঠবাদাম", image: "honey-nut-ingredient-almond-v1.webp", category: "বাদাম", note: "Vitamin E, healthy fat এবং উদ্ভিজ্জ প্রোটিনের পরিচিত উৎস।" },
   { name: "কাজুবাদাম", image: "honey-nut-ingredient-cashew-v1.webp", category: "বাদাম", note: "স্বাদ ও texture-এর পাশাপাশি Copper, Magnesium এবং mineral যোগ করে।" },
   { name: "আখরোট", image: "honey-nut-ingredient-walnut-v1.webp", category: "বাদাম", note: "Omega-3 fatty acid-এর উদ্ভিজ্জ উৎস হিসেবে পরিচিত।" },
-  { name: "পেস্তা বাদাম", image: "honey-nut-ingredient-pistachio-v1.webp", category: "বাদাম", note: "Protein, healthy fat এবং antioxidant compound-এর প্রাকৃতিক উৎস।" },
+  { name: "পেস্তা বাদাম", image: "honey-nut-ingredient-pistachio-v2.webp", category: "বাদাম", note: "Protein, healthy fat এবং antioxidant compound-এর প্রাকৃতিক উৎস।" },
   { name: "থাই বাদাম", image: "honey-nut-ingredient-thai-almond-v1.webp", category: "বাদাম", note: "মিশ্রণে বাদামের স্বাদ, texture ও বৈচিত্র্য যোগ করে।" },
   { name: "সূর্যমুখী বীজ", image: "honey-nut-ingredient-sunflower-seed-v1.webp", category: "বীজ", note: "Vitamin E, healthy fat এবং বিভিন্ন mineral-এর উৎস।" },
   { name: "কালো কিসমিস", image: "honey-nut-ingredient-black-raisin-v1.webp", category: "শুকনো ফল", note: "প্রাকৃতিক মিষ্টতা, carbohydrate এবং micronutrient যোগ করে।" },

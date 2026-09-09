@@ -25,7 +25,7 @@ const requiredAssets = [
   "honey-nut-ingredient-almond-v1.webp",
   "honey-nut-ingredient-cashew-v1.webp",
   "honey-nut-ingredient-walnut-v1.webp",
-  "honey-nut-ingredient-pistachio-v1.webp",
+  "honey-nut-ingredient-pistachio-v2.webp",
   "honey-nut-ingredient-thai-almond-v1.webp",
   "honey-nut-ingredient-sunflower-seed-v1.webp",
   "honey-nut-ingredient-black-raisin-v1.webp",
