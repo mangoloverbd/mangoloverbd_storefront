@@ -10,13 +10,17 @@ const spaRewrite = config.rewrites.find(
   (rewrite) => rewrite.destination === "/",
 );
 
-test("SPA fallback handles app routes without swallowing assets or API requests", () => {
+test("SPA fallback handles app routes without swallowing products, assets, or API requests", () => {
   assert.ok(spaRewrite, "expected an SPA fallback rewrite");
 
   const matchesFallback = new RegExp(`^${spaRewrite.source}$`);
 
-  for (const route of ["/", "/products", "/booking", "/product/honey"]) {
+  for (const route of ["/", "/products", "/booking"]) {
     assert.equal(matchesFallback.test(route), true, `${route} should reach the SPA`);
+  }
+
+  for (const route of ["/product/active", "/product/not-real", "/product"]) {
+    assert.equal(matchesFallback.test(route), false, `${route} must bypass the SPA fallback`);
   }
 
   for (const resource of [
@@ -33,18 +37,39 @@ test("SPA fallback handles app routes without swallowing assets or API requests"
   }
 });
 
-test("HTML shell is never stored by browser caches", () => {
-  const spaHeaders = config.headers.find(
-    (entry) => entry.source === spaRewrite.source,
+test("only the confirmed legacy template product paths rewrite to the 410 handler", () => {
+  const legacySlugs = [
+    "stepprs-massage-insoles",
+    "massage-insoles",
+    "4-in-1-makeup-pen",
+    "bordeaux",
+    "plum-veil",
+    "rosy-bloom",
+    "mauve-nude",
+  ];
+
+  for (const slug of legacySlugs) {
+    assert.ok(
+      config.rewrites.some((rewrite) => (
+        rewrite.source === `/product/${slug}` && rewrite.destination === "/api/legacy-gone"
+      )),
+      `expected exact legacy rewrite for ${slug}`,
+    );
+  }
+});
+
+test("HTML shell and generated product pages are never stored by browser caches", () => {
+  const htmlHeaders = config.headers.find(
+    (entry) => entry.source === "/((?!api(?:/|$)|assets(?:/|$)|.*\\.[^/]+$).*)",
   );
-  const spaCacheControl = spaHeaders?.headers.find(
+  const htmlCacheControl = htmlHeaders?.headers.find(
     (header) => header.key.toLowerCase() === "cache-control",
   )?.value;
-  const matchesSpaHeaders = new RegExp(`^${spaHeaders?.source ?? "$a"}$`);
+  const matchesHtmlHeaders = new RegExp(`^${htmlHeaders?.source ?? "$a"}$`);
 
-  assert.match(spaCacheControl ?? "", /no-store/);
+  assert.match(htmlCacheControl ?? "", /no-store/);
   for (const route of ["/", "/products", "/booking", "/product/honey"]) {
-    assert.equal(matchesSpaHeaders.test(route), true, `${route} must be no-store`);
+    assert.equal(matchesHtmlHeaders.test(route), true, `${route} must be no-store`);
   }
 
   const indexHeaders = config.headers.find(

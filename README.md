@@ -246,8 +246,9 @@ do not carry that convention across.
 ### Build-generated catalog file
 
 `script/build.ts` refreshes `client/src/lib/generated-storefront-products.ts` from the live public
-catalog before building. If the API is unavailable, the build keeps the previous snapshot. If the
-catalog is genuinely empty, check the product API and `git diff` before committing a snapshot refresh.
+catalog before building. A production build fails if the API is unavailable, so it never deploys stale
+static product SEO files. Local fallback builds keep the previous snapshot. If the catalog is genuinely
+empty, check the product API and `git diff` before committing a snapshot refresh.
 
 ---
 
@@ -296,6 +297,13 @@ change. Run `npm run check` too — `tsc` catches what source-text tests cannot.
 
 Vercel auto-deploys on push to `main`. `vercel.json` sets `outputDirectory: dist/public`, SPA
 rewrites, and immutable cache headers on hashed assets.
+
+Published product and static SEO metadata changes are rebuilt automatically: Merchant Suite queues a
+production Vercel deployment, which fetches the current public catalog to generate product pages and
+the sitemap. Staff should publish or unpublish products in Merchant Suite, never edit storefront catalog
+data. An unpublished seasonal product returns `404` until it is republished. See
+[`docs/superpowers/specs/2026-09-09-dynamic-product-seo-remediation-design.md`](docs/superpowers/specs/2026-09-09-dynamic-product-seo-remediation-design.md)
+for the exact legacy-URL and Google cleanup policy.
 
 Before pushing: `npm run check` and run the tests. After pushing, run `git status` again — the
 global pre-push hook builds, which clobbers `generated-storefront-products.ts`.
