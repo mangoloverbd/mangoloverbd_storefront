@@ -3,6 +3,7 @@ import { build as viteBuild } from "vite";
 import { mkdir, readFile, rm, writeFile } from "fs/promises";
 import {
   createSitemapXml,
+  getStaticSeoProducts,
   injectProductMeta,
   resolveStorefrontBuildCatalog,
   type BuildProduct,
@@ -77,7 +78,7 @@ async function generateStorefrontProducts() {
 }
 
 async function buildAll() {
-  const products = await generateStorefrontProducts();
+  const products = getStaticSeoProducts(await generateStorefrontProducts());
   const slugs = [...new Set(products.map((p) => p.slug).filter(Boolean))];
 
   await rm("dist", { recursive: true, force: true });

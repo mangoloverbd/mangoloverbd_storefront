@@ -48,10 +48,11 @@ test("does not mark a live product unavailable while inventory is still loading"
 });
 
 test("only clears stale product data after the Merchant Suite confirms a 404", () => {
-  assert.match(productSource, /isFetchedAfterMount/);
-  assert.match(productSource, /const productMissingFromMerchant = isFetchedAfterMount && merchantProduct === null/);
+  assert.match(productSource, /isFetchedAfterMount, isSuccess/);
+  assert.match(productSource, /const productMissingFromMerchant = isFetchedAfterMount && isSuccess && merchantProduct === null/);
   assert.match(productSource, /const product = productMissingFromMerchant\s*\? null\s*:/);
-  assert.match(productSource, /if \(merchantProduct === null\) \{[\s\S]*?removeCachedStorefrontProduct\(window\.localStorage, slug\);[\s\S]*?setCachedProduct\(null\);/);
+  assert.match(productSource, /if \(!isFetchedAfterMount \|\| !isSuccess\) return;[\s\S]*?if \(merchantProduct === null\) \{[\s\S]*?removeCachedStorefrontProduct\(window\.localStorage, slug\);[\s\S]*?setCachedProduct\(null\);/);
+  assert.match(productSource, /const merchantAvailabilityKnown = isFetchedAfterMount && isSuccess && merchantProduct !== undefined/);
   assert.doesNotMatch(productSource, /const merchantAvailabilityKnown = isFetched \|\| isError/);
 });
 

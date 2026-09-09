@@ -15,6 +15,16 @@ export type BuildCatalogResult = {
 const SITE_URL = "https://www.mangolover.com.bd";
 const DEFAULT_DESCRIPTION = "ম্যাংগো লাভার — Mango Lover BD. Fresh, authentic products delivered across Bangladesh.";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/opengraph.jpg`;
+const PRODUCT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const LEGACY_GONE_PRODUCT_SLUGS = new Set([
+  "stepprs-massage-insoles",
+  "massage-insoles",
+  "4-in-1-makeup-pen",
+  "bordeaux",
+  "plum-veil",
+  "rosy-bloom",
+  "mauve-nude",
+]);
 
 function isBuildProduct(value: unknown): value is BuildProduct {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -26,12 +36,25 @@ function isBuildProduct(value: unknown): value is BuildProduct {
     && typeof product.name === "string" && product.name.trim().length > 0;
 }
 
+function isStaticSeoProduct(value: unknown): value is BuildProduct {
+  if (!isBuildProduct(value)) {
+    return false;
+  }
+
+  return PRODUCT_SLUG_PATTERN.test(value.slug)
+    && !LEGACY_GONE_PRODUCT_SLUGS.has(value.slug);
+}
+
 function parseBuildProducts(value: unknown): BuildProduct[] {
-  if (!Array.isArray(value) || !value.every(isBuildProduct)) {
+  if (!Array.isArray(value) || !value.every(isStaticSeoProduct)) {
     throw new Error("invalid catalog response");
   }
 
   return value;
+}
+
+export function getStaticSeoProducts(products: BuildProduct[]) {
+  return products.filter(isStaticSeoProduct);
 }
 
 function safeCatalogFailureReason(error: unknown) {
@@ -124,15 +147,31 @@ function serializeJsonForScript(value: unknown) {
     .replace(/\u2029/g, "\\u2029");
 }
 
+function getCatalogPrice(value: unknown) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) && value >= 0 ? String(value) : null;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    const price = Number(value);
+    return Number.isFinite(price) && price >= 0 ? String(price) : null;
+  }
+
+  return null;
+}
+
 export function injectProductMeta(baseHtml: string, product: BuildProduct) {
+  if (!isStaticSeoProduct(product)) {
+    throw new Error("invalid product slug");
+  }
+
   const description = (typeof product.description === "string" && product.description.trim()
     ? product.description
     : DEFAULT_DESCRIPTION).slice(0, 160);
   const title = `${product.name} | ম্যাংগো লাভার - Mango Lover`;
   const url = `${SITE_URL}/product/${encodeURIComponent(product.slug)}`;
   const image = safeProductImage(product.image_url);
-  const price = Number(product.price);
-  const serializedPrice = Number.isFinite(price) ? String(price) : "0";
+  const price = getCatalogPrice(product.price);
 
   let html = baseHtml;
   html = replaceHeadTag(html, /<title\b[^>]*>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
@@ -152,20 +191,23 @@ export function injectProductMeta(baseHtml: string, product: BuildProduct) {
     image,
     url,
     brand: { "@type": "Brand", name: "Mango Lover" },
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "BDT",
-      price: serializedPrice,
-      url,
-    },
+    ...(price
+      ? {
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "BDT",
+          price,
+          url,
+        },
+      }
+      : {}),
   });
 
   return html.replace("</head>", `<script type="application/ld+json" data-seo="product">${jsonLd}</script>\n</head>`);
 }
 
 export function createSitemapXml(products: BuildProduct[]) {
-  const slugs = [...new Set(products
-    .filter((product) => isBuildProduct(product))
+  const slugs = [...new Set(getStaticSeoProducts(products)
     .map((product) => product.slug))];
   const urls = [
     { loc: `${SITE_URL}/`, changefreq: "daily", priority: "1.0" },
