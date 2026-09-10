@@ -18,9 +18,23 @@ test("uses visible Featured Categories for menu navigation", () => {
   assert.match(layoutSource, /visibleCollections\.map/);
 });
 
-test("links Top Selling Products in customer navigation", () => {
-  assert.match(layoutSource, /\/collection\/top-selling-products/);
-  assert.match(layoutSource, /Top Selling Products - সেরা বিক্রিত পণ্য/);
+test("links Top Selling Products in desktop and mobile navigation", () => {
+  const menuItemsStart = layoutSource.indexOf("const MENU_ITEMS = [");
+  const menuItemsEnd = layoutSource.indexOf("] as const;", menuItemsStart);
+  const mobileMenuStart = layoutSource.indexOf('<nav aria-label="Mobile menu"');
+  const mobileMenuEnd = layoutSource.indexOf("</nav>", mobileMenuStart);
+
+  assert.notEqual(menuItemsStart, -1);
+  assert.notEqual(menuItemsEnd, -1);
+  assert.notEqual(mobileMenuStart, -1);
+  assert.notEqual(mobileMenuEnd, -1);
+
+  const desktopMenuSource = layoutSource.slice(menuItemsStart, menuItemsEnd);
+  const mobileMenuSource = layoutSource.slice(mobileMenuStart, mobileMenuEnd);
+  for (const navigationSource of [desktopMenuSource, mobileMenuSource]) {
+    assert.match(navigationSource, /\/collection\/top-selling-products/);
+    assert.match(navigationSource, /Top Selling Products - সেরা বিক্রিত পণ্য/);
+  }
 });
 
 test("does not expose obsolete menu categories", () => {

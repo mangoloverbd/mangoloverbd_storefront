@@ -3,7 +3,6 @@ import { test } from "node:test";
 import {
   FEATURED_COLLECTIONS,
   TOP_SELLING_COLLECTION,
-  TOP_SELLING_PRODUCT_SLUGS,
   getCollection,
   getFeaturedCollection,
   getTopSellingProducts,
@@ -82,7 +81,16 @@ test("orders Top Selling Products with the three hero products first", () => {
   assert.equal(TOP_SELLING_COLLECTION.slug, "top-selling-products");
   assert.equal(TOP_SELLING_COLLECTION.label, "Top Selling Products - সেরা বিক্রিত পণ্য");
 
-  const products = TOP_SELLING_PRODUCT_SLUGS.map((slug) => ({ slug, name: slug }));
+  const products = [
+    { slug: "seed-nut-mix", name: "Seed Nut Mix" },
+    { slug: "new-product", name: "New Product" },
+    { slug: "black-seed-flower-honey", name: "Black Seed Flower Honey" },
+    { slug: "litchi-flower-honey", name: "Litchi Flower Honey" },
+    { slug: "honey-nut", name: "Honey Nut" },
+    { slug: "seed-mixed", name: "Seed Mixed" },
+    { slug: "kalojira-mixed", name: "Kalojira Mixed" },
+    { slug: "sundarbans-natural-honey", name: "Sundarbans Natural Honey" },
+  ];
   assert.deepEqual(
     getTopSellingProducts(products).slice(0, 6).map(({ slug }) => slug),
     [
