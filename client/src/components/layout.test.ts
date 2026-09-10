@@ -23,3 +23,22 @@ test("does not expose obsolete menu categories", () => {
     assert.doesNotMatch(layoutSource, new RegExp(label.replace(/&/g, "\\&")));
   }
 });
+
+test("connects footer information and support links to real pages", () => {
+  for (const path of [
+    "/about-us",
+    "/contact-us",
+    "/how-to-order",
+    "/shipping-policy",
+    "/payment-policy",
+    "/terms-and-conditions",
+    "/privacy-policy",
+    "/refund-return-exchange",
+    "/cancellation-policy",
+    "/faq",
+    "/track-order",
+  ]) {
+    assert.match(layoutSource, new RegExp(path));
+  }
+  assert.doesNotMatch(layoutSource, /href="#"/);
+});

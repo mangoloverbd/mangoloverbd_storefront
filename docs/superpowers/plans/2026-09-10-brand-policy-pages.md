@@ -195,6 +195,8 @@ const supportLinks = [
   ["How to Order", "/how-to-order"],
   ["Order Tracking", "/track-order"],
   ["Payment & Shipping", "/shipping-policy"],
+  ["Payment Policy", "/payment-policy"],
+  ["Cancellation Policy", "/cancellation-policy"],
   ["Frequently Asked Questions", "/faq"],
   ["Consumer Policy", "/terms-and-conditions"],
 ] as const;

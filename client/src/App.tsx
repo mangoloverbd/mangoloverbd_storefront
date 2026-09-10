@@ -17,6 +17,8 @@ import KalojiraMixedThankYouPage from "@/pages/kalojira-mixed-thank-you";
 import HoneyNutPage from "@/pages/honey-nut";
 import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
 import CollectionPage from "@/pages/collection";
+import SiteInformationPage from "@/pages/site-information";
+import { SITE_PAGES } from "@/lib/site-pages";
 import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -245,6 +247,13 @@ function Router() {
               </PageTransition>
             )}
           </Route>
+          {Object.values(SITE_PAGES).map((page) => (
+            <Route key={page.slug} path={`/${page.slug}`}>
+              <PageTransition>
+                <SiteInformationPage page={page} />
+              </PageTransition>
+            </Route>
+          ))}
           <Route path="/booking">
             <PageTransition>
               <BookingPage />

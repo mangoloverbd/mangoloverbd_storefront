@@ -81,6 +81,28 @@ const MENU_ITEMS = [
   { label: "Contact Us", href: "/contact-us" },
 ] as const;
 
+const INFORMATION_LINKS = [
+  ["About Us", "/about-us"],
+  ["Contact", "/contact-us"],
+  ["Company Information", "/about-us"],
+  ["The Mango Lover Story", "/about-us"],
+  ["Terms & Conditions", "/terms-and-conditions"],
+  ["Privacy Policy", "/privacy-policy"],
+  ["Careers", "/contact-us"],
+  ["Refund & Exchange", "/refund-return-exchange"],
+] as const;
+
+const SUPPORT_LINKS = [
+  ["Help Center", "/faq"],
+  ["How to Order", "/how-to-order"],
+  ["Order Tracking", "/track-order"],
+  ["Payment & Shipping", "/shipping-policy"],
+  ["Payment Policy", "/payment-policy"],
+  ["Cancellation Policy", "/cancellation-policy"],
+  ["Frequently Asked Questions", "/faq"],
+  ["Consumer Policy", "/terms-and-conditions"],
+] as const;
+
 const pad = (value: number) => value.toString().padStart(2, "0");
 
 // Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
@@ -551,8 +573,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Information</span>
               <ul className="space-y-3 text-[15px] md:text-[15px] font-bold text-black">
-                {["About Us", "Contact", "Company Information", "The Mango Lover Story", "Terms & Conditions", "Privacy Policy", "Careers", "Refund & Exchange"].map((label) => (
-                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                {INFORMATION_LINKS.map(([label, href]) => (
+                  <li key={label}><Link href={href}><a className="hover:text-black transition-colors block">{label}</a></Link></li>
                 ))}
               </ul>
             </div>
@@ -573,8 +595,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Support</span>
               <ul className="space-y-3 text-[17px] md:text-[15px] font-bold text-black">
-                {["Help Center", "How to Order", "Order Tracking", "Payment & Shipping", "Frequently Asked Questions", "Consumer Policy"].map((label) => (
-                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                {SUPPORT_LINKS.map(([label, href]) => (
+                  <li key={label}><Link href={href}><a className="hover:text-black transition-colors block">{label}</a></Link></li>
                 ))}
               </ul>
             </div>
