@@ -7,6 +7,29 @@ export type FeaturedCollection = {
   productSlugs: readonly string[];
 };
 
+export const TOP_SELLING_PRODUCT_SLUGS = [
+  "honey-nut",
+  "sundarbans-natural-honey",
+  "kalojira-mixed",
+  "litchi-flower-honey",
+  "black-seed-flower-honey",
+  "seed-nut-mix",
+  "seed-mixed",
+  "chia-seed",
+  "sugarcane-juice-powder",
+  "amsotto-pickle",
+  "lachcha-semai",
+  "mustard-oil",
+  "beetroot-powder",
+  "pure-ghee",
+] as const;
+
+export const TOP_SELLING_COLLECTION = {
+  slug: "top-selling-products",
+  label: "Top Selling Products - সেরা বিক্রিত পণ্য",
+  productSlugs: TOP_SELLING_PRODUCT_SLUGS,
+} as const;
+
 export const FEATURED_COLLECTIONS = [
   {
     slug: "homemade",
@@ -67,12 +90,31 @@ export function getFeaturedCollection(slug: string) {
   return FEATURED_COLLECTIONS.find((collection) => collection.slug === slug) ?? null;
 }
 
+export function getCollection(slug: string) {
+  if (slug === TOP_SELLING_COLLECTION.slug) {
+    return TOP_SELLING_COLLECTION;
+  }
+
+  return getFeaturedCollection(slug);
+}
+
 export function getProductsForCollection(
   products: StorefrontProduct[],
-  collection: FeaturedCollection,
+  collection: Pick<FeaturedCollection, "productSlugs">,
 ) {
   const assignedSlugs = new Set(collection.productSlugs);
   return products.filter((product) => assignedSlugs.has(product.slug));
+}
+
+export function getTopSellingProducts(products: StorefrontProduct[]) {
+  const productsBySlug = new Map(products.map((product) => [product.slug, product]));
+  const knownSlugs = new Set<string>(TOP_SELLING_PRODUCT_SLUGS);
+  const orderedProducts = TOP_SELLING_PRODUCT_SLUGS.flatMap((slug) => {
+    const product = productsBySlug.get(slug);
+    return product ? [product] : [];
+  });
+
+  return orderedProducts.concat(products.filter((product) => !knownSlugs.has(product.slug)));
 }
 
 export function getVisibleFeaturedCollections(products: StorefrontProduct[]) {
