@@ -5,6 +5,7 @@ import NotFound from "@/pages/not-found";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
   getCollection,
+  getTopSellingProducts,
   getProductsForCollection,
 } from "@/lib/featured-collections";
 import {
@@ -28,7 +29,9 @@ export default function CollectionPage({ params }: { params: { slug: string } })
     return <NotFound />;
   }
 
-  const filteredProducts = getProductsForCollection(products ?? [], collection);
+  const filteredProducts = collection.slug === "top-selling-products"
+    ? getTopSellingProducts(products ?? [])
+    : getProductsForCollection(products ?? [], collection);
   const [englishName, bengaliName] = collection.label.split("-");
 
   return (

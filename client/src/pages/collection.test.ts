@@ -12,6 +12,11 @@ test("loads the live catalog and filters it through the configured collection", 
   assert.match(collectionSource, /initialData: generatedStorefrontProducts/);
 });
 
+test("uses the complete ordered catalog for Top Selling Products", () => {
+  assert.match(collectionSource, /getTopSellingProducts/);
+  assert.match(collectionSource, /getTopSellingProducts\(products \?\? \[\]\)/);
+});
+
 test("renders the exact empty collection message", () => {
   assert.match(collectionSource, /No product found/);
 });
