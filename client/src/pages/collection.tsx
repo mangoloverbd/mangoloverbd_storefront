@@ -4,7 +4,7 @@ import StorefrontProductCard from "@/components/storefront-product-card";
 import NotFound from "@/pages/not-found";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import {
-  getFeaturedCollection,
+  getCollection,
   getProductsForCollection,
 } from "@/lib/featured-collections";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/lib/storefront-products";
 
 export default function CollectionPage({ params }: { params: { slug: string } }) {
-  const collection = getFeaturedCollection(params.slug);
+  const collection = getCollection(params.slug);
   const { data: products, isLoading, isError } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,

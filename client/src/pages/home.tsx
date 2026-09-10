@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
-import { getVisibleFeaturedCollections } from "@/lib/featured-collections";
+import { getTopSellingProducts, getVisibleFeaturedCollections } from "@/lib/featured-collections";
 
 function HighlightedWord({
   children,
@@ -91,6 +91,7 @@ export default function Home() {
       ? { ...product, compare_at_price: snapshotProduct.compare_at_price }
       : product;
   });
+  const topSellingProducts = getTopSellingProducts(homepageProducts);
   const visibleFeaturedCollections = getVisibleFeaturedCollections(catalogProducts);
 
   const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
@@ -325,7 +326,7 @@ export default function Home() {
                       <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
                     </div>
                   )
-                : homepageProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+                : topSellingProducts.slice(0, 6).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
           </motion.div>
         </motion.div>
       </section>
