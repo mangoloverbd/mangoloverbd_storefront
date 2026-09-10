@@ -7,7 +7,7 @@ const productsSource = readFileSync(new URL("./products.tsx", import.meta.url), 
 
 test("loads the live catalog and filters it through the configured collection", () => {
   assert.match(collectionSource, /fetchStorefrontProducts/);
-  assert.match(collectionSource, /getFeaturedCollection/);
+  assert.match(collectionSource, /getCollection/);
   assert.match(collectionSource, /getProductsForCollection/);
   assert.match(collectionSource, /initialData: generatedStorefrontProducts/);
 });

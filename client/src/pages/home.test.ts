@@ -113,6 +113,7 @@ test("loads every homepage product section from the public catalog", () => {
   assert.match(homeSource, /getProductImage,/);
   assert.match(homeSource, /STOREFRONT_POLL_INTERVAL_MS,/);
   assert.match(homeSource, /data: catalogProducts = \[\]/);
+  assert.match(homeSource, /getTopSellingProducts\(homepageProducts\)/);
   assert.match(homeSource, /queryKey: \["merchant-suite-products-listing"\],/);
   assert.match(homeSource, /queryFn: fetchStorefrontProducts,/);
   assert.match(homeSource, /refetchInterval: STOREFRONT_POLL_INTERVAL_MS,/);

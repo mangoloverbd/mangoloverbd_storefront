@@ -18,6 +18,11 @@ test("uses visible Featured Categories for menu navigation", () => {
   assert.match(layoutSource, /visibleCollections\.map/);
 });
 
+test("links Top Selling Products in customer navigation", () => {
+  assert.match(layoutSource, /\/collection\/top-selling-products/);
+  assert.match(layoutSource, /Top Selling Products - সেরা বিক্রিত পণ্য/);
+});
+
 test("does not expose obsolete menu categories", () => {
   for (const label of ["Organic", "Spices", "Beverage", "Rice", "Flours & lentils"]) {
     assert.doesNotMatch(layoutSource, new RegExp(label.replace(/&/g, "\\&")));
