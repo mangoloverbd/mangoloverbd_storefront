@@ -35,7 +35,13 @@ export const FEATURED_COLLECTIONS = [
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",
-    productSlugs: ["kalojira-mixed", "beetroot-powder", "amsotto-pickle"],
+    productSlugs: ["amsotto-pickle"],
+  },
+  {
+    slug: "functional-food",
+    label: "Functional Food-ফাংশনাল ফুড",
+    image: "/categories/functional-food-1-320.webp",
+    productSlugs: ["kalojira-mixed", "beetroot-powder"],
   },
   {
     slug: "honey",

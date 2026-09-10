@@ -10,9 +10,10 @@ import {
   getVisibleFeaturedCollections,
 } from "./featured-collections";
 
-test("defines the eight homepage collections", () => {
+test("defines the nine homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
     "homemade",
+    "functional-food",
     "honey",
     "oil-and-ghee",
     "jaggery",
@@ -57,6 +58,26 @@ test("assigns Honey Nut to Nuts & Seeds instead of Honey", () => {
   assert.ok(nutsAndSeeds);
   assert.equal(honey.productSlugs.includes("honey-nut"), false);
   assert.equal(nutsAndSeeds.productSlugs.includes("honey-nut"), true);
+});
+
+test("assigns functional products to Functional Food instead of Homemade", () => {
+  const homemade = getFeaturedCollection("homemade");
+  const functionalFood = getFeaturedCollection("functional-food");
+
+  assert.ok(homemade);
+  assert.ok(functionalFood);
+  assert.equal(functionalFood.label, "Functional Food-ফাংশনাল ফুড");
+  assert.equal(functionalFood.image, "/categories/functional-food-1-320.webp");
+  assert.deepEqual(functionalFood.productSlugs, ["kalojira-mixed", "beetroot-powder"]);
+  assert.equal(homemade.productSlugs.includes("kalojira-mixed"), false);
+  assert.equal(homemade.productSlugs.includes("beetroot-powder"), false);
+  assert.deepEqual(
+    getVisibleFeaturedCollections([
+      { slug: "kalojira-mixed", name: "Kalojira Mixed" },
+      { slug: "beetroot-powder", name: "Beetroot Powder" },
+    ]).map(({ slug }) => slug),
+    ["functional-food"],
+  );
 });
 
 test("assigns both sugarcane products to the visible Jaggery category", () => {

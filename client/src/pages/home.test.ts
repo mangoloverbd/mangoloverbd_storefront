@@ -45,6 +45,7 @@ test("interleaves populated bilingual category sections with the editorial featu
   const belowLatest = homeSource.slice(homeSource.indexOf("Latest Drop Section"));
   const order = [
     'renderCategorySection("homemade")',
+    'renderCategorySection("functional-food")',
     'renderCategorySection("honey")',
     "Editorial Section",
     'renderCategorySection("oil-and-ghee")',
@@ -123,6 +124,18 @@ test("centers Featured Categories on desktop", () => {
   );
 
   assert.match(categoriesSection, /lg:flex lg:justify-center/);
+});
+
+test("uses the shorter Functional Food title only in Featured Categories", () => {
+  const categoriesSection = homeSource.slice(
+    homeSource.indexOf("{/* Categories Section */}"),
+    homeSource.indexOf("{/* What's New Section */}"),
+  );
+
+  assert.match(categoriesSection, /Functional-ফুড/);
+  assert.doesNotMatch(categoriesSection, /Functional Food-ফুড/);
+  assert.doesNotMatch(categoriesSection, /Functional Food-ফাংশনাল ফুড/);
+  assert.match(categoriesSection, /alt=\{label\}/);
 });
 
 test("labels the product section Top Selling Products without a purchase CTA", () => {

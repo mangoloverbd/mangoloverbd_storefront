@@ -301,34 +301,38 @@ export default function Home() {
             ref={categoriesRef}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
           >
-            {visibleFeaturedCollections.map(({ slug, label, image }, index) => (
-              <Link
-                key={label}
-                href={`/collection/${slug}`}
-                className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
-              >
-                <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
-                  <img
-                    src={image}
-                    alt={label}
-                    loading={index < 4 ? "eager" : "lazy"}
-                    fetchPriority={index < 4 ? "high" : "auto"}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-                <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
-                  {label.includes("-") ? (
-                    <>
-                      <span className="block md:inline">{label.split("-")[0]}</span>
-                      <span className="hidden md:inline">-</span>
-                      <span className="block md:inline">{label.split("-")[1]}</span>
-                    </>
-                  ) : (
-                    <span>{label}</span>
-                  )}
-                </span>
-              </Link>
-            ))}
+            {visibleFeaturedCollections.map(({ slug, label, image }, index) => {
+              const featuredCategoryLabel = slug === "functional-food" ? "Functional-ফুড" : label;
+
+              return (
+                <Link
+                  key={label}
+                  href={`/collection/${slug}`}
+                  className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
+                >
+                  <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">
+                    <img
+                      src={image}
+                      alt={label}
+                      loading={index < 4 ? "eager" : "lazy"}
+                      fetchPriority={index < 4 ? "high" : "auto"}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                  </div>
+                  <span className="mt-3 block text-center text-[13px] font-semibold leading-tight tracking-[0.01em] text-black/80 transition-colors duration-300 group-hover:text-black md:text-[14px]">
+                    {featuredCategoryLabel.includes("-") ? (
+                      <>
+                        <span className="block md:inline">{featuredCategoryLabel.split("-")[0]}</span>
+                        <span className="hidden md:inline">-</span>
+                        <span className="block md:inline">{featuredCategoryLabel.split("-")[1]}</span>
+                      </>
+                    ) : (
+                      <span>{featuredCategoryLabel}</span>
+                    )}
+                  </span>
+                </Link>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -438,6 +442,9 @@ export default function Home() {
 
       {/* Category Section: Homemade */}
       {renderCategorySection("homemade")}
+
+      {/* Category Section: Functional Food */}
+      {renderCategorySection("functional-food")}
 
       {/* Category Section: Honey */}
       {renderCategorySection("honey")}

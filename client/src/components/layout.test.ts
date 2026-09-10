@@ -11,6 +11,13 @@ test("uses a compact announcement bar on mobile and restores desktop spacing", (
   );
 });
 
+test("reserves desktop width for the logo before category navigation", () => {
+  assert.match(layoutSource, /md:flex-none md:basis-64/);
+  assert.match(layoutSource, /<div className="md:hidden">/);
+  assert.match(layoutSource, /hidden min-w-0 flex-1 items-center justify-start md:flex md:overflow-x-auto no-scrollbar/);
+  assert.match(layoutSource, /flex w-max items-center justify-center gap-5/);
+});
+
 test("uses visible Featured Categories for menu navigation", () => {
   assert.match(layoutSource, /getVisibleFeaturedCollections/);
   assert.match(layoutSource, /getVisibleFeaturedCollections\(searchableProducts\)/);
