@@ -197,7 +197,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-[#f6f6f6] backdrop-blur-xl md:bg-brand-ivory/80 md:backdrop-blur-md transition-all duration-300">
         <div className="flex h-14 items-center justify-between pl-2.5 pr-1.5 md:h-20 md:gap-8 md:px-10 lg:px-16">
-          <div className="flex flex-1 items-center justify-start md:flex-none md:basis-44">
+          <div className="flex flex-1 items-center justify-start md:flex-none md:basis-64">
             <div className="md:hidden">
               <Button variant="ghost" size="icon" aria-label="Open menu" className="group flex h-9 w-auto items-center justify-center rounded-[8px] px-0 [&_svg]:size-7 md:h-12" onClick={openMenu}>
                 <MenuLinesIcon className="opacity-70 transition-opacity group-hover:opacity-100" />
@@ -222,8 +222,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
           </div>
 
-          <div className="hidden min-w-0 flex-1 items-center justify-center md:flex">
-            <div className="flex items-center justify-center gap-5 text-[10px] font-medium uppercase tracking-[0.16em] text-black/70 lg:gap-8">
+          <div className="hidden min-w-0 flex-1 items-center justify-start md:flex md:overflow-x-auto no-scrollbar">
+            <div className="flex w-max items-center justify-center gap-5 text-[10px] font-medium uppercase tracking-[0.16em] text-black/70 lg:gap-8">
               {visibleCollections.map(({ slug, label }) => (
                 <Link key={slug} href={`/collection/${slug}`}>
                   <a className="whitespace-nowrap transition-colors hover:text-brand-gold">{label}</a>
