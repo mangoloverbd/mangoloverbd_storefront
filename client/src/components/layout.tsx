@@ -77,6 +77,7 @@ const DHAKA_TIME_ZONE = "Asia/Dhaka";
 const MENU_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
+  { label: "Top Selling Products - সেরা বিক্রিত পণ্য", href: "/collection/top-selling-products" },
   { label: "Track Order", href: "/track-order" },
   { label: "Contact Us", href: "/contact-us" },
 ] as const;
@@ -410,6 +411,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </Link>
                     <Link href="/products" onClick={() => setIsOpen(false)}>
                       <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Products <span className="text-[1.45rem] font-bold text-black/55">/ পণ্যসমূহ</span></span><ArrowRight size={27} strokeWidth={1.25} /></a>
+                    </Link>
+                    <Link href="/collection/top-selling-products" onClick={() => setIsOpen(false)}>
+                      <a className="flex items-center justify-between text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Top Selling Products <span className="text-[1.45rem] font-bold text-black/55">/ সেরা বিক্রিত পণ্য</span></span><ArrowRight size={27} strokeWidth={1.25} /></a>
                     </Link>
                     <button type="button" onClick={() => setMobileMenuPage("collections")} className="flex w-full items-center justify-between text-left text-[2rem] font-normal leading-none tracking-[-0.05em]"><span>Collection <span className="text-[1.45rem] font-bold text-black/55">/ ক্যাটাগরিসমূহ</span></span><ArrowRight size={27} strokeWidth={1.25} /></button>
                   </nav>
