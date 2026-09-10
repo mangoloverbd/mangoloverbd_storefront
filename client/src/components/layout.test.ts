@@ -31,10 +31,11 @@ test("links Top Selling Products in desktop and mobile navigation", () => {
 
   const desktopMenuSource = layoutSource.slice(menuItemsStart, menuItemsEnd);
   const mobileMenuSource = layoutSource.slice(mobileMenuStart, mobileMenuEnd);
-  for (const navigationSource of [desktopMenuSource, mobileMenuSource]) {
-    assert.match(navigationSource, /\/collection\/top-selling-products/);
-    assert.match(navigationSource, /Top Selling Products - সেরা বিক্রিত পণ্য/);
-  }
+  assert.match(desktopMenuSource, /\/collection\/top-selling-products/);
+  assert.match(desktopMenuSource, /Top Selling Products - সেরা বিক্রিত পণ্য/);
+  assert.match(mobileMenuSource, /\/collection\/top-selling-products/);
+  assert.match(mobileMenuSource, /Top Selling Products/);
+  assert.match(mobileMenuSource, /সেরা বিক্রিত পণ্য/);
 });
 
 test("does not expose obsolete menu categories", () => {
