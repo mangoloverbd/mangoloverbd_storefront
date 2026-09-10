@@ -58,6 +58,12 @@ test("curates detailed source content for regular products", () => {
       minimumCharacters: 1400,
     },
     {
+      slug: "granulated-sugarcane-jaggery",
+      labels: ["বিবরণ", "উপাদানসমূহ", "খাওয়ার সম্ভাব্য উপকারিতা", "খাওয়ার সময় ও নিয়ম", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
+      expected: ["আখের রস", "কার্বোহাইড্রেট", "আর্দ্রতা"],
+      minimumCharacters: 1800,
+    },
+    {
       slug: "amsotto-pickle",
       labels: ["বিবরণ", "উপাদানসমূহ", "খাওয়ার উপকারিতা", "খাওয়ার সময় ও নিয়ম", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
       expected: ["পাকা আম", "আখের গুড়", "মিষ্টি-টক"],

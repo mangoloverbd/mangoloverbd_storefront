@@ -12,7 +12,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",
-    productSlugs: ["kalojira-mixed", "beetroot-powder", "sugarcane-juice-powder", "amsotto-pickle"],
+    productSlugs: ["kalojira-mixed", "beetroot-powder", "amsotto-pickle"],
   },
   {
     slug: "honey",
@@ -22,7 +22,6 @@ export const FEATURED_COLLECTIONS = [
       "litchi-flower-honey",
       "sundarbans-natural-honey",
       "black-seed-flower-honey",
-      "honey-nut",
     ],
   },
   {
@@ -35,7 +34,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "jaggery",
     label: "Jaggery-গুড়",
     image: "/categories/jaggery-1-320.webp",
-    productSlugs: [],
+    productSlugs: ["sugarcane-juice-powder", "granulated-sugarcane-jaggery"],
   },
   {
     slug: "semai",
@@ -59,7 +58,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "nuts-and-seeds",
     label: "Nuts & Seeds-বাদাম ও বীজ",
     image: "/categories/nuts-1-320.webp",
-    productSlugs: ["seed-nut-mix", "seed-mixed", "chia-seed"],
+    productSlugs: ["seed-nut-mix", "seed-mixed", "chia-seed", "honey-nut"],
   },
 ] as const satisfies readonly FeaturedCollection[];
 

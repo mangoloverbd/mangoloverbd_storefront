@@ -48,6 +48,7 @@ test("interleaves populated bilingual category sections with the editorial featu
     'renderCategorySection("honey")',
     "Editorial Section",
     'renderCategorySection("oil-and-ghee")',
+    'renderCategorySection("jaggery")',
     "Essentials Section",
     'renderCategorySection("semai")',
     'renderCategorySection("nuts-and-seeds")',
@@ -78,6 +79,22 @@ test("uses left-right category headers with underlined View All links and four p
   assert.match(categorySource, /border-b-2 border-black/);
   assert.match(categorySource, /products\.slice\(0, 4\)\.map/);
   assert.match(categorySource, /collection\.label/);
+ });
+
+test("links editorial sections to their products and aligns their text at the bottom", () => {
+  const editorialSource = homeSource.slice(
+    homeSource.indexOf("{/* Editorial Section */}"),
+    homeSource.indexOf("{/* Category Section: Oil & Ghee */}"),
+  );
+  const essentialsSource = homeSource.slice(
+    homeSource.indexOf("{/* Essentials Section */}"),
+    homeSource.indexOf("{/* Category Section: Semai */}"),
+  );
+
+  assert.match(editorialSource, /href="\/product\/pure-ghee"/);
+  assert.match(editorialSource, /absolute inset-0 flex flex-col items-center justify-end/);
+  assert.match(essentialsSource, /href="\/product\/kalojira-mixed"/);
+  assert.match(essentialsSource, /absolute inset-0 flex flex-col items-center justify-end/);
 });
 
 test("links Featured Categories to their collection pages", () => {
