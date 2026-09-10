@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
-import { FEATURED_COLLECTIONS } from "@/lib/featured-collections";
+import { getVisibleFeaturedCollections } from "@/lib/featured-collections";
 
 function HighlightedWord({
   children,
@@ -91,6 +91,7 @@ export default function Home() {
       ? { ...product, compare_at_price: snapshotProduct.compare_at_price }
       : product;
   });
+  const visibleFeaturedCollections = getVisibleFeaturedCollections(catalogProducts);
 
   const transition = { duration: 1, ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -247,7 +248,7 @@ export default function Home() {
             ref={categoriesRef}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
-            {FEATURED_COLLECTIONS.map(({ slug, label, image }, index) => (
+            {visibleFeaturedCollections.map(({ slug, label, image }, index) => (
               <Link
                 key={label}
                 href={`/collection/${slug}`}

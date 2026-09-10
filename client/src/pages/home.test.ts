@@ -36,7 +36,8 @@ test("uses the English Featured Categories heading", () => {
 });
 
 test("links Featured Categories to their collection pages", () => {
-  assert.match(homeSource, /FEATURED_COLLECTIONS/);
+  assert.match(homeSource, /getVisibleFeaturedCollections/);
+  assert.match(homeSource, /visibleFeaturedCollections\.map/);
   assert.match(homeSource, /href=\{`\/collection\/\$\{slug\}`\}/);
   assert.doesNotMatch(homeSource, /const categories = \[/);
 });

@@ -12,7 +12,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",
-    productSlugs: ["kalojira-mixed", "beetroot-powder"],
+    productSlugs: ["kalojira-mixed", "beetroot-powder", "sugarcane-juice-powder", "amsotto-pickle"],
   },
   {
     slug: "honey",
@@ -41,7 +41,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "semai",
     label: "Semai-সেমাই",
     image: "/categories/lachcha-1-320.webp",
-    productSlugs: [],
+    productSlugs: ["lachcha-semai"],
   },
   {
     slug: "fresh-mango",
@@ -73,4 +73,8 @@ export function getProductsForCollection(
 ) {
   const assignedSlugs = new Set(collection.productSlugs);
   return products.filter((product) => assignedSlugs.has(product.slug));
+}
+
+export function getVisibleFeaturedCollections(products: StorefrontProduct[]) {
+  return FEATURED_COLLECTIONS.filter((collection) => getProductsForCollection(products, collection).length > 0);
 }

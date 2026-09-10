@@ -11,7 +11,8 @@
 ## Global Constraints
 
 - Each published product in the current catalog is assigned to exactly one Featured Category.
-- Jaggery, Semai, Fresh Mango, and Dates must display exactly `No product found`.
+- Jaggery, Fresh Mango, and Dates must display exactly `No product found`.
+- Homepage cards for collections with no matching live products must be hidden; their definitions and direct routes remain.
 - All catalog reads must continue through the existing `fetchStorefrontProducts()` flow and its generated fallback.
 - Preserve the existing responsive grid, product detail links, inventory polling, motion, and visual language.
 - Do not add Merchant Suite routes, Supabase tables, migrations, or direct commerce-table access.

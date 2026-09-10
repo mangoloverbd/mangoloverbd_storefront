@@ -4,6 +4,7 @@ import {
   FEATURED_COLLECTIONS,
   getFeaturedCollection,
   getProductsForCollection,
+  getVisibleFeaturedCollections,
 } from "./featured-collections";
 
 test("defines the eight homepage collections", () => {
@@ -35,6 +36,9 @@ test("assigns every current product to exactly one collection", () => {
     "pure-ghee",
     "sundarbans-natural-honey",
     "black-seed-flower-honey",
+    "sugarcane-juice-powder",
+    "amsotto-pickle",
+    "lachcha-semai",
   ];
 
   assert.equal(new Set(assignments.map(({ productSlug }) => productSlug)).size, assignments.length);
@@ -55,4 +59,17 @@ test("filters a catalog by assigned slugs and ignores missing products", () => {
 test("returns no assigned products for empty collections", () => {
   const collection = getFeaturedCollection("jaggery");
   assert.deepEqual(getProductsForCollection([], collection!), []);
+});
+
+test("hides collections with no matching products without removing their definitions", () => {
+  const products = [
+    { slug: "honey-nut", name: "Honey Nut" },
+    { slug: "lachcha-semai", name: "Lachcha Semai" },
+  ];
+
+  assert.deepEqual(
+    getVisibleFeaturedCollections(products).map(({ slug }) => slug),
+    ["honey", "semai"],
+  );
+  assert.ok(getFeaturedCollection("jaggery"));
 });

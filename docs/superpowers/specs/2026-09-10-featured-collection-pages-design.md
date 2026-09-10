@@ -6,12 +6,12 @@ Turn the eight existing Featured Categories cards into working collection pages 
 
 ## Confirmed assignments
 
-- Homemade: `kalojira-mixed`, `beetroot-powder`
+- Homemade: `kalojira-mixed`, `beetroot-powder`, `sugarcane-juice-powder`, `amsotto-pickle`
 - Honey: `litchi-flower-honey`, `sundarbans-natural-honey`, `black-seed-flower-honey`, `honey-nut`
 - Oil & Ghee: `mustard-oil`, `pure-ghee`
+- Semai: `lachcha-semai`
 - Nuts & Seeds: `seed-nut-mix`, `seed-mixed`, `chia-seed`
 - Jaggery: no product found
-- Semai: no product found
 - Fresh Mango: no product found
 - Dates: no product found
 
@@ -27,6 +27,7 @@ This approach intentionally does not add Merchant Suite routes, Supabase tables,
 - The collection name is the page heading.
 - Products missing from the live catalog are ignored safely.
 - Empty collections display exactly `No product found`.
+- Homepage cards for empty collections are hidden without removing their definitions or direct routes.
 - `/products` remains the complete published catalog.
 
 ## Verification
