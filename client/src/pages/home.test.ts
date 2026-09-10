@@ -4,16 +4,15 @@ import { test } from "node:test";
 
 const homeSource = readFileSync(new URL("./home.tsx", import.meta.url), "utf8");
 
-test("renders a Just arrived section after Latest Drop", () => {
-  const latestDropIndex = homeSource.indexOf("Latest <span");
-  const justArrivedIndex = homeSource.indexOf("Just <span");
+test("renders category sections after Latest Drop", () => {
+  const latestDropIndex = homeSource.indexOf("Latest Drop Section");
+  const homemadeIndex = homeSource.indexOf('renderCategorySection("homemade")');
 
   assert.notEqual(latestDropIndex, -1);
-  assert.notEqual(justArrivedIndex, -1);
-  assert.ok(justArrivedIndex > latestDropIndex);
-  assert.match(homeSource, /VIEW ALL/);
-  assert.match(homeSource, /text-\[clamp\(2rem,5vw,2\.6rem\)\]/);
-  assert.match(homeSource, /flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden \[touch-action:pan-x_pan-y\] overscroll-x-contain md:grid md:grid-cols-4 md:gap-4 md:overflow-visible/);
+  assert.notEqual(homemadeIndex, -1);
+  assert.ok(homemadeIndex > latestDropIndex);
+  assert.match(homeSource, /getProductsForCollection/);
+  assert.match(homeSource, /collection\.label/);
 });
 
 test("renders a What's New section after the hero", () => {
@@ -35,6 +34,52 @@ test("uses the English Featured Categories heading", () => {
   assert.match(homeSource, /className="relative inline-block font-garet font-bold/);
 });
 
+test("removes the requested homepage sections while keeping the editorial features", () => {
+  assert.doesNotMatch(homeSource, /Just Arrived Section/);
+  assert.doesNotMatch(homeSource, /Special Collections Section/);
+  assert.match(homeSource, /Editorial Section/);
+  assert.match(homeSource, /Essentials Section/);
+});
+
+test("interleaves populated bilingual category sections with the editorial features", () => {
+  const belowLatest = homeSource.slice(homeSource.indexOf("Latest Drop Section"));
+  const order = [
+    'renderCategorySection("homemade")',
+    'renderCategorySection("honey")',
+    "Editorial Section",
+    'renderCategorySection("oil-and-ghee")',
+    "Essentials Section",
+    'renderCategorySection("semai")',
+    'renderCategorySection("nuts-and-seeds")',
+  ];
+
+  let previous = -1;
+  for (const marker of order) {
+    const index = belowLatest.indexOf(marker);
+    assert.ok(index > previous, `${marker} should follow the previous homepage section`);
+    previous = index;
+  }
+
+  assert.match(homeSource, /getProductsForCollection/);
+  assert.match(homeSource, /visibleFeaturedCollections/);
+  assert.match(homeSource, /collection\.label/);
+  assert.match(homeSource, /HomeProductCard/);
+});
+
+test("uses left-right category headers with underlined View All links and four products", () => {
+  const categorySource = homeSource.slice(
+    homeSource.indexOf("const renderCategorySection"),
+    homeSource.indexOf("  useEffect(() => {\n    const el = categoriesRef.current"),
+  );
+
+  assert.match(categorySource, /className="mb-7 flex items-center justify-between gap-6/);
+  assert.match(categorySource, /href=\{`\/collection\/\$\{collection\.slug\}`\}/);
+  assert.match(categorySource, /View All/);
+  assert.match(categorySource, /border-b-2 border-black/);
+  assert.match(categorySource, /products\.slice\(0, 4\)\.map/);
+  assert.match(categorySource, /collection\.label/);
+});
+
 test("links Featured Categories to their collection pages", () => {
   assert.match(homeSource, /getVisibleFeaturedCollections/);
   assert.match(homeSource, /visibleFeaturedCollections\.map/);
@@ -50,8 +95,17 @@ test("lays visible Featured Categories in one desktop row", () => {
 
   assert.match(
     categoriesSection,
-    /sm:grid-cols-4[\s\S]*lg:grid-cols-8[\s\S]*lg:overflow-visible/,
+    /sm:grid-cols-4[\s\S]*lg:flex[\s\S]*lg:overflow-visible/,
   );
+});
+
+test("centers Featured Categories on desktop", () => {
+  const categoriesSection = homeSource.slice(
+    homeSource.indexOf("{/* Categories Section */}"),
+    homeSource.indexOf("{/* What's New Section */}"),
+  );
+
+  assert.match(categoriesSection, /lg:flex lg:justify-center/);
 });
 
 test("labels the product section Top Selling Products without a purchase CTA", () => {
@@ -97,14 +151,11 @@ test("loads every homepage product section from the public catalog", () => {
   );
   const latestDropSource = homeSource.slice(
     homeSource.indexOf("Latest Drop Section"),
-    homeSource.indexOf("Just Arrived Section"),
+    homeSource.indexOf("Category Section: Homemade"),
   );
-  const justArrivedSource = homeSource.slice(
-    homeSource.indexOf("Just Arrived Section"),
+  const categorySource = homeSource.slice(
+    homeSource.indexOf("Category Section: Homemade"),
     homeSource.indexOf("Editorial Section"),
-  );
-  const specialSource = homeSource.slice(
-    homeSource.indexOf("Special Collections Section"),
   );
 
   assert.match(homeSource, /import \{ useQuery \} from "@tanstack\/react-query";/);
@@ -133,10 +184,14 @@ test("loads every homepage product section from the public catalog", () => {
   assert.match(whatsNewSource, /className="mt-auto w-full border/);
   assert.match(whatsNewSource, /topSellingProducts\.slice\(0, 6\)\.map/);
   assert.match(homeSource, /product\.compare_at_price == null && snapshotProduct\?\.compare_at_price != null/);
-  assert.match(latestDropSource, /catalogProducts\.slice\(0, 4\)\.map/);
-  assert.match(justArrivedSource, /catalogProducts\.slice\(0, 4\)\.map/);
-  assert.match(specialSource, /catalogProducts\.slice\(0, 3\)\.map/);
-});
+   assert.match(categorySource, /renderCategorySection\("homemade"\)/);
+   assert.match(homeSource, /renderCategorySection\("honey"\)/);
+   assert.match(homeSource, /renderCategorySection\("oil-and-ghee"\)/);
+   assert.match(homeSource, /renderCategorySection\("semai"\)/);
+   assert.match(homeSource, /renderCategorySection\("nuts-and-seeds"\)/);
+   assert.doesNotMatch(homeSource, /Just Arrived Section/);
+   assert.doesNotMatch(homeSource, /Special Collections Section/);
+ });
 
 test("uses the generated catalog while the live catalog revalidates", () => {
   assert.match(homeSource, /generatedStorefrontProducts/);

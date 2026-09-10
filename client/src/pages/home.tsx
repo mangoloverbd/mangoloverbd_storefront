@@ -11,7 +11,11 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
-import { getTopSellingProducts, getVisibleFeaturedCollections } from "@/lib/featured-collections";
+import {
+  getProductsForCollection,
+  getTopSellingProducts,
+  getVisibleFeaturedCollections,
+} from "@/lib/featured-collections";
 
 function HighlightedWord({
   children,
@@ -104,16 +108,13 @@ export default function Home() {
   const [heroRef] = useReveal();
   const [whatsNewRef, whatsNewInView] = useReveal();
   const [latestDropRef, latestDropInView] = useReveal();
-  const [justArrivedRef, justArrivedInView] = useReveal();
-  const [specialRef, specialInView] = useReveal();
   const [editorialRef, editorialInView] = useReveal();
   const [essentialsRef, essentialsInView] = useReveal();
   const categoriesRef = useRef<HTMLDivElement>(null);
   const whatsNewGridRef = useRef<HTMLDivElement>(null);
-  const justArrivedGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const grids = [whatsNewGridRef.current, justArrivedGridRef.current];
+    const grids = [whatsNewGridRef.current];
     const cleanups: Array<() => void> = [];
     for (const el of grids) {
       if (!el) continue;
@@ -164,6 +165,57 @@ export default function Home() {
     }
     return () => cleanups.forEach((fn) => fn());
   }, []);
+
+  const renderCategorySection = (slug: string) => {
+    const collection = visibleFeaturedCollections.find((item) => item.slug === slug);
+    if (!collection) return null;
+
+    const products = getProductsForCollection(homepageProducts, collection);
+    const [englishLabel, bengaliLabel] = collection.label.split("-");
+
+    return (
+      <section key={collection.slug} className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mx-auto max-w-[1500px] px-4 md:px-8 xl:px-12"
+        >
+          <div className="mb-7 flex items-center justify-between gap-6 md:mb-12">
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]">
+              <span>{englishLabel}</span>-
+              <HighlightedWord highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
+            </h2>
+            <Link
+              href={`/collection/${collection.slug}`}
+              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
+            >
+              View All
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
+            {isCatalogLoading
+              ? Array.from({ length: Math.min(products.length || 4, 4) }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] animate-pulse bg-[#e5e5e5] motion-reduce:animate-none"
+                    aria-hidden="true"
+                  />
+                ))
+              : isCatalogError && catalogProducts.length === 0
+                ? (
+                    <div className="col-span-full border border-black/10 bg-white px-6 py-10 text-center">
+                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
+                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
+                    </div>
+                  )
+                : products.slice(0, 4).map((product) => <HomeProductCard key={product.id || product.slug} product={product} />)}
+          </div>
+        </motion.div>
+      </section>
+    );
+  };
 
   useEffect(() => {
     const el = categoriesRef.current;
@@ -247,7 +299,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.05 }}
             ref={categoriesRef}
-            className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:grid-cols-8 lg:overflow-visible"
+            className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0 lg:max-w-none lg:flex lg:justify-center lg:overflow-visible"
           >
             {visibleFeaturedCollections.map(({ slug, label, image }, index) => (
               <Link
@@ -384,65 +436,11 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Just Arrived Section */}
-      <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
-        <motion.div
-          ref={justArrivedRef}
-          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
-          initial="hidden"
-          animate={justArrivedInView ? "visible" : "hidden"}
-          transition={{ staggerChildren: 0.12 }}
-        >
-          <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
-          >
-            <motion.h2
-              className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
-            >
-              <span>JUST</span>{" "}
-               <HighlightedWord highlightColor="#A8DADC">ARRIVED</HighlightedWord>
-            </motion.h2>
+      {/* Category Section: Homemade */}
+      {renderCategorySection("homemade")}
 
-            <Link
-              href="/products"
-              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-            >
-              View All
-            </Link>
-          </motion.div>
-
-          <motion.div
-            ref={justArrivedGridRef}
-            transition={{ staggerChildren: 0.08 }}
-            className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:grid md:grid-cols-4 md:gap-4 md:overflow-visible"
-          >
-            {isCatalogLoading
-              ? Array.from({ length: 4 }).map((_, index) => (
-                  <div
-                    key={index}
-                     className="aspect-[3/4] min-w-[58vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
-                    aria-hidden="true"
-                  />
-                ))
-              : isCatalogError && catalogProducts.length === 0
-                ? (
-                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
-                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
-                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
-                    </div>
-                  )
-                : homepageProducts.slice(0, 4).map((product) => (
-                    <HomeProductCard
-                      key={product.id || product.slug}
-                      product={product}
-                      className="min-w-[58vw] snap-start snap-always md:min-w-0"
-                    />
-                  ))}
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* Category Section: Honey */}
+      {renderCategorySection("honey")}
 
       {/* Editorial Section */}
       <section className="w-full bg-[#f6f6f6]">
@@ -495,6 +493,9 @@ export default function Home() {
           </div>
         </motion.div>
       </section>
+
+      {/* Category Section: Oil & Ghee */}
+      {renderCategorySection("oil-and-ghee")}
 
       {/* Essentials Section */}
       <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
@@ -549,64 +550,11 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Special Collections Section */}
-      <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
-        <motion.div
-          ref={specialRef}
-          className="mx-auto max-w-[1500px] pl-4 md:px-8 xl:px-12"
-          initial="hidden"
-          animate={specialInView ? "visible" : "hidden"}
-          transition={{ staggerChildren: 0.12 }}
-        >
-          <motion.div
-            variants={reveal}
-            transition={transition}
-            className="mb-7 flex items-center justify-between gap-6 pr-4 md:mb-12 md:pr-0"
-          >
-            <motion.h2
-              className="font-inter-28pt-semibold min-w-0 text-[clamp(1.2rem,5.2vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]"
-            >
-              <span>OUR SPECIAL</span>{" "}
-              <span className="block md:inline-block">
-                <HighlightedWord highlightColor="#CDB4DB">COLLECTIONS</HighlightedWord>
-              </span>
-            </motion.h2>
-            <Link
-              href="/products"
-              className="shrink-0 border-b-2 border-black pb-1 text-[15px] font-medium text-black transition-opacity hover:opacity-60 md:text-[18px]"
-            >
-              View All Collections
-            </Link>
-          </motion.div>
+      {/* Category Section: Semai */}
+      {renderCategorySection("semai")}
 
-          <motion.div
-            className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden [touch-action:pan-x_pan-y] overscroll-x-contain md:grid md:grid-cols-3 md:gap-4 md:overflow-visible"
-          >
-            {isCatalogLoading
-              ? Array.from({ length: 3 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[3/4] min-w-[78vw] snap-start snap-always animate-pulse bg-[#eeeeee] motion-reduce:animate-none md:min-w-0"
-                    aria-hidden="true"
-                  />
-                ))
-              : isCatalogError && catalogProducts.length === 0
-                ? (
-                    <div className="w-full border border-black/10 bg-white px-6 py-10 text-center">
-                      <p className="text-sm uppercase tracking-[0.2em] text-black/60">Could not load products right now.</p>
-                      <p className="mt-2 text-xs text-black/40">Please try again shortly.</p>
-                    </div>
-                  )
-                : homepageProducts.slice(0, 3).map((product) => (
-                    <HomeProductCard
-                      key={product.id || product.slug}
-                      product={product}
-                      className="min-w-[78vw] snap-start snap-always md:min-w-0"
-                    />
-                  ))}
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* Category Section: Nuts & Seeds */}
+      {renderCategorySection("nuts-and-seeds")}
 
       <RecentlyViewed products={homepageProducts} />
 
