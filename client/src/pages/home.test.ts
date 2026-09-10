@@ -35,6 +35,12 @@ test("uses the English Featured Categories heading", () => {
   assert.match(homeSource, /className="relative inline-block font-garet font-bold/);
 });
 
+test("links Featured Categories to their collection pages", () => {
+  assert.match(homeSource, /FEATURED_COLLECTIONS/);
+  assert.match(homeSource, /href=\{`\/collection\/\$\{slug\}`\}/);
+  assert.doesNotMatch(homeSource, /const categories = \[/);
+});
+
 test("labels the product section Top Selling Products without a purchase CTA", () => {
   const whatsNewSource = homeSource.slice(
     homeSource.indexOf("What's New Section"),

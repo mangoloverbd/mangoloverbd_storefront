@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { FEATURED_COLLECTIONS } from "@/lib/featured-collections";
 
 function HighlightedWord({
   children,
@@ -191,17 +192,6 @@ export default function Home() {
     };
   }, []);
 
-  const categories = [
-    { label: "Homemade-হোমমেড", image: "/categories/homemade-3-320.webp" },
-    { label: "Honey-মধু", image: "/categories/honey-4-320.webp" },
-    { label: "Oil & Ghee-তেল ও ঘি", image: "/categories/oil-2-320.webp" },
-    { label: "Jaggery-গুড়", image: "/categories/jaggery-1-320.webp" },
-    { label: "Semai-সেমাই", image: "/categories/lachcha-1-320.webp" },
-    { label: "Fresh Mango-ফ্রেশ আম", image: "/categories/mango-1-320.webp" },
-    { label: "Dates-খেজুর", image: "/categories/dates-1-320.webp" },
-    { label: "Nuts & Seeds-বাদাম ও বীজ", image: "/categories/nuts-1-320.webp" },
-  ];
-
   return (
     <Layout>
       {/* Hero Section */}
@@ -257,10 +247,10 @@ export default function Home() {
             ref={categoriesRef}
             className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:mx-auto sm:max-w-[820px] sm:grid sm:grid-cols-4 sm:gap-x-6 sm:gap-y-8 sm:overflow-visible sm:pb-0"
           >
-            {categories.map(({ label, image }, index) => (
+            {FEATURED_COLLECTIONS.map(({ slug, label, image }, index) => (
               <Link
                 key={label}
-                href="/products"
+                href={`/collection/${slug}`}
                 className="group flex w-[96px] shrink-0 snap-start flex-col items-center text-center sm:w-auto"
               >
                 <div className="aspect-square w-[104px] overflow-hidden rounded-full sm:w-[112px]">

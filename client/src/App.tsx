@@ -16,6 +16,7 @@ import KalojiraMixedPage from "@/pages/kalojira-mixed";
 import KalojiraMixedThankYouPage from "@/pages/kalojira-mixed-thank-you";
 import HoneyNutPage from "@/pages/honey-nut";
 import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
+import CollectionPage from "@/pages/collection";
 import { isGoogleOnlyCampaignPath } from "@/lib/campaign-routes";
 import { createEventId, initMetaPixel, trackMetaEvent } from "@/lib/meta";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -236,6 +237,13 @@ function Router() {
             <PageTransition>
               <ProductsPage />
             </PageTransition>
+          </Route>
+          <Route path="/collection/:slug">
+            {(params) => (
+              <PageTransition key={params.slug}>
+                <CollectionPage params={params} />
+              </PageTransition>
+            )}
           </Route>
           <Route path="/booking">
             <PageTransition>
