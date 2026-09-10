@@ -42,6 +42,18 @@ test("links Featured Categories to their collection pages", () => {
   assert.doesNotMatch(homeSource, /const categories = \[/);
 });
 
+test("lays visible Featured Categories in one desktop row", () => {
+  const categoriesSection = homeSource.slice(
+    homeSource.indexOf("{/* Categories Section */}"),
+    homeSource.indexOf("{/* What's New Section */}"),
+  );
+
+  assert.match(
+    categoriesSection,
+    /sm:grid-cols-4[\s\S]*lg:grid-cols-8[\s\S]*lg:overflow-visible/,
+  );
+});
+
 test("labels the product section Top Selling Products without a purchase CTA", () => {
   const whatsNewSource = homeSource.slice(
     homeSource.indexOf("What's New Section"),
