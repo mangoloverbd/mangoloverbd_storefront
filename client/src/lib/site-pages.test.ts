@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { POLICY_FACTS, SITE_PAGES } from "./site-pages";
+import { CONTACT_DETAILS, POLICY_FACTS, SITE_PAGES } from "./site-pages";
 
 test("defines every approved bilingual information page", () => {
   assert.deepEqual(Object.keys(SITE_PAGES).sort(), [
@@ -37,4 +37,10 @@ test("keeps published policy facts aligned with checkout", () => {
   assert.equal(POLICY_FACTS.dhakaDeliveryDays, "1–2 days");
   assert.equal(POLICY_FACTS.outsideDhakaDeliveryDays, "2–3 days");
   assert.equal(POLICY_FACTS.paymentMethod, "Cash on Delivery");
+});
+
+test("uses Mango Lover's phone number for customer WhatsApp support", () => {
+  assert.equal(CONTACT_DETAILS.phone, "01301-636461");
+  assert.equal(CONTACT_DETAILS.whatsapp, "+8801301636461");
+  assert.equal(CONTACT_DETAILS.whatsappHref, "https://wa.me/8801301636461");
 });

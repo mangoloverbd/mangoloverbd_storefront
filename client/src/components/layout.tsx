@@ -430,7 +430,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div className="mt-auto grid grid-cols-1 gap-y-4 pb-2 text-base">
                     <a href="https://www.facebook.com/WeAreMangoLover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Facebook</a>
                     <a href="https://www.instagram.com/wearemangolover" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">Instagram</a>
-                    <a href="https://api.whatsapp.com/send/?phone=8801733670129" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">WhatsApp</a>
+                    <a href="https://api.whatsapp.com/send/?phone=8801301636461" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-60">WhatsApp</a>
                     <a href="tel:+8801301636461" className="transition-opacity hover:opacity-60">Call Mango Lover Team</a>
                   </div>
                 )}

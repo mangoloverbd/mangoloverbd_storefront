@@ -35,7 +35,8 @@ The storefront will provide these routes:
 - Contact details:
   - Address: Nowhata, Paba, Rajshahi, Bangladesh – 6213
   - Phone: 01301-636461
-  - WhatsApp: 01733-670129
+  - WhatsApp: +8801301636461
+  - Arc Labs developer WhatsApp: +8801733670129 (footer credit only)
   - Email: mangolover.com.bd@gmail.com
 
 ## Architecture

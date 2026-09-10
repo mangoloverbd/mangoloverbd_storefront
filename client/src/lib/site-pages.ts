@@ -26,7 +26,8 @@ export const POLICY_FACTS = {
 export const CONTACT_DETAILS = {
   address: "Nowhata, Paba, Rajshahi, Bangladesh – 6213",
   phone: "01301-636461",
-  whatsapp: "01733-670129",
+  whatsapp: "+8801301636461",
+  whatsappHref: "https://wa.me/8801301636461",
   email: "mangolover.com.bd@gmail.com",
 } as const;
 

@@ -52,7 +52,7 @@ export default function SiteInformationPage({ page }: { page: SitePage }) {
             </div>
             <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.12em]">
               <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={`tel:+8801301636461`}>Call us</a>
-              <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={`https://wa.me/8801733670129`}>WhatsApp</a>
+              <a className="border border-black/20 px-4 py-3 transition-colors hover:bg-black hover:text-white" href={CONTACT_DETAILS.whatsappHref}>WhatsApp</a>
             </div>
           </aside>
         </article>

@@ -42,3 +42,13 @@ test("connects footer information and support links to real pages", () => {
   }
   assert.doesNotMatch(layoutSource, /href="#"/);
 });
+
+test("uses Mango Lover WhatsApp in customer navigation and Arc Labs WhatsApp only for the developer credit", () => {
+  const bottomBarIndex = layoutSource.indexOf("/* Bottom Bar */");
+  assert.notEqual(bottomBarIndex, -1);
+  const customerNavigationSource = layoutSource.slice(0, bottomBarIndex);
+
+  assert.match(customerNavigationSource, /phone=8801301636461/);
+  assert.doesNotMatch(customerNavigationSource, /phone=8801733670129/);
+  assert.match(layoutSource.slice(bottomBarIndex), /phone=8801733670129/);
+});

@@ -15,7 +15,7 @@
 - Cash on Delivery is the only current payment method.
 - Food returns require a damaged, spoiled, or incorrect item report within 24 hours with unboxing photo/video proof.
 - Cancellation is allowed before dispatch only.
-- Use Mango Lover BD contact details: Nowhata, Paba, Rajshahi, Bangladesh – 6213; 01301-636461; 01733-670129; mangolover.com.bd@gmail.com.
+- Use Mango Lover BD contact details: Nowhata, Paba, Rajshahi, Bangladesh – 6213; phone and WhatsApp +8801301636461; mangolover.com.bd@gmail.com. Keep +8801733670129 only for the Arc Labs developer footer credit.
 - Do not modify Merchant Suite, Supabase, APIs, catalog data, or unrelated user changes in `client/src/lib/generated-storefront-products.ts`, `client/src/pages/home.tsx`, `client/src/pages/home.test.ts`, or `storefront-server.log`.
 
 ---
@@ -206,7 +206,7 @@ Keep the existing dynamic Shop category links. Replace the footer `href="#"` ent
 
 - [ ] **Step 3: Add real contact destinations**
 
-Use `mailto:mangolover.com.bd@gmail.com`, `tel:+8801301636461`, and `https://wa.me/8801733670129` in the contact page and any new policy callout. Keep existing social links unchanged.
+Use `mailto:mangolover.com.bd@gmail.com`, `tel:+8801301636461`, and `https://wa.me/8801301636461` in the contact page and any new policy callout. Keep the Arc Labs developer footer link on `https://api.whatsapp.com/send/?phone=8801733670129` and keep existing social links unchanged.
 
 - [ ] **Step 4: Run focused route/footer tests**
 
