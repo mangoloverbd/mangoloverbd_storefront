@@ -39,6 +39,7 @@ test("assigns every current product to exactly one collection", () => {
     "pure-ghee",
     "sundarbans-natural-honey",
     "black-seed-flower-honey",
+    "granulated-sugarcane-jaggery",
     "sugarcane-juice-powder",
     "amsotto-pickle",
     "lachcha-semai",
@@ -48,13 +49,40 @@ test("assigns every current product to exactly one collection", () => {
   assert.deepEqual(assignments.map(({ productSlug }) => productSlug).sort(), productSlugs.sort());
 });
 
+test("assigns Honey Nut to Nuts & Seeds instead of Honey", () => {
+  const honey = getFeaturedCollection("honey");
+  const nutsAndSeeds = getFeaturedCollection("nuts-and-seeds");
+
+  assert.ok(honey);
+  assert.ok(nutsAndSeeds);
+  assert.equal(honey.productSlugs.includes("honey-nut"), false);
+  assert.equal(nutsAndSeeds.productSlugs.includes("honey-nut"), true);
+});
+
+test("assigns both sugarcane products to the visible Jaggery category", () => {
+  const homemade = getFeaturedCollection("homemade");
+  const jaggery = getFeaturedCollection("jaggery");
+
+  assert.ok(homemade);
+  assert.ok(jaggery);
+  assert.equal(homemade.productSlugs.includes("sugarcane-juice-powder"), false);
+  assert.deepEqual(jaggery.productSlugs, ["sugarcane-juice-powder", "granulated-sugarcane-jaggery"]);
+  assert.deepEqual(
+    getVisibleFeaturedCollections([
+      { slug: "sugarcane-juice-powder", name: "Sugarcane Juice Powder" },
+      { slug: "granulated-sugarcane-jaggery", name: "Granulated Sugarcane Jaggery" },
+    ]).map(({ slug }) => slug),
+    ["jaggery"],
+  );
+});
+
 test("filters a catalog by assigned slugs and ignores missing products", () => {
   const products = [
     { slug: "honey-nut", name: "Honey Nut" },
     { slug: "missing", name: "Missing" },
     { slug: "pure-ghee", name: "Pure Ghee" },
   ];
-  const collection = getFeaturedCollection("honey");
+  const collection = getFeaturedCollection("nuts-and-seeds");
 
   assert.deepEqual(getProductsForCollection(products, collection!), [products[0]]);
 });
@@ -72,7 +100,7 @@ test("hides collections with no matching products without removing their definit
 
   assert.deepEqual(
     getVisibleFeaturedCollections(products).map(({ slug }) => slug),
-    ["honey", "semai"],
+    ["semai", "nuts-and-seeds"],
   );
   assert.ok(getFeaturedCollection("jaggery"));
 });

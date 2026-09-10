@@ -465,7 +465,7 @@ export default function Home() {
               className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/35" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
               <motion.h2
                 variants={reveal}
                 transition={transition}
@@ -483,7 +483,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/products"
+                  href="/product/pure-ghee"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
               >
                 Shop Now
@@ -496,6 +496,9 @@ export default function Home() {
 
       {/* Category Section: Oil & Ghee */}
       {renderCategorySection("oil-and-ghee")}
+
+      {/* Category Section: Jaggery */}
+      {renderCategorySection("jaggery")}
 
       {/* Essentials Section */}
       <section className="w-full bg-[#f6f6f6] pb-12 pt-2 md:pb-20 md:pt-4">
@@ -520,7 +523,7 @@ export default function Home() {
               className="hidden md:block w-full object-cover"
             />
             <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-end p-6 text-center">
               <motion.h2
                 variants={reveal}
                 transition={transition}
@@ -539,7 +542,7 @@ export default function Home() {
               </motion.p>
               <motion.div variants={reveal} transition={transition} className="mt-8">
                 <Link
-                  href="/products"
+                  href="/product/kalojira-mixed"
                   className="border-b-2 border-white pb-1 text-[18px] font-medium text-white transition-opacity hover:opacity-60 md:text-lg"
                 >
                   Shop Now
