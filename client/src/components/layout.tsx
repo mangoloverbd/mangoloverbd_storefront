@@ -279,7 +279,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             aria-current={location === "/products" ? "page" : undefined}
             className={`flex min-w-[52px] flex-col items-center gap-1 text-[9px] font-medium tracking-[0.04em] transition-colors ${location === "/products" ? "text-white" : "text-white/55"}`}
           >
-            <ReiconBox size={20} color="currentColor" weight="light" />
+            <ReiconBox size={20} color="currentColor" weight="Outline" />
             <span>Products</span>
           </a>
         </Link>
@@ -628,7 +628,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               { icon: CheckCircle, label: "মান নিশ্চিত" },
             ].map(({ icon: Icon, label }) => (
               <div key={label} className="flex flex-col items-center gap-2">
-                <Icon size={22} color="#FBBB14" weight="light" />
+                <Icon size={22} color="#FBBB14" weight="Outline" />
                 <span
                   className="text-[11px] md:text-[12px] text-black/50 font-medium"
                   style={{ fontFamily: "'KaiumSimanto', serif" }}
