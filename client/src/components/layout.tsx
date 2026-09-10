@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, ArrowRight, Globe, ShieldCheck, ShoppingBag, X, Plus, Minus } from "lucide-react";
+import { ArrowUpRight, ArrowRight, Globe, ShieldCheck, ShoppingBag, X } from "lucide-react";
 import { Box as ReiconBox, MoneyReceive, TruckFast, ShieldTick, CheckCircle } from "reicon-react";
 import { useState, useEffect, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import {
   STOREFRONT_CATALOG_QUERY_OPTIONS,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { getVisibleFeaturedCollections } from "@/lib/featured-collections";
 
 function BagIcon({ className }: { className?: string }) {
   return (
@@ -75,40 +76,10 @@ const DHAKA_TIME_ZONE = "Asia/Dhaka";
 
 const MENU_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "All Categories", href: "/products", keywords: [] },
-  { label: "Oil & ghee", href: "/products", keywords: ["oil", "ghee", "ঘি", "তেল"] },
-  { label: "Organic", href: "/products", keywords: ["organic", "অর্গানিক"] },
-  { label: "Honey", href: "/products", keywords: ["honey", "মধু"] },
-  { label: "Dates", href: "/products", keywords: ["date", "খেজুর"] },
-  { label: "Spices", href: "/products", keywords: ["spice", "মসলা"] },
-  { label: "Nuts & seeds", href: "/products", keywords: ["nut", "seed", "বাদাম", "বীজ"] },
-  { label: "Beverage", href: "/products", keywords: ["beverage", "drink", "পানীয়"] },
-  { label: "Rice", href: "/products", keywords: ["rice", "চাল"] },
-  { label: "Flours & lentils", href: "/products", keywords: ["flour", "lentil", "আটা", "ডাল"] },
-  { label: "Functional food", href: "/products", keywords: ["functional", "health", "স্বাস্থ্য"] },
+  { label: "Products", href: "/products" },
   { label: "Track Order", href: "/track-order" },
   { label: "Contact Us", href: "/contact-us" },
 ] as const;
-
-const MOBILE_COLLECTIONS = [
-  "Oil & Ghee",
-  "Organic",
-  "Honey",
-  "Dates",
-  "Spices",
-  "Nuts & Seeds",
-  "Functional Food",
-];
-
-const DESKTOP_COLLECTIONS = [
-  "Oil & Ghee",
-  "Organic",
-  "Honey",
-  "Dates",
-  "Spices",
-  "Nuts & Seeds",
-  "Functional Food",
-];
 
 const pad = (value: number) => value.toString().padStart(2, "0");
 
@@ -131,7 +102,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [openMenuItem, setOpenMenuItem] = useState<string | null>(null);
   const [mobileMenuPage, setMobileMenuPage] = useState<"main" | "collections">("main");
   const [time, setTime] = useState('');
   const { setIsOpen: setCartOpen, itemCount } = useCart();
@@ -143,11 +113,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     initialDataUpdatedAt: 0,
     enabled: isSearchOpen || isOpen,
   });
+  const visibleCollections = getVisibleFeaturedCollections(searchableProducts);
+  const desktopMenuItems = [
+    ...MENU_ITEMS.slice(0, 2),
+    ...visibleCollections.map(({ slug, label }) => ({ label, href: `/collection/${slug}` })),
+    ...MENU_ITEMS.slice(2),
+  ];
 
   const openSearch = () => setIsSearchOpen(true);
   const openMenu = () => {
     setMobileMenuPage("main");
-    setOpenMenuItem(null);
     setIsOpen(true);
   };
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
@@ -157,13 +132,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsSearchOpen(false);
   };
   const suggestions = searchStorefrontProducts(searchableProducts, searchQuery).slice(0, 5);
-  const getMenuProducts = (item: (typeof MENU_ITEMS)[number]) => {
-    if (!item.keywords) return [];
-    if (item.keywords.length === 0) return searchableProducts.slice(0, 6);
-    return searchableProducts
-      .filter((product) => item.keywords.some((keyword) => product.name.toLocaleLowerCase().includes(keyword)))
-      .slice(0, 6);
-  };
 
   useEffect(() => {
     if (isOpen) {
@@ -233,8 +201,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="hidden min-w-0 flex-1 items-center justify-center md:flex">
             <div className="flex items-center justify-center gap-5 text-[10px] font-medium uppercase tracking-[0.16em] text-black/70 lg:gap-8">
-              {DESKTOP_COLLECTIONS.map((label) => (
-                <Link key={label} href="/products">
+              {visibleCollections.map(({ slug, label }) => (
+                <Link key={slug} href={`/collection/${slug}`}>
                   <a className="whitespace-nowrap transition-colors hover:text-brand-gold">{label}</a>
                 </Link>
               ))}
@@ -428,9 +396,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <button type="button" onClick={() => setMobileMenuPage("main")} className="mb-10 flex items-center gap-2 text-sm text-black/55"><ArrowRight size={17} className="rotate-180" /> Back</button>
                     <h2 className="mb-7 text-[2rem] font-normal leading-none tracking-[-0.05em]">Collections</h2>
                     <nav aria-label="Collections" className="grid grid-cols-1 gap-4 text-lg">
-                      {MOBILE_COLLECTIONS.map((collection) => (
-                        <Link key={collection} href="/products" onClick={() => setIsOpen(false)}>
-                          <a className="transition-opacity hover:opacity-60">{collection}</a>
+                      {visibleCollections.map(({ slug, label }) => (
+                        <Link key={slug} href={`/collection/${slug}`} onClick={() => setIsOpen(false)}>
+                          <a className="transition-opacity hover:opacity-60">{label}</a>
                         </Link>
                       ))}
                     </nav>
@@ -462,44 +430,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                 {/* Navigation Links */}
                 <div className="flex flex-col gap-6 md:gap-8 py-8 flex-1 justify-center px-2">
-                  {MENU_ITEMS.map((item, idx) => {
-                    const products = getMenuProducts(item);
-                    const hasSubmenu = Boolean(item.keywords);
-                    const isExpanded = openMenuItem === item.label;
-
-                    return (
+                  {desktopMenuItems.map((item, idx) => (
                       <motion.div
                         key={item.label}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: idx * 0.06 + 0.2, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        <div className="flex items-center justify-between gap-4">
-                          {hasSubmenu ? (
-                            <button type="button" onClick={() => setOpenMenuItem(isExpanded ? null : item.label)} className="group flex items-baseline text-left">
-                              <span className="text-2xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70 md:text-3xl">{item.label}</span>
-                            </button>
-                          ) : (
-                            <Link href={item.href} onClick={() => setIsOpen(false)}>
-                              <a className="group flex items-baseline">
-                                <span className="text-2xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70 md:text-3xl">{item.label}</span>
-                              </a>
-                            </Link>
-                          )}
-                          {hasSubmenu && <button type="button" onClick={() => setOpenMenuItem(isExpanded ? null : item.label)} aria-label={`${isExpanded ? "Collapse" : "Expand"} ${item.label}`} className="p-2 text-white/60">{isExpanded ? <Minus size={18} /> : <Plus size={18} />}</button>}
-                        </div>
-                        {isExpanded && (
-                          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 pl-1">
-                            {products.length > 0 ? products.map((product) => (
-                              <Link key={product.slug} href={`/product/${product.slug}`} onClick={() => setIsOpen(false)}>
-                                <a className="text-sm text-white/65 transition-colors hover:text-white">{product.name}</a>
-                              </Link>
-                            )) : <span className="text-sm text-white/45">No products listed yet</span>}
-                          </div>
-                        )}
+                        <Link href={item.href} onClick={() => setIsOpen(false)}>
+                          <a className="group flex items-baseline">
+                            <span className="text-2xl font-sans font-medium tracking-tight text-white transition-opacity duration-300 hover:opacity-70 md:text-3xl">{item.label}</span>
+                          </a>
+                        </Link>
                       </motion.div>
-                    );
-                  })}
+                    ))}
                 </div>
 
                 {/* Footer Info */}
@@ -616,8 +560,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-8">
               <span className="text-[28px] md:text-[22px] font-bold text-[#FBBB14] block">Shop</span>
               <ul className="space-y-3 text-[17px] md:text-[15px] font-bold text-black">
-                {["Oil & Ghee", "Honey", "Dates", "Spices", "Nuts & Seeds", "Beverages", "Homemade Foods"].map((label) => (
-                  <li key={label}><a href="#" className="hover:text-black transition-colors block">{label}</a></li>
+                {visibleCollections.map(({ slug, label }) => (
+                  <li key={slug}>
+                    <Link href={`/collection/${slug}`}>
+                      <a className="hover:text-black transition-colors block">{label}</a>
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
