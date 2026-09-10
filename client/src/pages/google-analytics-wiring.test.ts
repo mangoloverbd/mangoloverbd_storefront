@@ -7,6 +7,16 @@ const homeProductCard = readFileSync(new URL("../components/home-product-card.ts
 const cartContext = readFileSync(new URL("../contexts/cart-context.tsx", import.meta.url), "utf8");
 const cartDrawer = readFileSync(new URL("../components/cart-drawer.tsx", import.meta.url), "utf8");
 const orderDialog = readFileSync(new URL("../components/order-dialog.tsx", import.meta.url), "utf8");
+const campaignCheckouts = [
+  readFileSync(new URL("../features/sundarbans-honey/honey-checkout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("../features/kalojira-mixed/kalojira-checkout.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("../features/honey-nut/honey-nut-checkout.tsx", import.meta.url), "utf8"),
+];
+const campaignThankYouPages = [
+  readFileSync(new URL("./sundarbans-honey-thank-you.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./kalojira-mixed-thank-you.tsx", import.meta.url), "utf8"),
+  readFileSync(new URL("./honey-nut-thank-you.tsx", import.meta.url), "utf8"),
+];
 
 test("product page sends view_item and direct checkout item metadata", () => {
   assert.match(productPage, /trackGoogleEcommerceEvent\("view_item"/);
@@ -41,4 +51,16 @@ test("direct checkout analytics preserve selected quantity and unit price", () =
   assert.match(orderDialog, /const bundleUnitPrice = bundle\?\.unitPrice \?\?/);
   assert.match(orderDialog, /quantity: bundleQuantity/);
   assert.match(orderDialog, /item_price: bundleUnitPrice/);
+});
+
+test("all campaign landing pages send ecommerce view, checkout, selection, and purchase events", () => {
+  for (const checkout of campaignCheckouts) {
+    assert.match(checkout, /trackGoogleEcommerceEvent\("view_item"/);
+    assert.match(checkout, /trackGoogleEcommerceEvent\("begin_checkout"/);
+    assert.match(checkout, /trackGoogleEcommerceEvent\("select_item"/);
+  }
+
+  for (const thankYouPage of campaignThankYouPages) {
+    assert.match(thankYouPage, /trackGoogleEcommerceEvent\("purchase"/);
+  }
 });
