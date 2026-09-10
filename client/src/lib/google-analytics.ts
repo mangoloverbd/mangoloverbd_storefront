@@ -45,6 +45,16 @@ type GoogleEcommerceBaseInput = {
   coupon?: string;
 };
 
+export type GoogleEcommerceData = {
+  currency: "BDT";
+  value: number;
+  items: GoogleAnalyticsItem[];
+  transaction_id?: string;
+  tax?: number;
+  shipping?: number;
+  coupon?: string;
+};
+
 export type GoogleEcommercePayload = {
   event: GoogleEcommerceEventName;
   page_type: GoogleEcommerceBaseInput["pageType"];
@@ -54,13 +64,7 @@ export type GoogleEcommercePayload = {
   page_language: string;
   logged_in: false;
   customer_id: null;
-  currency: "BDT";
-  value: number;
-  items: GoogleAnalyticsItem[];
-  transaction_id?: string;
-  tax?: number;
-  shipping?: number;
-  coupon?: string;
+  ecommerce: GoogleEcommerceData;
 };
 
 type GoogleTagFunction = (...args: unknown[]) => void;
@@ -126,6 +130,17 @@ export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): Go
     pagePath = "";
   }
 
+  const ecommerce: GoogleEcommerceData = {
+    currency: "BDT",
+    value: roundMoney(input.value),
+    items: input.items,
+  };
+
+  if (input.transactionId) ecommerce.transaction_id = input.transactionId;
+  if (typeof input.tax === "number") ecommerce.tax = roundMoney(input.tax);
+  if (typeof input.shipping === "number") ecommerce.shipping = roundMoney(input.shipping);
+  if (typeof input.coupon === "string") ecommerce.coupon = input.coupon;
+
   const payload: GoogleEcommercePayload = {
     event: input.event,
     page_type: input.pageType,
@@ -135,15 +150,8 @@ export function buildGoogleEcommercePayload(input: GoogleEcommerceBaseInput): Go
     page_language: input.language || "en",
     logged_in: false,
     customer_id: null,
-    currency: "BDT",
-    value: roundMoney(input.value),
-    items: input.items,
+    ecommerce,
   };
-
-  if (input.transactionId) payload.transaction_id = input.transactionId;
-  if (typeof input.tax === "number") payload.tax = roundMoney(input.tax);
-  if (typeof input.shipping === "number") payload.shipping = roundMoney(input.shipping);
-  if (typeof input.coupon === "string") payload.coupon = input.coupon;
 
   return payload;
 }
@@ -178,13 +186,8 @@ export function trackGoogleEcommerceEvent(
     language: input.language ?? getCurrentLanguage(browserTarget),
   });
 
-  const { event: _event, ...gtagPayload } = payload;
-  if (browserTarget.gtag) {
-    browserTarget.gtag("event", event, gtagPayload);
-  } else {
-    browserTarget.dataLayer = browserTarget.dataLayer || [];
-    browserTarget.dataLayer.push(payload);
-  }
+  browserTarget.dataLayer = browserTarget.dataLayer || [];
+  browserTarget.dataLayer.push(payload);
 
   return payload;
 }

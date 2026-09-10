@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 const productPage = readFileSync(new URL("./product.tsx", import.meta.url), "utf8");
-const homePage = readFileSync(new URL("./home.tsx", import.meta.url), "utf8");
+const homeProductCard = readFileSync(new URL("../components/home-product-card.tsx", import.meta.url), "utf8");
 const cartContext = readFileSync(new URL("../contexts/cart-context.tsx", import.meta.url), "utf8");
 const cartDrawer = readFileSync(new URL("../components/cart-drawer.tsx", import.meta.url), "utf8");
 const orderDialog = readFileSync(new URL("../components/order-dialog.tsx", import.meta.url), "utf8");
@@ -19,9 +19,9 @@ test("cart add sends add_to_cart with selected variant metadata", () => {
 });
 
 test("homepage add to cart passes real product metadata into cart analytics", () => {
-  assert.match(homePage, /toGoogleAnalyticsItem/);
-  assert.match(homePage, /analyticsItem: toGoogleAnalyticsItem\(\{/);
-  assert.match(homePage, /id: product\.id \?\? product\.slug/);
+  assert.match(homeProductCard, /toGoogleAnalyticsItem/);
+  assert.match(homeProductCard, /analyticsItem: toGoogleAnalyticsItem\(\{/);
+  assert.match(homeProductCard, /id: product\.id \?\? product\.slug/);
 });
 
 test("cart checkout preserves every item for checkout and purchase analytics", () => {

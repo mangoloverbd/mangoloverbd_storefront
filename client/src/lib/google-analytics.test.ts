@@ -30,7 +30,7 @@ test("normalizes storefront items into the merchant team's GA4 item shape", () =
   );
 });
 
-test("builds a flat dataLayer event with page metadata", () => {
+test("builds a GTM ecommerce event with nested ecommerce parameters", () => {
   const payload = buildGoogleEcommercePayload({
     event: "view_item",
     pageType: "product",
@@ -58,22 +58,24 @@ test("builds a flat dataLayer event with page metadata", () => {
     page_language: "en",
     logged_in: false,
     customer_id: null,
-    currency: "BDT",
-    value: 1850,
-    items: [
-      {
-        item_id: "mango-himsagar",
-        item_name: "Himsagar Mango — 10kg",
-        item_brand: "Mango Lover BD",
-        item_variant: "10kg",
-        price: 1850,
-        quantity: 1,
-      },
-    ],
+    ecommerce: {
+      currency: "BDT",
+      value: 1850,
+      items: [
+        {
+          item_id: "mango-himsagar",
+          item_name: "Himsagar Mango — 10kg",
+          item_brand: "Mango Lover BD",
+          item_variant: "10kg",
+          price: 1850,
+          quantity: 1,
+        },
+      ],
+    },
   });
 });
 
-test("sends one direct GA4 ecommerce event without adding a duplicate dataLayer event", () => {
+test("pushes one GTM ecommerce event with ecommerce.value and ecommerce.currency", () => {
   const gtagCalls: unknown[][] = [];
   const target: GoogleAnalyticsWindow = {
     dataLayer: [],
@@ -92,9 +94,9 @@ test("sends one direct GA4 ecommerce event without adding a duplicate dataLayer 
     target,
   );
 
-  assert.deepEqual(target.dataLayer, []);
-  assert.deepEqual(gtagCalls, [
-    ["event", "begin_checkout", {
+  assert.deepEqual(target.dataLayer, [
+    {
+      event: "begin_checkout",
       page_type: "checkout",
       page_title: "Checkout | Mango Lover BD",
       page_url: "https://mangoloverbd.vercel.app/checkout",
@@ -102,19 +104,22 @@ test("sends one direct GA4 ecommerce event without adding a duplicate dataLayer 
       page_language: "en",
       logged_in: false,
       customer_id: null,
-      currency: "BDT",
-      value: 1850,
-      items: [
-        {
-          item_id: "mango-himsagar",
-          item_name: "Himsagar Mango",
-          item_brand: "Mango Lover BD",
-          price: 1850,
-          quantity: 1,
-        },
-      ],
-    }],
+      ecommerce: {
+        currency: "BDT",
+        value: 1850,
+        items: [
+          {
+            item_id: "mango-himsagar",
+            item_name: "Himsagar Mango",
+            item_brand: "Mango Lover BD",
+            price: 1850,
+            quantity: 1,
+          },
+        ],
+      },
+    },
   ]);
+  assert.deepEqual(gtagCalls, []);
 });
 
 test("sends one direct GA4 custom interaction without adding a duplicate dataLayer event", () => {
@@ -161,7 +166,7 @@ test("uses the GA4 select_item ecommerce shape for a selected live pack", () => 
     })],
   }, target);
 
-  assert.deepEqual(payload?.items, [{
+  assert.deepEqual(payload?.ecommerce.items, [{
     item_id: "honey-1kg",
     item_name: "Sundarbans Natural Honey — 1KG",
     item_brand: "Mango Lover BD",
@@ -170,7 +175,7 @@ test("uses the GA4 select_item ecommerce shape for a selected live pack", () => 
     quantity: 2,
   }]);
   assert.equal(payload?.event, "select_item");
-  assert.equal(payload?.value, 1600);
+  assert.equal(payload?.ecommerce.value, 1600);
 });
 
 test("parses visible taka prices into GA4 numbers", () => {
