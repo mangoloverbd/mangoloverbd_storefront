@@ -260,9 +260,10 @@ test("renders a full-bleed editorial hero", () => {
   assert.doesNotMatch(homeSource, /Discover New Arrival/);
 });
 
-test("uses reveal-style Framer animations on homepage sections", () => {
-  assert.match(homeSource, /filter: "blur\(10px\)", transform: "translateY\(20%\)", opacity: 0/);
-  assert.match(homeSource, /filter: "blur\(0\)", transform: "translateY\(0\)", opacity: 1/);
+test("uses subtle fade-and-lift Framer animations on homepage sections", () => {
+  assert.match(homeSource, /transform: "translateY\(12px\)", opacity: 0/);
+  assert.match(homeSource, /transform: "translateY\(0\)", opacity: 1/);
+  assert.doesNotMatch(homeSource, /filter: "blur/);
   assert.match(homeSource, /useReveal/);
   assert.match(homeSource, /animate=\{[^}]*InView \? "visible" : "hidden"\}/);
   assert.match(homeSource, /staggerChildren/);
