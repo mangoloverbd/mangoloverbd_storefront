@@ -176,7 +176,8 @@ export class AbandonedCartCapture {
   private draftKeyValue: string | null;
   private latestPayload: AbandonedCartCapturePayload | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
-  private inFlight: Promise<void> | null = null;
+  private inFlight: Promise<boolean> | null = null;
+  private inFlightPayload: AbandonedCartCapturePayload | null = null;
   private resendAfterFlight = false;
   private failed = false;
 
@@ -237,6 +238,19 @@ export class AbandonedCartCapture {
     removeDraftKey(this.options.source, this.options.storage);
   }
 
+  async finalize() {
+    this.clearTimer();
+    const payload = this.latestPayload;
+    const inFlight = this.inFlight;
+    const inFlightPayload = this.inFlightPayload;
+    this.clear();
+
+    const inFlightSucceeded = inFlight ? await inFlight : false;
+    if (payload && (payload !== inFlightPayload || !inFlightSucceeded)) {
+      await this.post(payload);
+    }
+  }
+
   dispose() {
     this.clearTimer();
   }
@@ -264,18 +278,23 @@ export class AbandonedCartCapture {
     this.timer = null;
   }
 
-  private send() {
-    if (!this.latestPayload) return Promise.resolve();
+  private send(): Promise<boolean> {
+    if (!this.latestPayload) return Promise.resolve(true);
     if (this.inFlight) {
       this.resendAfterFlight = true;
       return this.inFlight;
     }
 
     const payload = this.latestPayload;
+    this.inFlightPayload = payload;
     this.inFlight = this.post(payload)
-      .then((ok) => { this.failed = !ok; })
+      .then((ok) => {
+        this.failed = !ok;
+        return ok;
+      })
       .finally(() => {
         this.inFlight = null;
+        this.inFlightPayload = null;
         if (this.resendAfterFlight && this.latestPayload) {
           this.resendAfterFlight = false;
           this.schedule(0);

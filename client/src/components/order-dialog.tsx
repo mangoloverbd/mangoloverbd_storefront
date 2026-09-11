@@ -155,6 +155,7 @@ export default function OrderDialog({
 
   const resetDialog = (nextOpen: boolean) => {
     if (!nextOpen) {
+      void capture.finalize();
       setOrderClosing(true);
       onOpenChange(false);
       return;

@@ -30,6 +30,12 @@ test("the main checkout does not display the incomplete-checkout retention notic
   assert.doesNotMatch(source, /Incomplete checkout details may be saved for up to 30 days/);
 });
 
+test("the main checkout finalizes a captured draft when the dialog closes", () => {
+  const source = readFileSync(new URL("./components/order-dialog.tsx", import.meta.url), "utf8");
+
+  assert.match(source, /if \(!nextOpen\) \{[\s\S]*?void capture\.finalize\(\)/);
+});
+
 test("the main checkout preserves live cart lines for its descriptive capture snapshot", () => {
   const cartDrawerSource = readFileSync(new URL("./components/cart-drawer.tsx", import.meta.url), "utf8");
   const productSource = readFileSync(new URL("./pages/product.tsx", import.meta.url), "utf8");

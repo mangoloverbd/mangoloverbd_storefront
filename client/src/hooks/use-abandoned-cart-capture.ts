@@ -28,6 +28,7 @@ export function useAbandonedCartCapture(source: AbandonedCartSource): AbandonedC
     return () => {
       window.removeEventListener("focus", retry);
       window.removeEventListener("online", retry);
+      void capture.finalize();
       capture.dispose();
     };
   }, [capture]);

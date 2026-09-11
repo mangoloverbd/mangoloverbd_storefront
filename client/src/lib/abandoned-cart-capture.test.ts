@@ -61,6 +61,122 @@ test("creates one draft key after a valid BD phone and reuses it for newer snaps
     fetchImpl: async () => new Response(null, { status: 202 }),
   });
   assert.equal(resumedCapture.capture(snapshot), "7cb13b8e-b576-4faa-b238-cc8b73059772");
+  resumedCapture.clear();
+});
+
+test("finalizes a closed checkout before rotating the next draft key", async () => {
+  const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
+  const storage = new MemoryStorage();
+  const draftKeys = [
+    "7cb13b8e-b576-4faa-b238-cc8b73059772",
+    "e8c62e5c-a1fb-4eb4-9fd5-ec19e16c31a5",
+  ];
+  const requests: Array<{ draftKey: string }> = [];
+  let nextDraftKey = 0;
+  const capture = createAbandonedCartCapture({
+    source: "sundarbans_honey",
+    storage,
+    debounceMs: 0,
+    createDraftKey: () => draftKeys[nextDraftKey++] ?? null,
+    fetchImpl: async (_url: RequestInfo | URL, init?: RequestInit) => {
+      requests.push(JSON.parse(String(init?.body)));
+      return new Response(null, { status: 202 });
+    },
+  });
+
+  assert.equal(capture.capture(snapshot), draftKeys[0]);
+  await capture.finalize();
+  assert.equal(capture.draftKey, null);
+
+  assert.equal(capture.capture({ ...snapshot, items: [{ ...snapshot.items[0], quantity: 2 }], subtotal: 1500, total: 1600 }), draftKeys[1]);
+  await capture.flush();
+
+  assert.deepEqual(requests.map((request) => request.draftKey), draftKeys);
+});
+
+test("posts the final snapshot after an in-flight update before rotating its draft", async () => {
+  const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
+  const requests: Array<{ items: Array<{ quantity: number }> }> = [];
+  let resolveFirstRequest: (() => void) | null = null;
+  const capture = createAbandonedCartCapture({
+    source: "sundarbans_honey",
+    storage: new MemoryStorage(),
+    debounceMs: 0,
+    createDraftKey: () => "7cb13b8e-b576-4faa-b238-cc8b73059772",
+    fetchImpl: async (_url: RequestInfo | URL, init?: RequestInit) => {
+      requests.push(JSON.parse(String(init?.body)));
+      if (requests.length === 1) {
+        return new Promise<Response>((resolve) => {
+          resolveFirstRequest = () => resolve(new Response(null, { status: 202 }));
+        });
+      }
+      return new Response(null, { status: 202 });
+    },
+  });
+
+  capture.capture(snapshot);
+  await delay();
+  capture.capture({ ...snapshot, items: [{ ...snapshot.items[0], quantity: 2 }], subtotal: 1500, total: 1600 });
+  const finalizing = capture.finalize();
+  resolveFirstRequest?.();
+  await finalizing;
+
+  assert.deepEqual(requests.map((request) => request.items[0].quantity), [1, 2]);
+  assert.equal(capture.draftKey, null);
+});
+
+test("does not repost an unchanged snapshot while finalizing an in-flight capture", async () => {
+  const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
+  let requests = 0;
+  let resolveRequest: (() => void) | null = null;
+  const capture = createAbandonedCartCapture({
+    source: "honey_nut",
+    storage: new MemoryStorage(),
+    debounceMs: 0,
+    createDraftKey: () => "7cb13b8e-b576-4faa-b238-cc8b73059772",
+    fetchImpl: async () => {
+      requests += 1;
+      if (requests > 1) return new Response(null, { status: 202 });
+      return new Promise<Response>((resolve) => {
+        resolveRequest = () => resolve(new Response(null, { status: 202 }));
+      });
+    },
+  });
+
+  capture.capture(snapshot);
+  await delay();
+  const finalizing = capture.finalize();
+  resolveRequest?.();
+  await finalizing;
+
+  assert.equal(requests, 1);
+});
+
+test("retries an unchanged snapshot when its in-flight capture fails during finalization", async () => {
+  const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
+  let requests = 0;
+  let resolveRequest: (() => void) | null = null;
+  const capture = createAbandonedCartCapture({
+    source: "honey_nut",
+    storage: new MemoryStorage(),
+    debounceMs: 0,
+    createDraftKey: () => "7cb13b8e-b576-4faa-b238-cc8b73059772",
+    fetchImpl: async () => {
+      requests += 1;
+      if (requests > 1) return new Response(null, { status: 202 });
+      return new Promise<Response>((resolve) => {
+        resolveRequest = () => resolve(new Response(null, { status: 503 }));
+      });
+    },
+  });
+
+  capture.capture(snapshot);
+  await delay();
+  const finalizing = capture.finalize();
+  resolveRequest?.();
+  await finalizing;
+
+  assert.equal(requests, 2);
 });
 
 test("retries a failed capture after a later checkout interaction without throwing", async () => {
@@ -85,7 +201,7 @@ test("retries a failed capture after a later checkout interaction without throwi
   assert.equal(attempts, 2);
 });
 
-test("falls back to memory when session storage is unavailable and clears only on confirmed order", async () => {
+test("falls back to memory when session storage is unavailable and clears its draft", async () => {
   const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
   const unavailableStorage = {
     getItem: () => { throw new Error("blocked"); },
