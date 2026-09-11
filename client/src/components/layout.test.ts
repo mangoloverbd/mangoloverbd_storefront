@@ -11,6 +11,14 @@ test("uses a compact announcement bar on mobile and restores desktop spacing", (
   );
 });
 
+test("hides the mobile navigation dock at the document bottom with Framer Motion", () => {
+  assert.match(layoutSource, /useReducedMotion/);
+  assert.match(layoutSource, /window\.innerHeight \+ window\.scrollY >= documentHeight - 24/);
+  assert.match(layoutSource, /<motion\.nav/);
+  assert.match(layoutSource, /animate=\{\{ y: isAtPageBottom \? "110%" : 0 \}\}/);
+  assert.match(layoutSource, /className="fixed inset-x-3 bottom-3[^\"]*md:hidden"/);
+});
+
 test("reserves desktop width for the logo before category navigation", () => {
   assert.match(layoutSource, /md:flex-none md:basis-64/);
   assert.match(layoutSource, /<div className="md:hidden">/);

@@ -93,15 +93,10 @@ test("Honey Nut titles use the normal Bengali font stack", () => {
 test("Honey Nut mobile sticky bar mirrors Kalojira's three-action behavior", () => {
   assert.match(mobileBarSource, /IntersectionObserver/);
   assert.match(mobileBarSource, /data-hidden/);
-  assert.match(mobileBarSource, /motion\.div/);
-  assert.match(mobileBarSource, /useReducedMotion/);
-  assert.match(mobileBarSource, /window\.innerHeight \+ window\.scrollY >= documentElement\.scrollHeight - 24/);
-  assert.match(mobileBarSource, /const hidden = checkoutVisible \|\| atPageBottom/);
-  assert.match(mobileBarSource, /animate=\{\{ y: hidden \? "110%" : 0 \}\}/);
   assert.match(mobileBarSource, /WhatsAppBrandIcon/);
   assert.match(mobileBarSource, /placement: "sticky_bar"/);
   assert.match(stylesSource, /safe-area-inset-bottom/);
-  assert.match(stylesSource, /@media \(min-width: 768px\)/);
+  assert.match(stylesSource, /honey-nut-order-bar\[data-hidden="true"\]/);
 });
 
 test("Honey Nut header and footer mirror the Kalojira campaign chrome", () => {

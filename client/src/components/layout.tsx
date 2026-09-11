@@ -5,7 +5,7 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
@@ -127,6 +127,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuPage, setMobileMenuPage] = useState<"main" | "collections">("main");
   const [time, setTime] = useState('');
+  const [isAtPageBottom, setIsAtPageBottom] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const { setIsOpen: setCartOpen, itemCount } = useCart();
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
@@ -178,6 +180,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  useEffect(() => {
+    const updatePageBottom = () => {
+      const documentHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+      setIsAtPageBottom(window.innerHeight + window.scrollY >= documentHeight - 24);
+    };
+
+    updatePageBottom();
+    window.addEventListener("scroll", updatePageBottom, { passive: true });
+    window.addEventListener("resize", updatePageBottom);
+    return () => {
+      window.removeEventListener("scroll", updatePageBottom);
+      window.removeEventListener("resize", updatePageBottom);
+    };
+  }, [location]);
 
   return (
     <div className="min-h-screen flex flex-col md:bg-brand-ivory text-black selection:bg-brand-gold selection:text-white">
@@ -260,8 +277,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Mobile bottom navigation */}
-      <nav
+      <motion.nav
         aria-label="Mobile navigation"
+        initial={false}
+        animate={{ y: isAtPageBottom ? "110%" : 0 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-3 bottom-3 z-[80] flex h-16 items-center justify-around rounded-[8px] border border-white/10 bg-neutral-500/60 px-2 text-white shadow-2xl backdrop-blur-md md:hidden"
       >
         <Link href="/">
@@ -309,7 +329,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <MenuLinesIcon className="!h-5 !w-5 scale-125 opacity-70" />
           <span>Menu</span>
         </Button>
-      </nav>
+      </motion.nav>
 
       <AnimatePresence>
         {isSearchOpen && (

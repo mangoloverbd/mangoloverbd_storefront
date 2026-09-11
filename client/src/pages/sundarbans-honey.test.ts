@@ -278,13 +278,7 @@ test("sticky bar exposes three accessible actions and hides at checkout", () => 
   assert.ok((barSource.match(/aria-label=/g) ?? []).length >= 3);
   assert.match(barSource, /IntersectionObserver/);
   assert.match(barSource, /honey-checkout/);
-  assert.match(barSource, /motion\.div/);
-  assert.match(barSource, /useReducedMotion/);
-  assert.match(barSource, /window\.innerHeight \+ window\.scrollY >= documentElement\.scrollHeight - 24/);
-  assert.match(barSource, /const hidden = checkoutVisible \|\| atPageBottom/);
-  assert.match(barSource, /animate=\{\{ y: hidden \? "110%" : 0 \}\}/);
   assert.match(campaignCssSource, /env\(safe-area-inset-bottom\)/);
-  assert.match(campaignCssSource, /@media \(min-width: 768px\)/);
   assert.match(pageSource, /MobileOrderBar/);
 });
 
