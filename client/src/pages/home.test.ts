@@ -31,7 +31,7 @@ test("renders a What's New section after the hero", () => {
 test("uses only the highlighted Bengali Featured Categories heading", () => {
   assert.doesNotMatch(homeSource, /FEATURED CATEGORIES/);
   assert.match(homeSource, /আমাদের ক্যাটাগরিসমূহ/);
-  assert.match(homeSource, /<HighlightedWord className="font-display italic text-\[1\.85rem\]/);
+  assert.match(homeSource, /<HighlightedWord className="font-display italic text-\[1\.65rem\]/);
   assert.match(homeSource, /highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ/);
 });
 
@@ -162,7 +162,7 @@ test("styles the Top Selling Products heading as a modern food feature", () => {
   assert.match(whatsNewSource, /font-display italic[\s\S]*highlightColor="#FBBB14"/);
   assert.match(whatsNewSource, /className="block md:inline">BEST SELLERS<\/span>/);
   assert.match(whatsNewSource, /className="mt-1 block md:ml-1 md:mt-0 md:inline"/);
-  assert.match(whatsNewSource, /text-\[clamp\(1\.5rem,4vw,2\.4rem\)\]/);
+  assert.match(whatsNewSource, /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\]/);
   assert.match(whatsNewSource, /View All/);
   assert.match(whatsNewSource, /border-b-2 border-black/);
   assert.doesNotMatch(whatsNewSource, /<svg/);
@@ -195,6 +195,15 @@ test("styles Bengali homepage highlights with the italic display font", () => {
   assert.match(homeSource, /<HighlightedWord className="font-display italic" highlightColor="#FBBB14">\{bengaliLabel\}<\/HighlightedWord>/);
   assert.match(homeSource, /সবচেয়ে জনপ্রিয়/);
   assert.match(homeSource, /আমাদের নতুন পণ্য/);
+});
+
+test("uses a reduced type scale across homepage section headings", () => {
+  const reducedHeadingScale = /text-\[clamp\(1\.35rem,3\.6vw,2\.15rem\)\][^"]*md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/g;
+
+  assert.equal((homeSource.match(reducedHeadingScale) ?? []).length, 6);
+  assert.match(homeSource, /text-\[1\.65rem\] leading-none md:text-\[clamp\(1\.5rem,3\.9vw,2\.35rem\)\]/);
+  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.65rem,4\.3vw,2\.6rem\)\]/);
+  assert.doesNotMatch(homeSource, /text-\[clamp\(1\.75rem,4\.3vw,2\.6rem\)\]/);
 });
 
 test("loads every homepage product section from the public catalog", () => {
