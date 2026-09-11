@@ -121,8 +121,22 @@ const REEL_MEDIA = [
   poster: src.replace("/f_auto,q_auto/", "/so_1,w_480,f_auto,q_auto/").replace(".mp4", ".jpg"),
 }));
 
+const HONEY_NUT_REEL_EMBEDS = [
+  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=FDown.vn_Facebook_Video_Downloader_720p_HD__7925&player%5Bshow_logo%5D=false",
+  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1432224402135483_hd&player%5Bshow_logo%5D=false",
+  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=FDown.vn_Facebook_Video_Downloader_720p_HD__8e09&player%5Bshow_logo%5D=false",
+] as const;
+
+const HONEY_NUT_REEL_POSTERS = [
+  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.jpg",
+  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/snapsave-app_1432224402135483_hd.jpg",
+  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.jpg",
+] as const;
+
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
+  const honeyNutReelEmbeds = slug === "honey-nut" ? HONEY_NUT_REEL_EMBEDS : null;
+  const reelCount = honeyNutReelEmbeds?.length ?? REEL_MEDIA.length;
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(0);
@@ -158,7 +172,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (dir > 0) reelApi.scrollNext();
       return;
     }
-    setCurrentReel((i) => Math.min(REEL_MEDIA.length - 1, Math.max(0, i + dir)));
+    setCurrentReel((i) => Math.min(reelCount - 1, Math.max(0, i + dir)));
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -937,23 +951,34 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               {i === currentReel ? (
-                                <video
-                                  src={src}
-                                  title={`Mango Lover BD reel ${i + 1}`}
-                                  controls={activeReelVideo === i}
-                                  playsInline
-                                  preload="none"
-                                  onPlay={() => setActiveReelVideo(i)}
-                                  onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
-                                  ref={(video) => {
-                                    activeReelVideoRef.current = video;
-                                  }}
-                                  className="h-full w-full object-contain bg-black"
-                                />
+                                honeyNutReelEmbeds ? (
+                                  <iframe
+                                    src={honeyNutReelEmbeds[i]}
+                                    title={`Mango Lover BD reel ${i + 1}`}
+                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                                    allowFullScreen
+                                    frameBorder={0}
+                                    className="h-full w-full border-0 bg-black"
+                                  />
+                                ) : (
+                                  <video
+                                    src={src}
+                                    title={`Mango Lover BD reel ${i + 1}`}
+                                    controls={activeReelVideo === i}
+                                    playsInline
+                                    preload="none"
+                                    onPlay={() => setActiveReelVideo(i)}
+                                    onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                    ref={(video) => {
+                                      activeReelVideoRef.current = video;
+                                    }}
+                                    className="h-full w-full object-contain bg-black"
+                                  />
+                                )
                               ) : null}
-                              {activeReelVideo !== i ? (
+                              {((honeyNutReelEmbeds && i !== currentReel) || (!honeyNutReelEmbeds && activeReelVideo !== i)) ? (
                                 <img
-                                  src={poster}
+                                  src={honeyNutReelEmbeds ? HONEY_NUT_REEL_POSTERS[i] : poster}
                                   alt=""
                                   aria-hidden="true"
                                   loading="lazy"
@@ -961,7 +986,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
                                 />
                               ) : null}
-                              {activeReelVideo !== i ? (
+                              {((honeyNutReelEmbeds && i !== currentReel) || (!honeyNutReelEmbeds && activeReelVideo !== i)) ? (
                                 <button
                                   type="button"
                                   aria-label={`Play reel ${i + 1}`}
@@ -1009,7 +1034,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
 
                   <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {REEL_MEDIA.map((_, i) => (
+                    {Array.from({ length: reelCount }, (_, i) => (
                       <button
                         key={i}
                         aria-label={`Go to reel ${i + 1}`}
