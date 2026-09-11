@@ -469,6 +469,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
         unitPrice: selectedBundle.amount,
         images: [{ src: displayImage, alt: product.name }],
         analyticsItems: [{ ...productAnalyticsItem, quantity }],
+        captureItems: [{
+          productName: product.name,
+          variantName: selectedBundle.title,
+          quantity,
+          unitPrice: selectedBundle.amount,
+        }],
       } : null;
 
   if (isLoading) {

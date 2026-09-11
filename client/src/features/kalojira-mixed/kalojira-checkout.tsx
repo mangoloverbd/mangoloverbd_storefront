@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
+import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
   type StorefrontProduct,
@@ -132,6 +134,7 @@ function SupportActions({ placement }: { placement: string }) {
 
 export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry }: KalojiraCheckoutProps) {
   const [, setLocation] = useLocation();
+  const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
   if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
@@ -156,6 +159,35 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
       )
     : null;
+
+  const getCaptureSnapshot = () => {
+    if (!product || !presentedPack || !totals) return null;
+    return {
+      customerName: name,
+      phone,
+      address,
+      items: [{
+        productName: product.name,
+        variantName: presentedPack.label,
+        quantity: totals.quantity,
+        unitPrice: presentedPack.unitPrice,
+      }],
+      subtotal: totals.subtotal,
+      deliveryRate: totals.deliveryCharge,
+      total: totals.total,
+      campaign: readAbandonedCartCampaign(window.location.search),
+    };
+  };
+
+  const updateCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    return snapshot ? capture.capture(snapshot) : null;
+  };
+
+  const flushCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    if (snapshot) void capture.flush(snapshot);
+  };
 
   const analyticsItem = (pack: KalojiraPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
     id: pack.variantId,
@@ -211,6 +243,10 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     setAnnouncement((current) => current === AVAILABILITY_ERROR ? "" : current);
   }, [livePacks, selectedVariantId, status]);
 
+  useEffect(() => {
+    updateCapture();
+  }, [address, name, phone, product, quantity, selectedVariantId, status]);
+
   const focusFirstInvalidField = (
     fieldErrors: KalojiraFieldErrors,
     renderedPacks = packs,
@@ -227,6 +263,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     event.preventDefault();
     if (submittingRef.current) return;
 
+    const draftKey = updateCapture();
+    flushCapture();
     const fields = { name, phone, address, selectedVariantId, quantity };
     const nextErrors = getFieldErrors(fields, packs);
     if (Object.keys(nextErrors).length) {
@@ -279,7 +317,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       }
 
       const combinedAddress = buildKalojiraAddress(address);
-      const payload: KalojiraOrderPayload = {
+      const payload: KalojiraOrderPayload & { draftKey?: string } = {
         ...buildKalojiraOrderPayload({
           productName: refreshedProduct.name,
           pack: freshPack,
@@ -291,6 +329,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
         trackingMode: "google_only" as const,
+        ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);
       if (response.status !== 201) throw new Error("unexpected-order-response");
@@ -299,6 +338,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
         throw new Error("missing-order-reference");
       }
+      capture.clear();
       const confirmation = buildKalojiraOrderConfirmation(result.orderRef, payload);
       writeKalojiraOrderConfirmation(window.sessionStorage, confirmation);
       setLocation("/step/kalojira-mixed/thank-you");
@@ -338,6 +378,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
         onFocusCapture={beginCheckout}
+        onInput={updateCapture}
+        onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
@@ -493,6 +535,9 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             />
             <InlineError id="kalojira-address" error={errors.address} />
           </div>
+          <p className="text-sm leading-6 text-[#654b2f]">
+            অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
+          </p>
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">

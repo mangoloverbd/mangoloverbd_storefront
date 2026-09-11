@@ -4,6 +4,8 @@ import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
+import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
   type StorefrontProduct,
@@ -127,6 +129,7 @@ function SupportActions({ placement }: { placement: string }) {
 
 export function HoneyCheckout({ product, status, productQuery, inventoryQuery, onRetry }: HoneyCheckoutProps) {
   const [, setLocation] = useLocation();
+  const capture = useAbandonedCartCapture("sundarbans_honey");
   const livePacks = useMemo(() => product ? getHoneyPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
   if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
@@ -151,6 +154,35 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
       )
     : null;
+
+  const getCaptureSnapshot = () => {
+    if (!product || !presentedPack || !totals) return null;
+    return {
+      customerName: name,
+      phone,
+      address,
+      items: [{
+        productName: product.name,
+        variantName: presentedPack.label,
+        quantity: totals.quantity,
+        unitPrice: presentedPack.unitPrice,
+      }],
+      subtotal: totals.subtotal,
+      deliveryRate: totals.deliveryCharge,
+      total: totals.total,
+      campaign: readAbandonedCartCampaign(window.location.search),
+    };
+  };
+
+  const updateCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    return snapshot ? capture.capture(snapshot) : null;
+  };
+
+  const flushCapture = () => {
+    const snapshot = getCaptureSnapshot();
+    if (snapshot) void capture.flush(snapshot);
+  };
 
   const analyticsItem = (pack: HoneyPackOption, itemQuantity: number) => toGoogleAnalyticsItem({
     id: pack.variantId,
@@ -206,6 +238,10 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     setAnnouncement((current) => current === AVAILABILITY_ERROR ? "" : current);
   }, [livePacks, selectedVariantId, status]);
 
+  useEffect(() => {
+    updateCapture();
+  }, [address, name, phone, product, quantity, selectedVariantId, status]);
+
   const focusFirstInvalidField = (
     fieldErrors: HoneyFieldErrors,
     renderedPacks = packs,
@@ -222,6 +258,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     event.preventDefault();
     if (submittingRef.current) return;
 
+    const draftKey = updateCapture();
+    flushCapture();
     const fields = { name, phone, address, selectedVariantId, quantity };
     const nextErrors = getFieldErrors(fields, packs);
     if (Object.keys(nextErrors).length) {
@@ -274,7 +312,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       }
 
       const combinedAddress = buildHoneyAddress(address);
-      const payload: HoneyOrderPayload = {
+      const payload: HoneyOrderPayload & { draftKey?: string } = {
         ...buildHoneyOrderPayload({
           productName: refreshedProduct.name,
           pack: freshPack,
@@ -286,6 +324,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         deliveryCharge: HONEY_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
         trackingMode: "google_only" as const,
+        ...(draftKey ? { draftKey } : {}),
       };
       const response = await apiRequest("POST", "/api/orders", payload);
       if (response.status !== 201) throw new Error("unexpected-order-response");
@@ -294,6 +333,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
         throw new Error("missing-order-reference");
       }
+      capture.clear();
       const confirmation = buildHoneyOrderConfirmation(result.orderRef, payload);
       writeHoneyOrderConfirmation(window.sessionStorage, confirmation);
       setLocation("/step/sundarbans-natural-honey/thank-you");
@@ -333,6 +373,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
         onFocusCapture={beginCheckout}
+        onInput={updateCapture}
+        onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
@@ -482,6 +524,9 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
             />
             <InlineError id="honey-address" error={errors.address} />
           </div>
+          <p className="text-sm leading-6 text-[#654b2f]">
+            অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
+          </p>
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">

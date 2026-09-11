@@ -255,6 +255,12 @@ export default function CartDrawer() {
                     price: parseCurrencyAmount(item.price),
                     quantity: item.quantity,
                 })),
+            captureItems: items.map((item) => ({
+                productName: item.title,
+                variantName: item.size,
+                quantity: item.quantity,
+                unitPrice: parseCurrencyAmount(item.price),
+            })),
         };
     }, [items]);
 

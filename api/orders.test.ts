@@ -54,6 +54,14 @@ test("normalizes the tracking policy and rejects unknown modes", () => {
   assert.equal(shouldSendMetaPurchase({ trackingMode: "google_only" }), false);
 });
 
+test("accepts an optional checkout draft key only when it is a UUID", () => {
+  assert.equal(
+    validateOrder({ ...validOrder, draftKey: "7CB13B8E-B576-4FAA-B238-CC8B73059772" }).draftKey,
+    "7cb13b8e-b576-4faa-b238-cc8b73059772",
+  );
+  assert.throws(() => validateOrder({ ...validOrder, draftKey: "not-a-draft" }));
+});
+
 test("matches the reviewed bounded validation contract without coercion", () => {
   const accepted = [
     { deliveryCharge: 0 },
@@ -113,6 +121,33 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
     quantity: 3,
     price: 1500,
     delivery_rate: 100,
+  });
+});
+
+test("forwards a validated checkout draft key only through the secret-backed order path", async () => {
+  let outboundBody: unknown;
+  const order = validateOrder({
+    ...validOrder,
+    draftKey: "7cb13b8e-b576-4faa-b238-cc8b73059772",
+  });
+
+  await processOrder(order, {
+    ...dependencies,
+    fetchImpl: async (_input, init) => {
+      outboundBody = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ order_id: "ML-150001" }), { status: 200 });
+    },
+  });
+
+  assert.deepEqual(outboundBody, {
+    customer_name: "Test Customer",
+    phone: "01712345678",
+    address: "House 1 Road 2 Dhaka",
+    product: "Test product - 1 kg",
+    quantity: 3,
+    price: 1500,
+    delivery_rate: 100,
+    abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   });
 });
 

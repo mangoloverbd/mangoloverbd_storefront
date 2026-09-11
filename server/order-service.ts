@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const orderRequestSchema = z.object({
   bundleTitle: z.string().trim().min(1).max(200),
@@ -15,6 +16,7 @@ export const orderRequestSchema = z.object({
   bkashTrxId: z.string().trim().max(80).optional().default(""),
   metaEventId: z.string().trim().max(128).optional(),
   trackingMode: z.enum(["default", "google_only"]).default("default"),
+  draftKey: z.string().trim().regex(UUID_RE, "Draft key must be a UUID").transform((value) => value.toLowerCase()).optional(),
 }).refine(
   (order) => order.paymentMethod !== "bkash" || order.bkashTrxId.length > 0,
   {
@@ -81,7 +83,8 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         product: `${order.bundleTitle} - ${order.bundleDetails}`,
         quantity: order.quantity,
         price: order.bundlePrice,
-        delivery_rate: order.deliveryCharge
+        delivery_rate: order.deliveryCharge,
+        ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(10_000)))(),
     });

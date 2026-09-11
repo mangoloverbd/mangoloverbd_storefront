@@ -8,10 +8,17 @@ import {
   shouldSendMetaPurchase,
   type OrderRequest,
 } from "./order-service.ts";
+import {
+  AbandonedCartUpstreamError,
+  AbandonedCartValidationError,
+  parseAbandonedCartCapture,
+  processAbandonedCartCapture,
+} from "./abandoned-cart-service.ts";
 import { getMetaUserDataFromRequest, sendMetaCapiEvent } from "./meta-capi.ts";
 
 type RouteDependencies = {
   processOrder?: (order: OrderRequest) => Promise<{ orderRef: string }>;
+  processAbandonedCartCapture?: typeof processAbandonedCartCapture;
   getMetaUserDataFromRequest?: typeof getMetaUserDataFromRequest;
   sendMetaCapiEvent?: typeof sendMetaCapiEvent;
 };
@@ -22,6 +29,7 @@ export async function registerRoutes(
   dependencies: RouteDependencies = {},
 ): Promise<Server> {
   const process = dependencies.processOrder ?? processOrder;
+  const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
   const getMetaUserData = dependencies.getMetaUserDataFromRequest ?? getMetaUserDataFromRequest;
   const sendMetaEvent = dependencies.sendMetaCapiEvent ?? sendMetaCapiEvent;
 
@@ -58,6 +66,24 @@ export async function registerRoutes(
 
       res.status(200).json({ ok: true, result });
     } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post("/api/abandoned-carts", async (req, res, next) => {
+    try {
+      const capture = parseAbandonedCartCapture(req.body);
+      await processCapture(capture);
+      res.status(202).json({ ok: true });
+    } catch (error) {
+      if (error instanceof AbandonedCartValidationError) {
+        res.status(400).json({ ok: false, message: "Invalid checkout details" });
+        return;
+      }
+      if (error instanceof AbandonedCartUpstreamError) {
+        res.status(502).json({ ok: false, message: "Could not save checkout details. Please continue with your order." });
+        return;
+      }
       next(error);
     }
   });

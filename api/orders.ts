@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "http";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const WEBHOOK_TIMEOUT_MS = 10_000;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type OrderRequest = {
   bundleTitle: string;
@@ -16,6 +17,7 @@ export type OrderRequest = {
   bkashTrxId?: string;
   metaEventId?: string;
   trackingMode: "default" | "google_only";
+  draftKey?: string;
 };
 
 class OrderValidationError extends Error {
@@ -151,6 +153,12 @@ export function validateOrder(body: unknown): OrderRequest {
     if (metaEventId.length > 128) throw new OrderValidationError();
   }
 
+  let draftKey = "";
+  if (value.draftKey !== undefined) {
+    draftKey = requiredString(value.draftKey, 36, 36).toLowerCase();
+    if (!UUID_RE.test(draftKey)) throw new OrderValidationError();
+  }
+
   return {
     bundleTitle,
     bundleDetails,
@@ -163,6 +171,7 @@ export function validateOrder(body: unknown): OrderRequest {
     paymentMethod,
     ...(bkashTrxId ? { bkashTrxId } : {}),
     ...(metaEventId ? { metaEventId } : {}),
+    ...(draftKey ? { draftKey } : {}),
     trackingMode,
   };
 }
@@ -200,6 +209,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         quantity: order.quantity,
         price: order.bundlePrice,
         delivery_rate: order.deliveryCharge,
+        ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(WEBHOOK_TIMEOUT_MS)))(),
     });
