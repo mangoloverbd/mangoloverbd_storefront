@@ -32,11 +32,6 @@
   border-radius: 8px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   color: #fff;
-  transition: transform 0.25s ease;
-}
-
-.honey-nut-page .honey-nut-order-bar[data-hidden="true"] {
-  transform: translateY(110%);
 }
 
 @media (min-width: 768px) {
@@ -52,9 +47,5 @@
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
-  }
-
-  .honey-nut-page .honey-nut-order-bar {
-    transition: none;
   }
 }

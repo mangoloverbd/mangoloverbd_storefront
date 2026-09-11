@@ -32,21 +32,10 @@
   border-radius: 8px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   color: #fff;
-  transition: transform 0.25s ease;
-}
-
-.kalojira-mixed-page .kalojira-order-bar[data-hidden="true"] {
-  transform: translateY(110%);
 }
 
 @media (min-width: 768px) {
   .kalojira-mixed-page .kalojira-order-bar {
     display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .kalojira-mixed-page .kalojira-order-bar {
-    transition: none;
   }
 }

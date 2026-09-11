@@ -68,10 +68,16 @@ test("campaign chrome mirrors the Sundarbans header and sticky order bar", () =>
   assert.match(layoutSource, /WhatsAppBrandIcon/);
   assert.match(barSource, /WhatsAppBrandIcon/);
   assert.match(barSource, /placement: "sticky_bar"/);
+  assert.match(barSource, /motion\.div/);
+  assert.match(barSource, /useReducedMotion/);
+  assert.match(barSource, /window\.innerHeight \+ window\.scrollY >= documentElement\.scrollHeight - 24/);
+  assert.match(barSource, /const hidden = checkoutVisible \|\| atPageBottom/);
+  assert.match(barSource, /animate=\{\{ y: hidden \? "110%" : 0 \}\}/);
   assert.match(barSource, /h-12 flex-1 rounded-full bg-\[#f5c456\]/);
   assert.match(barSource, /কল করুন/);
   assert.match(campaignCssSource, /background: rgba\(115, 115, 115, 0\.6\)/);
   assert.match(campaignCssSource, /border-radius: 8px/);
+  assert.match(campaignCssSource, /@media \(min-width: 768px\)/);
   assert.match(layoutSource, /Facebook পেজ/);
   assert.match(layoutSource, /fontFamily: "'KaiumSimanto', serif"/);
   assert.match(layoutSource, /bg-\[#0f241c\]/);

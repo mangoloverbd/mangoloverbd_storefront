@@ -1,4 +1,5 @@
 import { Phone } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import { WhatsAppBrandIcon } from "./campaign-layout";
@@ -10,6 +11,8 @@ import { trackHoneyCampaignEvent } from "./tracking";
 
 export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: string) => void }) {
   const [checkoutVisible, setCheckoutVisible] = useState(false);
+  const [atPageBottom, setAtPageBottom] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const target = document.getElementById("honey-checkout");
@@ -21,10 +24,30 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const updateBottomState = () => {
+      const { documentElement } = document;
+      setAtPageBottom(window.innerHeight + window.scrollY >= documentElement.scrollHeight - 24);
+    };
+
+    updateBottomState();
+    window.addEventListener("scroll", updateBottomState, { passive: true });
+    window.addEventListener("resize", updateBottomState);
+    return () => {
+      window.removeEventListener("scroll", updateBottomState);
+      window.removeEventListener("resize", updateBottomState);
+    };
+  }, []);
+
+  const hidden = checkoutVisible || atPageBottom;
+
   return (
-    <div
+    <motion.div
       className="honey-order-bar"
-      data-hidden={checkoutVisible ? "true" : undefined}
+      data-hidden={hidden ? "true" : undefined}
+      initial={false}
+      animate={{ y: hidden ? "110%" : 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
       role="group"
       aria-label="দ্রুত অর্ডার"
     >
@@ -56,6 +79,6 @@ export function MobileOrderBar({ onOrderClick }: { onOrderClick: (placement: str
         <Phone className="h-5 w-5" aria-hidden="true" />
         <span>কল করুন</span>
       </a>
-    </div>
+    </motion.div>
   );
 }
