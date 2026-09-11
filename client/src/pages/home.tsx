@@ -184,7 +184,7 @@ export default function Home() {
           <div className="mb-7 flex items-center justify-between gap-6 md:mb-12">
             <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)]">
               <span>{englishLabel}</span>-
-              <HighlightedWord highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
+              <HighlightedWord className="font-display italic" highlightColor="#FBBB14">{bengaliLabel}</HighlightedWord>
             </h2>
             <Link
               href={`/collection/${collection.slug}`}
@@ -288,9 +288,8 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-center"
           >
-            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]">
-              <span>FEATURED</span>{" "}
-              <HighlightedWord highlightColor="#FBBB14">CATEGORIES</HighlightedWord>
+            <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:leading-none">
+              <HighlightedWord className="font-display italic text-[1.85rem] leading-none md:text-[clamp(1.65rem,4.3vw,2.6rem)]" highlightColor="#FBBB14">আমাদের ক্যাটাগরিসমূহ</HighlightedWord>
             </h2>
           </motion.div>
 
@@ -352,7 +351,11 @@ export default function Home() {
             className="mb-7 flex items-center justify-between gap-2 overflow-visible md:mb-12 md:gap-4"
           >
             <h2 className="font-inter-28pt-semibold text-[clamp(1.5rem,4vw,2.4rem)] leading-[1.1] tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor] md:text-[clamp(1.65rem,4.3vw,2.6rem)] md:leading-none">
-              <span>TOP SELLING</span><br className="md:hidden" />{" "}<HighlightedWord className="ml-1 text-[1.85rem] leading-none md:ml-0 md:text-[clamp(1.65rem,4.3vw,2.6rem)]" highlightColor="#FBBB14">PRODUCTS</HighlightedWord>
+              <span className="block md:inline">BEST SELLERS</span>
+              <span className="hidden md:inline">-</span>
+              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
+                <HighlightedWord className="font-display italic text-[1.85rem] leading-none md:text-[clamp(1.65rem,4.3vw,2.6rem)]" highlightColor="#FBBB14">সবচেয়ে জনপ্রিয়</HighlightedWord>
+              </span>
             </h2>
             <Link
               href="/products"
@@ -404,8 +407,11 @@ export default function Home() {
             <motion.h2
               className="font-inter-28pt-semibold text-[clamp(1.65rem,4.3vw,2.6rem)] leading-none tracking-normal text-black [-webkit-text-stroke:0.25px_currentColor]"
             >
-              <span>LATEST</span>{" "}
-               <HighlightedWord highlightColor="#FFD166">COLLECTION</HighlightedWord>
+              <span className="block md:inline">NEWLY ADDED</span>
+              <span className="hidden md:inline">-</span>
+              <span className="mt-1 block md:ml-1 md:mt-0 md:inline">
+                <HighlightedWord className="font-display italic" highlightColor="#FBBB14">আমাদের নতুন পণ্য</HighlightedWord>
+              </span>
             </motion.h2>
 
             <Link
