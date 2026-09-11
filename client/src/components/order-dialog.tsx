@@ -476,10 +476,6 @@ export default function OrderDialog({
                     />
                   </label>
 
-                  <p className="text-[10px] leading-5 text-black/45">
-                    Incomplete checkout details may be saved for up to 30 days so our team can assist if you need help. No automatic messages are sent.
-                  </p>
-
                   <div className="grid gap-4 md:grid-cols-2">
                   <div className="grid content-start gap-2">
                       <span className="text-[13px] md:text-[14px] font-semibold text-black">
