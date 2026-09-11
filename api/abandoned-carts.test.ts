@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { Readable } from "node:stream";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -95,8 +96,7 @@ test("Vercel handler rejects malformed or oversized captures before forwarding",
 });
 
 test("Vercel handler does not expose an upstream failure or accept another method", async () => {
-  const { AbandonedCartUpstreamError } = await import("../server/abandoned-cart-service.ts");
-  const { createAbandonedCartHandler } = await import("./abandoned-carts.ts");
+  const { AbandonedCartUpstreamError, createAbandonedCartHandler } = await import("./abandoned-carts.ts");
   const handler = createAbandonedCartHandler({
     processCapture: async () => { throw new AbandonedCartUpstreamError(); },
   });
@@ -111,4 +111,62 @@ test("Vercel handler does not expose an upstream failure or accept another metho
   const method = createResponse();
   await handler(createRequest(validCapture, undefined, "GET"), method.response);
   assert.deepEqual(method.read(), { status: 405, body: { ok: false, message: "Method not allowed" } });
+});
+
+test("Vercel capture handler has no runtime dependency on the local Express server", () => {
+  const source = readFileSync(new URL("./abandoned-carts.ts", import.meta.url), "utf8");
+
+  assert.doesNotMatch(source, /from ["']\.\.\/server\//);
+});
+
+test("Vercel parsing matches the local strict capture contract", async () => {
+  const { parseAbandonedCartCapture: parseVercelCapture } = await import("./abandoned-carts.ts");
+  const { parseAbandonedCartCapture: parseLocalCapture } = await import("../server/abandoned-cart-service.ts");
+  const invalidCaptures = [
+    { ...validCapture, unexpected: true },
+    { ...validCapture, sourcePath: "/step/honey-nut" },
+    { ...validCapture, phone: "0181234567" },
+    { ...validCapture, total: 851 },
+    { ...validCapture, items: [{ ...validCapture.items[0], quantity: 101 }] },
+    { ...validCapture, campaign: { notAllowed: "value" } },
+  ];
+
+  const normalizedCapture = {
+    ...validCapture,
+    customerName: " Test Customer ",
+    address: " ",
+    campaign: { utmSource: " facebook ", utmMedium: "" },
+  };
+
+  assert.deepEqual(parseVercelCapture(normalizedCapture), parseLocalCapture(normalizedCapture));
+  for (const capture of invalidCaptures) {
+    assert.throws(() => parseVercelCapture(capture));
+    assert.throws(() => parseLocalCapture(capture));
+  }
+});
+
+test("Vercel forwards only the validated capture using its server-only API key", async () => {
+  const { processAbandonedCartCapture } = await import("./abandoned-carts.ts");
+  let requestUrl = "";
+  let requestInit: RequestInit | undefined;
+
+  await processAbandonedCartCapture(validCapture, {
+    merchantSuiteUrl: "https://suite.invalid",
+    apiKey: "test-api-key",
+    forwardedClientIp: "203.0.113.42",
+    timeoutSignal: () => new AbortController().signal,
+    fetchImpl: async (input, init) => {
+      requestUrl = String(input);
+      requestInit = init;
+      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    },
+  });
+
+  assert.equal(requestUrl, "https://suite.invalid/api/custom-orders/abandoned-checkouts");
+  assert.deepEqual(requestInit?.headers, {
+    "Content-Type": "application/json",
+    "x-api-key": "test-api-key",
+    "x-storefront-client-ip": "203.0.113.42",
+  });
+  assert.deepEqual(JSON.parse(String(requestInit?.body)), { ...validCapture, campaign: {} });
 });

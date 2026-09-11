@@ -33,11 +33,6 @@
       "destination": "/"
     }
   ],
-  "functions": {
-    "api/abandoned-carts.ts": {
-      "includeFiles": "server/abandoned-cart-service.ts"
-    }
-  },
   "headers": [
     {
       "source": "/step/(.*)",
