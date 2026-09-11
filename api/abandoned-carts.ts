@@ -11,8 +11,11 @@ import {
 const MAX_REQUEST_BYTES = 32 * 1024;
 
 class RequestBodyError extends Error {
-  constructor(readonly statusCode: 400 | 413) {
+  readonly statusCode: 400 | 413;
+
+  constructor(statusCode: 400 | 413) {
     super(statusCode === 413 ? "Request body too large" : "Invalid request body");
+    this.statusCode = statusCode;
   }
 }
 
