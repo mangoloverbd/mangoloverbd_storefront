@@ -75,6 +75,16 @@ test("shows quantity before size at every breakpoint", () => {
   assert.ok(quantityIndex < sizeIndex);
 });
 
+test("derives one-size width from the quantity control without changing the multi-size grid", () => {
+  assert.match(productSource, /const quantityControlRef = useRef<HTMLDivElement>\(null\)/);
+  assert.match(productSource, /const \[quantityControlWidth, setQuantityControlWidth\] = useState<number \| null>\(null\)/);
+  assert.match(productSource, /new ResizeObserver/);
+  assert.match(productSource, /ref=\{quantityControlRef\}/);
+  assert.match(productSource, /style=\{bundles\.length === 1 && quantityControlWidth/);
+  assert.match(productSource, /bundles\.length === 1 \? "inline-flex" : "grid grid-cols-2 gap-2"/);
+  assert.match(productSource, /bundles\.length === 1 \? "w-full" : ""/);
+});
+
 test("highlights the বৈশিষ্ট্য label with the existing yellow hand-drawn oval", () => {
   assert.match(
     productSource,
@@ -116,15 +126,15 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
   assert.match(productSource, /<video/);
   assert.match(productSource, /controls=\{activeReelVideo === i\}/);
-  // Only the active slide mounts a <video>, and it never preloads until played, so a
-  // mobile drag moves one cheap layer instead of three decoding video layers.
+  // Only the active slide mounts a <video>, so a mobile drag moves one cheap layer
+  // instead of three decoding video layers.
   assert.match(productSource, /i === currentReel/);
-  assert.match(productSource, /preload="none"/);
+  assert.match(productSource, /preload="metadata"/);
   assert.doesNotMatch(productSource, /autoPlay=/);
   assert.match(productSource, /so_1,w_480,f_auto,q_auto/);
   assert.match(productSource, /Play className/);
   assert.match(productSource, /activeReelVideoRef/);
-  assert.match(productSource, /src=\{honeyNutReelEmbeds \? HONEY_NUT_REEL_POSTERS\[i\] : poster\}[\s\S]*?pointer-events-none/);
+  assert.match(productSource, /src=\{poster\}[\s\S]*?pointer-events-none/);
   assert.match(productSource, /loading="lazy"/);
   assert.doesNotMatch(productSource, /video\.load\(\)/);
   assert.match(productSource, /will-change-transform/);
@@ -141,19 +151,36 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.doesNotMatch(productSource, /wistia-player/);
 });
 
-test("uses the new Cloudinary reels only for Honey Nut", () => {
-  assert.match(productSource, /const HONEY_NUT_REEL_EMBEDS = \[/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__7925/);
-  assert.match(productSource, /snapsave-app_1432224402135483_hd/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__8e09/);
-  assert.match(productSource, /player%5Bshow_logo%5D=false/);
-  assert.match(productSource, /const honeyNutReelEmbeds = slug === "honey-nut" \? HONEY_NUT_REEL_EMBEDS : null/);
-  assert.match(productSource, /honeyNutReelEmbeds\[i\]/);
-  assert.match(productSource, /const HONEY_NUT_REEL_POSTERS = \[/);
+test("uses native Cloudinary reels only for Honey Nut", () => {
+  assert.match(productSource, /const HONEY_NUT_REEL_MEDIA = \[/);
+  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__7925\.mp4/);
+  assert.match(productSource, /snapsave-app_1432224402135483_hd\.mp4/);
+  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__8e09\.mp4/);
+  assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
+  assert.match(productSource, /const honeyNutReelMedia = slug === "honey-nut" \? HONEY_NUT_REEL_MEDIA : null/);
+  assert.match(productSource, /const reelMedia = honeyNutReelMedia \? honeyNutReelMedia : REEL_MEDIA/);
+  assert.match(productSource, /reelMedia\.map\(\(\{ src, poster \}, i\) =>/);
   assert.match(productSource, /video\/upload\/so_1,w_480,f_auto,q_auto/);
-  assert.match(productSource, /honeyNutReelEmbeds \? HONEY_NUT_REEL_POSTERS\[i\] : poster/);
-  assert.match(productSource, /honeyNutReelEmbeds && i !== currentReel/);
-  assert.match(productSource, /allow="autoplay; fullscreen; encrypted-media; picture-in-picture"/);
-  assert.match(productSource, /allowFullScreen/);
+  assert.match(productSource, /poster=\{poster\}/);
   assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden rounded-\[6px\] bg-black"/);
+});
+
+test("navigates reels with arrow keys without hijacking editable controls", () => {
+  assert.match(productSource, /const target = e\.target as HTMLElement \| null/);
+  assert.match(productSource, /target instanceof HTMLInputElement[\s\S]*?target instanceof HTMLTextAreaElement[\s\S]*?target instanceof HTMLSelectElement[\s\S]*?target\?\.isContentEditable/);
+  assert.match(productSource, /e\.preventDefault\(\);\s*goReel\(-1\)/);
+  assert.match(productSource, /e\.preventDefault\(\);\s*goReel\(1\)/);
+});
+
+test("keeps previous and next reel buttons visible on mobile", () => {
+  assert.match(productSource, /className="absolute left-2 top-1\/2 flex -translate-y-1\/2/);
+  assert.match(productSource, /className="absolute right-2 top-1\/2 flex -translate-y-1\/2/);
+  assert.doesNotMatch(productSource, /left-2 top-1\/2 hidden -translate-y-1\/2/);
+  assert.doesNotMatch(productSource, /right-2 top-1\/2 hidden -translate-y-1\/2/);
+});
+
+test("uses the poster while the active native video is loading", () => {
+  assert.match(productSource, /preload="metadata"/);
+  assert.match(productSource, /poster=\{poster\}/);
+  assert.doesNotMatch(productSource, /loadedHoneyNutReel/);
 });
