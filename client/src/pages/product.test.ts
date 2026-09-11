@@ -81,6 +81,7 @@ test("derives one-size width from the quantity control without changing the mult
   assert.match(productSource, /new ResizeObserver/);
   assert.match(productSource, /ref=\{quantityControlRef\}/);
   assert.match(productSource, /style=\{bundles\.length === 1 && quantityControlWidth/);
+  assert.match(productSource, /width: `\$\{quantityControlWidth \+ 7\}px`/);
   assert.match(productSource, /bundles\.length === 1 \? "inline-flex" : "grid grid-cols-2 gap-2"/);
   assert.match(productSource, /bundles\.length === 1 \? "w-full" : ""/);
 });

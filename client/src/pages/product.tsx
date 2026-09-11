@@ -701,7 +701,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </span>
                   <div
                     className={bundles.length === 1 ? "inline-flex" : "grid grid-cols-2 gap-2"}
-                    style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth}px` } : undefined}
+                    style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth + 7}px` } : undefined}
                   >
                     {bundles.map((bundle, idx) => {
                       const selected = selectedBundleIdx === idx;
