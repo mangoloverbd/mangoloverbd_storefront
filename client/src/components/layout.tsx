@@ -349,7 +349,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             exit={{ opacity: 0, y: -18, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 360, damping: 28, mass: 0.7 }}
               onClick={(event) => event.stopPropagation()}
-              className="relative h-full w-full max-w-none overflow-hidden rounded-[12px] bg-white px-5 pb-8 pt-5 md:h-auto md:max-w-xl md:rounded-2xl md:border md:border-black/10 md:p-3 md:shadow-2xl"
+              className="relative h-auto max-h-[70dvh] w-full max-w-none overflow-y-auto rounded-[12px] bg-white px-5 pb-8 pt-5 md:h-auto md:max-h-none md:max-w-xl md:overflow-hidden md:rounded-2xl md:border md:border-black/10 md:p-3 md:shadow-2xl"
             >
               <form onSubmit={submitSearch} className="flex items-center justify-start gap-3 border-b border-black/10 px-0 py-4 md:rounded-xl md:border md:bg-[#fafafa] md:px-4 md:py-3">
                 <SearchIcon className="h-5 w-5 shrink-0 text-black/60" />

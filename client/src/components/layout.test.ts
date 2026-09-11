@@ -33,7 +33,7 @@ test("keeps header cart icons balanced without changing the mobile dock", () => 
 
 test("uses the mobile menu white treatment for the shared search overlay", () => {
   assert.match(layoutSource, /className="fixed inset-0 z-\[100\][^"]*bg-black\/10/);
-  assert.match(layoutSource, /className="relative h-full w-full[^"]*rounded-\[12px\][^"]*bg-white[^"]*md:max-w-xl/);
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*rounded-\[12px\][^"]*bg-white[^"]*md:max-w-xl/);
 });
 
 test("keeps search typing aligned to the left", () => {
@@ -43,7 +43,11 @@ test("keeps search typing aligned to the left", () => {
 
 test("matches the mobile menu inset shell around dock search", () => {
   assert.match(layoutSource, /className="fixed inset-0 z-\[100\][^"]*p-3 sm:p-4/);
-  assert.match(layoutSource, /className="relative h-full w-full[^"]*rounded-\[12px\][^"]*bg-white/);
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*rounded-\[12px\][^"]*bg-white/);
+});
+
+test("keeps the mobile dock search panel compact", () => {
+  assert.match(layoutSource, /className="relative h-auto max-h-\[70dvh\] w-full[^"]*md:h-auto/);
 });
 
 test("reserves desktop width for the logo before category navigation", () => {
