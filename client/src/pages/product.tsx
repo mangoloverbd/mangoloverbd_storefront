@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -121,22 +121,26 @@ const REEL_MEDIA = [
   poster: src.replace("/f_auto,q_auto/", "/so_1,w_480,f_auto,q_auto/").replace(".mp4", ".jpg"),
 }));
 
-const HONEY_NUT_REEL_EMBEDS = [
-  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=FDown.vn_Facebook_Video_Downloader_720p_HD__7925&player%5Bshow_logo%5D=false",
-  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=snapsave-app_1432224402135483_hd&player%5Bshow_logo%5D=false",
-  "https://player.cloudinary.com/embed/?cloud_name=n0d6bs08&public_id=FDown.vn_Facebook_Video_Downloader_720p_HD__8e09&player%5Bshow_logo%5D=false",
-] as const;
-
-const HONEY_NUT_REEL_POSTERS = [
-  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.jpg",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/snapsave-app_1432224402135483_hd.jpg",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.jpg",
+const HONEY_NUT_REEL_MEDIA = [
+  {
+    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.mp4",
+    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.jpg",
+  },
+  {
+    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1432224402135483_hd.mp4",
+    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/snapsave-app_1432224402135483_hd.jpg",
+  },
+  {
+    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.mp4",
+    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.jpg",
+  },
 ] as const;
 
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
-  const honeyNutReelEmbeds = slug === "honey-nut" ? HONEY_NUT_REEL_EMBEDS : null;
-  const reelCount = honeyNutReelEmbeds?.length ?? REEL_MEDIA.length;
+  const honeyNutReelMedia = slug === "honey-nut" ? HONEY_NUT_REEL_MEDIA : null;
+  const reelMedia = honeyNutReelMedia ? honeyNutReelMedia : REEL_MEDIA;
+  const reelCount = reelMedia.length;
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
   const [selectedBundleIdx, setSelectedBundleIdx] = useState(0);
@@ -145,6 +149,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [currentReel, setCurrentReel] = useState(0);
+  const quantityControlRef = useRef<HTMLDivElement>(null);
+  const [quantityControlWidth, setQuantityControlWidth] = useState<number | null>(null);
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
   // decoders to layers that Embla re-transforms every frame, which is what makes the
   // horizontal drag stutter on real phones but not on a desktop localhost.
@@ -166,6 +172,16 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     loop: true,
     skipSnaps: false,
   });
+  useLayoutEffect(() => {
+    const quantityControl = quantityControlRef.current;
+    if (!quantityControl) return;
+    const updateWidth = () => setQuantityControlWidth(quantityControl.getBoundingClientRect().width);
+    updateWidth();
+    if (typeof ResizeObserver === "undefined") return;
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(quantityControl);
+    return () => resizeObserver.disconnect();
+  }, []);
   const goReel = (dir: number) => {
     if (reelApi) {
       if (dir < 0) reelApi.scrollPrev();
@@ -176,8 +192,23 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") goReel(-1);
-      if (e.key === "ArrowRight") goReel(1);
+      const target = e.target as HTMLElement | null;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goReel(-1);
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goReel(1);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -637,7 +668,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                     Quantity
                   </span>
-                  <div className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
+                  <div ref={quantityControlRef} className="inline-flex items-center overflow-hidden rounded-[8px] border border-black/15 bg-white">
                     <button
                       type="button"
                       aria-label="Decrease quantity"
@@ -668,7 +699,10 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <span className="block pb-1 text-[10px] font-bold uppercase tracking-[0.4em] text-black/60">
                     Select Size
                   </span>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div
+                    className={bundles.length === 1 ? "inline-flex" : "grid grid-cols-2 gap-2"}
+                    style={bundles.length === 1 && quantityControlWidth ? { width: `${quantityControlWidth}px` } : undefined}
+                  >
                     {bundles.map((bundle, idx) => {
                       const selected = selectedBundleIdx === idx;
                       return (
@@ -677,7 +711,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           type="button"
                           onClick={() => setSelectedBundleIdx(idx)}
                           aria-pressed={selected}
-                          className={`flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
+                          className={`${bundles.length === 1 ? "w-full" : ""} flex flex-col items-center justify-center rounded-[6px] border-2 px-3 py-1.5 text-center transition-all duration-200 ${
                             selected
                               ? "border-black bg-white text-black"
                               : "border-black/10 bg-white text-black hover:border-black/30"
@@ -947,38 +981,28 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
                     <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
                       <div className="flex will-change-transform gap-0 px-0 md:px-6">
-                        {REEL_MEDIA.map(({ src, poster }, i) => (
+                        {reelMedia.map(({ src, poster }, i) => (
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               {i === currentReel ? (
-                                honeyNutReelEmbeds ? (
-                                  <iframe
-                                    src={honeyNutReelEmbeds[i]}
-                                    title={`Mango Lover BD reel ${i + 1}`}
-                                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                                    allowFullScreen
-                                    frameBorder={0}
-                                    className="h-full w-full border-0 bg-black"
-                                  />
-                                ) : (
-                                  <video
-                                    src={src}
-                                    title={`Mango Lover BD reel ${i + 1}`}
-                                    controls={activeReelVideo === i}
-                                    playsInline
-                                    preload="none"
-                                    onPlay={() => setActiveReelVideo(i)}
-                                    onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
-                                    ref={(video) => {
-                                      activeReelVideoRef.current = video;
-                                    }}
-                                    className="h-full w-full object-contain bg-black"
-                                  />
-                                )
+                                <video
+                                  src={src}
+                                  title={`Mango Lover BD reel ${i + 1}`}
+                                  poster={poster}
+                                  controls={activeReelVideo === i}
+                                  playsInline
+                                  preload="metadata"
+                                  onPlay={() => setActiveReelVideo(i)}
+                                  onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
+                                  ref={(video) => {
+                                    activeReelVideoRef.current = video;
+                                  }}
+                                  className="h-full w-full object-contain bg-black"
+                                />
                               ) : null}
-                              {((honeyNutReelEmbeds && i !== currentReel) || (!honeyNutReelEmbeds && activeReelVideo !== i)) ? (
+                              {activeReelVideo !== i ? (
                                 <img
-                                  src={honeyNutReelEmbeds ? HONEY_NUT_REEL_POSTERS[i] : poster}
+                                  src={poster}
                                   alt=""
                                   aria-hidden="true"
                                   loading="lazy"
@@ -986,7 +1010,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
                                 />
                               ) : null}
-                              {((honeyNutReelEmbeds && i !== currentReel) || (!honeyNutReelEmbeds && activeReelVideo !== i)) ? (
+                              {activeReelVideo !== i ? (
                                 <button
                                   type="button"
                                   aria-label={`Play reel ${i + 1}`}
@@ -1017,7 +1041,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       size="icon"
                       aria-label="Previous reel"
                       onClick={() => goReel(-1)}
-                      className="absolute left-2 top-1/2 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 md:flex"
+                      className="absolute left-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </Button>
@@ -1027,7 +1051,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                       size="icon"
                       aria-label="Next reel"
                       onClick={() => goReel(1)}
-                      className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60 md:flex"
+                      className="absolute right-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
                     >
                       <ChevronRight className="h-5 w-5" />
                     </Button>
