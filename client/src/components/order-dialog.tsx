@@ -3,6 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { OrderProtectionError } from "@/lib/order-protection-errors";
+import { useCheckoutProtectionSignals } from "@/lib/order-protection";
+import { OrderProtectionMessage } from "@/components/order-protection-message";
+import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { createEventId, trackMetaEvent } from "@/lib/meta";
@@ -33,6 +37,7 @@ export type OrderDialogBundle = {
   images: { src: string; alt: string }[];
   analyticsItems?: GoogleAnalyticsItem[];
   captureItems?: AbandonedCartItem[];
+  items?: Array<{ productId: string; variantId: string; quantity: number }>;
 };
 
 function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
@@ -67,6 +72,8 @@ export default function OrderDialog({
   const [orderError, setOrderError] = useState("");
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
+  const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
+  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const formRef = useRef<HTMLFormElement>(null);
@@ -168,6 +175,7 @@ export default function OrderDialog({
     setOrderSubmitting(false);
     setOrderError("");
     setOrderRef("");
+    setProtectionDecision(null);
     setPaymentMethod(null);
   };
 
@@ -221,6 +229,7 @@ export default function OrderDialog({
     flushCapture(event.currentTarget);
     setOrderSubmitting(true);
     setOrderError("");
+    setProtectionDecision(null);
 
     try {
       const response = await apiRequest("POST", "/api/orders", {
@@ -234,9 +243,20 @@ export default function OrderDialog({
          address,
         paymentMethod: selectedPaymentMethod,
         metaEventId: eventId,
+        items: bundle.items,
+        website: String(formData.get("website") || ""),
+        turnstileToken,
+        clientSessionId,
+        checkoutStartedAt,
         ...(draftKey ? { draftKey } : {}),
       });
-      const result = await response.json() as { orderRef?: unknown };
+      const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
+      if (response.status === 202 && result.decision === "review") {
+        setProtectionDecision("review");
+        setOrderError("");
+        capture.clear();
+        return;
+      }
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
         throw new Error("Could not confirm order. Please try again.");
       }
@@ -266,6 +286,11 @@ export default function OrderDialog({
         },
       });
     } catch (error) {
+      if (error instanceof OrderProtectionError) {
+        setProtectionDecision("block");
+        setOrderError("");
+        return;
+      }
       setOrderError(
         error instanceof Error
           ? error.message
@@ -332,6 +357,7 @@ export default function OrderDialog({
                   }}
                   className="flex w-full flex-1 flex-col items-center justify-center px-2 py-12 text-center font-sans md:py-16"
                 >
+                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <motion.span
                     variants={{
                       hidden: { opacity: 0, scaleX: 0 },
@@ -553,6 +579,9 @@ export default function OrderDialog({
                       {orderError}
                     </div>
                   )}
+
+                  {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
+                  <TurnstileChallenge onToken={setTurnstileToken} />
 
                   <div className="bg-black/5 rounded-[12px] p-5">
                     <div className="flex justify-between text-[11px] text-black/60 font-medium">

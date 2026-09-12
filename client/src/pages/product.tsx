@@ -520,6 +520,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           quantity,
           unitPrice: selectedBundle.amount,
         }],
+        items: selectedVariant?.id !== undefined && product.id !== undefined
+          ? [{ productId: String(product.id), variantId: String(selectedVariant.id), quantity }]
+          : undefined,
       } : null;
 
   if (isLoading) {
@@ -757,6 +760,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             price: selectedBundle.price,
                             image: displayImage,
                             analyticsItem: productAnalyticsItem,
+                            productUuid: String(product.id ?? ""),
+                            variantId: String(selectedVariant?.id ?? ""),
                           },
                           selectedBundle.title,
                           quantity,
