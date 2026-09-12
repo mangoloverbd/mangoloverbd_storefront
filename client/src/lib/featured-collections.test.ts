@@ -37,6 +37,7 @@ test("assigns every current product to exactly one collection", () => {
     "kalojira-mixed",
     "honey-nut",
     "chia-seed",
+    "katimon-mango",
     "pure-ghee",
     "sundarbans-natural-honey",
     "black-seed-flower-honey",
@@ -95,6 +96,16 @@ test("assigns both sugarcane products to the visible Jaggery category", () => {
     ]).map(({ slug }) => slug),
     ["jaggery"],
   );
+});
+
+test("makes Fresh Mango visible for Katimon Mango", () => {
+  const freshMango = getFeaturedCollection("fresh-mango");
+  const katimonMango = { slug: "katimon-mango", name: "কাটিমন আম | Katimon Mango" };
+
+  assert.ok(freshMango);
+  assert.equal(freshMango.label, "Fresh Mango-ফ্রেশ আম");
+  assert.deepEqual(getProductsForCollection([katimonMango], freshMango), [katimonMango]);
+  assert.deepEqual(getVisibleFeaturedCollections([katimonMango]).map(({ slug }) => slug), ["fresh-mango"]);
 });
 
 test("filters a catalog by assigned slugs and ignores missing products", () => {
