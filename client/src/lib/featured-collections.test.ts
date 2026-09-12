@@ -12,13 +12,13 @@ import {
 
 test("defines the nine homepage collections", () => {
   assert.deepEqual(FEATURED_COLLECTIONS.map(({ slug }) => slug), [
+    "fresh-mango",
     "homemade",
     "functional-food",
     "honey",
     "oil-and-ghee",
     "jaggery",
     "semai",
-    "fresh-mango",
     "dates",
     "nuts-and-seeds",
   ]);
