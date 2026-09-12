@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.ts";
+import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.js";
 
-export { OrderProtectionError } from "../server/order-protection-errors.ts";
+export { OrderProtectionError } from "../server/order-protection-errors.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const WEBHOOK_TIMEOUT_MS = 10_000;
@@ -292,7 +292,7 @@ async function sendPurchaseCapi(options: {
   total: number;
   headers: Record<string, unknown>;
 }) {
-  const { getMetaUserDataFromRequest, sendMetaCapiEvent } = await import("../server/meta-capi");
+  const { getMetaUserDataFromRequest, sendMetaCapiEvent } = await import("../server/meta-capi.js");
   const user_data = getMetaUserDataFromRequest({
     headers: options.headers,
     customerName: options.order.customerName,
