@@ -9,7 +9,7 @@ export function OrderProtectionMessage({ decision, retryable = true }: { decisio
         href="https://wa.me/8801301636461"
         target="_blank"
         rel="noopener noreferrer"
-        className="group mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#25d366] px-4 text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"
+        className="group mx-auto mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] border border-white/20 bg-[#25d366] px-4 text-center text-[11px] font-medium tracking-[0.02em] text-white shadow-none transition-all hover:-translate-y-0.5 hover:border-white/30 hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"
       >
         <img
           src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
