@@ -287,6 +287,8 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     submittingRef.current = true;
     setIsPending(true);
     setProtectionDecision(null);
+    const protectionFormData = new FormData(event.currentTarget);
+    const website = String(protectionFormData.get("website") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -337,7 +339,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         paymentMethod: "cash_on_delivery" as const,
         trackingMode: "google_only" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
-        website: "",
+        website,
         turnstileToken,
         clientSessionId,
         checkoutStartedAt,
