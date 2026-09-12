@@ -32,6 +32,12 @@ export const TOP_SELLING_COLLECTION = {
 
 export const FEATURED_COLLECTIONS = [
   {
+    slug: "fresh-mango",
+    label: "Fresh Mango-ফ্রেশ আম",
+    image: "/categories/mango-1-320.webp",
+    productSlugs: ["katimon-mango"],
+  },
+  {
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",
@@ -70,12 +76,6 @@ export const FEATURED_COLLECTIONS = [
     label: "Semai-সেমাই",
     image: "/categories/lachcha-1-320.webp",
     productSlugs: ["lachcha-semai"],
-  },
-  {
-    slug: "fresh-mango",
-    label: "Fresh Mango-ফ্রেশ আম",
-    image: "/categories/mango-1-320.webp",
-    productSlugs: ["katimon-mango"],
   },
   {
     slug: "dates",
