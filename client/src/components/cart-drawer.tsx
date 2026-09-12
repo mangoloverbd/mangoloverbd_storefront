@@ -262,6 +262,9 @@ export default function CartDrawer() {
                 quantity: item.quantity,
                 unitPrice: parseCurrencyAmount(item.price),
             })),
+            items: items.every((item) => item.productUuid && item.variantId)
+                ? items.map((item) => ({ productId: item.productUuid!, variantId: item.variantId!, quantity: item.quantity }))
+                : undefined,
         };
     }, [items]);
 
