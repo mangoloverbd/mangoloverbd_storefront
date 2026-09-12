@@ -8,6 +8,7 @@ export type FeaturedCollection = {
 };
 
 export const TOP_SELLING_PRODUCT_SLUGS = [
+  "katimon-mango",
   "honey-nut",
   "sundarbans-natural-honey",
   "kalojira-mixed",
