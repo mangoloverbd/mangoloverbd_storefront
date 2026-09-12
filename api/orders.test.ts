@@ -137,14 +137,9 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
 
   assert.deepEqual(result, { orderRef: "ML-150000", decision: "allow" });
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test product - 1 kg",
-    quantity: 3,
-    price: 1500,
-    delivery_rate: 100,
-    payment_method: "cash_on_delivery",
     notes: "Test product - 1 kg",
   });
 });
@@ -176,20 +171,15 @@ test("posts canonical checkout data to the public handle endpoint", async () => 
   assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test product - 1 kg",
-    quantity: 3,
-    price: 1500,
-    delivery_rate: 100,
     items: canonicalItems,
-    shipping_zone_id: "inside-dhaka",
+    shippingZoneId: "inside-dhaka",
     website: "",
-    turnstile_token: "turnstile-token",
-    client_session_id: "session-123",
-    checkout_started_at: "2026-09-12T10:00:00.000Z",
-    payment_method: "cash_on_delivery",
+    turnstileToken: "turnstile-token",
+    clientSessionId: "session-123",
+    checkoutStartedAt: "2026-09-12T10:00:00.000Z",
     notes: "Test product - 1 kg",
   });
 });
@@ -232,14 +222,9 @@ test("forwards a validated checkout draft key only through the secret-backed ord
   });
 
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test product - 1 kg",
-    quantity: 3,
-    price: 1500,
-    delivery_rate: 100,
-    payment_method: "cash_on_delivery",
     notes: "Test product - 1 kg",
     abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   });

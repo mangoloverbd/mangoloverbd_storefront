@@ -155,15 +155,9 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
 
   assert.deepEqual(result, { orderRef: "ML-150000", decision: "allow" });
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test bundle - Test details",
-    quantity: 2,
-    price: 500,
-    delivery_rate: 100,
-    payment_method: "cash_on_delivery",
-    bkash_trx_id: "",
     notes: "Test bundle - Test details",
   });
   assert.ok(outboundSignal);
@@ -194,8 +188,10 @@ test("uses the public storefront handle endpoint and forwards protection signals
   assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
   assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
+  assert.equal(outboundBody?.customerName, "Test Customer");
   assert.equal((outboundBody?.items as typeof canonicalItems)[0].variantId, canonicalItems[0].variantId);
-  assert.equal(outboundBody?.turnstile_token, "turnstile-token");
+  assert.equal(outboundBody?.shippingZoneId, "inside-dhaka");
+  assert.equal(outboundBody?.turnstileToken, "turnstile-token");
 });
 
 test("keeps a held review as a normal checkout outcome", async () => {
@@ -234,15 +230,9 @@ test("forwards a validated checkout draft key only through the secret-backed ord
   });
 
   assert.deepEqual(outboundBody, {
-    customer_name: "Test Customer",
+    customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
-    product: "Test bundle - Test details",
-    quantity: 2,
-    price: 500,
-    delivery_rate: 100,
-    payment_method: "cash_on_delivery",
-    bkash_trx_id: "",
     notes: "Test bundle - Test details",
     abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   });
