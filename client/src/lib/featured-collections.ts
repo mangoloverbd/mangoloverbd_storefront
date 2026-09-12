@@ -75,7 +75,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "fresh-mango",
     label: "Fresh Mango-ফ্রেশ আম",
     image: "/categories/mango-1-320.webp",
-    productSlugs: [],
+    productSlugs: ["katimon-mango"],
   },
   {
     slug: "dates",
