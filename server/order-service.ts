@@ -59,7 +59,6 @@ export class OrderUpstreamError extends Error {
 type OrderServiceDependencies = {
   fetchImpl?: typeof fetch;
   merchantSuiteUrl?: string;
-  apiKey?: string;
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
 };
@@ -88,7 +87,6 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": dependencies.apiKey ?? process.env.CUSTOM_ORDERS_API_KEY ?? ""
       },
       body: JSON.stringify({
         customer_name: order.customerName,

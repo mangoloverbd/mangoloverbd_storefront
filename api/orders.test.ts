@@ -152,6 +152,7 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
 test("posts canonical checkout data to the public handle endpoint", async () => {
   let outboundUrl = "";
   let outboundBody: Record<string, unknown> | undefined;
+  let outboundHeaders: Record<string, string> | undefined;
   const order = validateOrder({
     ...validOrder,
     items: canonicalItems,
@@ -165,12 +166,14 @@ test("posts canonical checkout data to the public handle endpoint", async () => 
     ...dependencies,
     fetchImpl: async (input, init) => {
       outboundUrl = String(input);
+      outboundHeaders = init?.headers as Record<string, string>;
       outboundBody = JSON.parse(String(init?.body));
       return new Response(JSON.stringify({ orderRef: "ML-150002", decision: "allow" }), { status: 201 });
     },
   });
 
   assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
+  assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
   assert.deepEqual(outboundBody, {
     customer_name: "Test Customer",
