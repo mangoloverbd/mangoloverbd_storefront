@@ -150,10 +150,12 @@ test("orders Top Selling Products with the three hero products first", () => {
     { slug: "seed-mixed", name: "Seed Mixed" },
     { slug: "kalojira-mixed", name: "Kalojira Mixed" },
     { slug: "sundarbans-natural-honey", name: "Sundarbans Natural Honey" },
+    { slug: "katimon-mango", name: "Katimon Mango" },
   ];
   assert.deepEqual(
     getTopSellingProducts(products).slice(0, 6).map(({ slug }) => slug),
     [
+      "katimon-mango",
       "honey-nut",
       "sundarbans-natural-honey",
       "kalojira-mixed",
