@@ -34,6 +34,7 @@ import {
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import { recordRecentlyViewedSlug } from "@/lib/recently-viewed";
+import { getDefaultBundleIndex } from "@/lib/product-selection";
 
 // Use the direct catalog image URL. Vercel's image optimizer currently
 // rejects these Supabase URLs in production (INVALID_IMAGE_OPTIMIZE_REQUEST),
@@ -295,6 +296,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     const base = Number(product?.price) || 0;
     return [{ id: 1, title: "Default", price: `৳${base.toLocaleString()}`, amount: base }];
   })();
+  const bundleSignature = bundles.map((bundle) => bundle.title).join("|");
+  const defaultBundleIdx = getDefaultBundleIndex(slug, bundles);
   const selectedBundle = bundles[selectedBundleIdx] ?? bundles[0];
   const selectedVariant = product?.variants?.find((variant) => {
     const label = String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
@@ -341,9 +344,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [slug]);
 
   useEffect(() => {
-    setSelectedBundleIdx(0);
+    setSelectedBundleIdx(defaultBundleIdx);
     setQuantity(1);
-  }, [slug]);
+    // `bundleSignature` changes when async catalog data arrives, but stays stable
+    // while a shopper explicitly changes the selected bundle.
+  }, [slug, bundleSignature, defaultBundleIdx]);
 
   useEffect(() => {
     const imageUrl = displayImage;

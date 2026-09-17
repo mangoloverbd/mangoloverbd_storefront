@@ -17,6 +17,30 @@ test("returns true when the title is the honey name", () => {
   );
 });
 
+test("returns true for the Litchi Flower Honey slug", () => {
+  assert.equal(
+    bundleHasFreeDeliveryProduct({ title: "anything", productSlug: "litchi-flower-honey" }),
+    true,
+  );
+});
+
+test("returns true when the title is the Litchi Flower Honey name", () => {
+  assert.equal(
+    bundleHasFreeDeliveryProduct({ title: "লিচু ফুলের মধু | Litchi Flower Honey" }),
+    true,
+  );
+});
+
+test("returns true when a cart checkout contains Litchi Flower Honey", () => {
+  assert.equal(
+    bundleHasFreeDeliveryProduct({
+      title: "Cart Checkout",
+      captureItems: [{ productName: "লিচু ফুলের মধু | Litchi Flower Honey", quantity: 1, unitPrice: 700 }],
+    }),
+    true,
+  );
+});
+
 test("returns false for other products", () => {
   assert.equal(
     bundleHasFreeDeliveryProduct({ title: "কালোজিরা মিক্সড | Kalojira Mixed", productSlug: "kalojira-mixed" }),
