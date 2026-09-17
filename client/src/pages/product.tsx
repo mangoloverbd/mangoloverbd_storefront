@@ -495,6 +495,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const orderBundle: OrderDialogBundle | null = product ? {
         title: product.name,
         details: selectedBundle.title,
+        productSlug: product.slug,
+        productId: product.id !== undefined ? String(product.id) : undefined,
         price: selectedBundle.amount * quantity,
         quantity,
         unitPrice: selectedBundle.amount,

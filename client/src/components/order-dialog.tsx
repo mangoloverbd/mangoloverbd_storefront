@@ -10,6 +10,7 @@ import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
+import { bundleHasFreeDeliveryProduct } from "@/lib/free-delivery";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
   Dialog,
@@ -31,6 +32,8 @@ export type OrderDialogBundle = {
   title: string;
   details: string;
   price: number;
+  productId?: string;
+  productSlug?: string;
   quantity?: number;
   unitPrice?: number;
   images: { src: string; alt: string }[];
@@ -79,7 +82,8 @@ export default function OrderDialog({
   const capture = useAbandonedCartCapture("storefront");
   const bundleQuantity = bundle?.quantity ?? 1;
   const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
-  const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold;
+  const hasFreeDeliveryProduct = bundleHasFreeDeliveryProduct(bundle);
+  const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold || hasFreeDeliveryProduct;
 
   const getCaptureSnapshot = (form: HTMLFormElement | null = formRef.current) => {
     if (!bundle || deliveryCharge === null) return null;
@@ -490,7 +494,7 @@ export default function OrderDialog({
                           ৳0
                         </span>
                         <span className="mt-3 block text-[9px] leading-5 text-black/45">
-                          Applied automatically for orders over ৳2600
+                          {hasFreeDeliveryProduct ? "Free delivery on Black Seed Flower Honey" : "Applied automatically for orders over ৳2600"}
                         </span>
                       </div>
                     ) : (
