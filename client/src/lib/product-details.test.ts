@@ -123,6 +123,12 @@ test("curates detailed source content for regular products", () => {
       expected: ["মাষকলাই", "চালকুমড়ো", "হাতে তৈরি", "রোদে শুকানো", "ঘরোয়া স্বাদ"],
       minimumCharacters: 900,
     },
+    {
+      slug: "jhalmuri-moshla",
+      labels: ["বিবরণ", "উপাদানসমূহ", "খাওয়ার সম্ভাব্য উপকারিতা", "খাওয়ার সময় ও নিয়ম", "কেন ম্যাংগো লাভারের?", "সংরক্ষণের নিয়ম"],
+      expected: ["ঝালমুড়ি মসলা", "মরিচের গুঁড়া", "ভাজা জিরা", "বিট লবণ", "মুরাদ পারভেজ"],
+      minimumCharacters: 1500,
+    },
   ];
 
   for (const { slug, labels, expected, minimumCharacters } of cases) {
