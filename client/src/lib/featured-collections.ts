@@ -42,7 +42,7 @@ export const FEATURED_COLLECTIONS = [
     slug: "homemade",
     label: "Homemade-হোমমেড",
     image: "/categories/homemade-3-320.webp",
-    productSlugs: ["amsotto-pickle"],
+    productSlugs: ["amsotto-pickle", "jhalmuri-moshla"],
   },
   {
     slug: "functional-food",

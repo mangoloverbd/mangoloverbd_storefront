@@ -45,6 +45,7 @@ test("assigns every current product to exactly one collection", () => {
     "sugarcane-juice-powder",
     "amsotto-pickle",
     "lachcha-semai",
+    "jhalmuri-moshla",
   ];
 
   assert.equal(new Set(assignments.map(({ productSlug }) => productSlug)).size, assignments.length);
