@@ -41,9 +41,23 @@ test("returns true when a cart checkout contains Litchi Flower Honey", () => {
   );
 });
 
-test("returns false for other products", () => {
+test("returns true for the Kalojira Mixed slug", () => {
+  assert.equal(
+    bundleHasFreeDeliveryProduct({ title: "anything", productSlug: "kalojira-mixed" }),
+    true,
+  );
+});
+
+test("returns true when the title is the Kalojira Mixed name", () => {
   assert.equal(
     bundleHasFreeDeliveryProduct({ title: "কালোজিরা মিক্সড | Kalojira Mixed", productSlug: "kalojira-mixed" }),
+    true,
+  );
+});
+
+test("returns false for other products", () => {
+  assert.equal(
+    bundleHasFreeDeliveryProduct({ title: "Some Other Product", productSlug: "some-other-product" }),
     false,
   );
 });
