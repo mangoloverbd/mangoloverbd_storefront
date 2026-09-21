@@ -12,7 +12,13 @@ const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 // How often the storefront re-checks the Suite for stock/image/price changes.
 // The Suite's inventory feed purges its cache the moment stock changes, so a
 // fresh poll reflects an edit within roughly this window — Shopify-like sync.
-export const STOREFRONT_POLL_INTERVAL_MS = 8000;
+//
+// Listing pages read stock for every card in ONE batched request (see
+// useCatalogInventory), so this interval sets the request rate per open tab,
+// not per product. Checkout re-validates stock server-side and rejects a sale
+// that no longer has inventory, so a stale card is a display lag, never an
+// oversell.
+export const STOREFRONT_POLL_INTERVAL_MS = 30000;
 export const STOREFRONT_CATALOG_QUERY_OPTIONS = {
   staleTime: 0,
   refetchOnMount: "always" as const,
@@ -254,6 +260,29 @@ export type StorefrontProductInventory = {
   inventory: StorefrontInventoryEntry | null;
   as_of: string;
 };
+
+// Stock for many products in one request, keyed by product id. Listing pages
+// use this instead of one /inventory call per card.
+export type StorefrontInventoryMap = Record<string, StorefrontInventoryEntry>;
+
+export const STOREFRONT_INVENTORY_BATCH_LIMIT = 100;
+
+export async function fetchStorefrontInventoryBatch(ids: string[]): Promise<StorefrontInventoryMap> {
+  const requested = ids.filter(Boolean).slice(0, STOREFRONT_INVENTORY_BATCH_LIMIT);
+  if (!requested.length) return {};
+
+  const res = await fetch(
+    `${STOREFRONT_API_BASE}/inventory?ids=${encodeURIComponent(requested.join(","))}`,
+    { headers: STOREFRONT_FETCH_HEADERS },
+  );
+
+  if (!res.ok) {
+    throw new Error("Could not load inventory.");
+  }
+
+  const data = (await res.json()) as { inventory?: StorefrontInventoryMap } | null;
+  return data?.inventory ?? {};
+}
 
 export async function fetchStorefrontProductInventory(slug: string) {
   const res = await fetch(`${STOREFRONT_API_BASE}/products/${encodeURIComponent(slug)}/inventory`, {

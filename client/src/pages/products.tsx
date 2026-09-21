@@ -11,6 +11,7 @@ import {
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { inventoryEntryFor, useCatalogInventory } from "@/lib/use-catalog-inventory";
 
 export default function ProductsPage() {
   const [location] = useLocation();
@@ -24,6 +25,7 @@ export default function ProductsPage() {
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
   const filteredProducts = products ? searchStorefrontProducts(products, searchQuery) : products;
+  const inventory = useCatalogInventory(products ?? []);
 
   return (
     <Layout>
@@ -59,7 +61,7 @@ export default function ProductsPage() {
         {filteredProducts && filteredProducts.length > 0 && (
           <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
             {filteredProducts.map((product: StorefrontProduct, index: number) => (
-              <StorefrontProductCard key={product.slug} product={product} index={index} />
+              <StorefrontProductCard key={product.slug} product={product} index={index} inventory={inventoryEntryFor(inventory, product)} />
             ))}
           </div>
         )}

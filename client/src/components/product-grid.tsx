@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
-  fetchStorefrontProductInventory,
   formatProductPrice,
   formatProductPriceRange,
   getProductImage,
@@ -11,19 +10,15 @@ import {
   mergeInventory,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
+  type StorefrontInventoryEntry,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { inventoryEntryFor, useCatalogInventory } from "@/lib/use-catalog-inventory";
 
-function ProductCard({ p }: { p: StorefrontProduct }) {
+function ProductCard({ p, inventory }: { p: StorefrontProduct; inventory?: StorefrontInventoryEntry | null }) {
   const [, setLocation] = useLocation();
-  const { data: inventory } = useQuery({
-    queryKey: ["merchant-suite-inventory", p.slug],
-    queryFn: () => fetchStorefrontProductInventory(p.slug),
-    enabled: Boolean(p.slug),
-    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
-  });
-  const product = mergeInventory(p, inventory?.inventory) ?? p;
+  const product = mergeInventory(p, inventory) ?? p;
   const image = getProductImage(product);
 
   return (
@@ -88,6 +83,7 @@ export default function ProductGrid() {
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
+  const inventory = useCatalogInventory(products);
 
   return (
     <section className="bg-brand-ivory">
@@ -136,7 +132,7 @@ export default function ProductGrid() {
           "
         >
           {products.map((p) => (
-            <ProductCard key={p.id || p.slug} p={p} />
+            <ProductCard key={p.id || p.slug} p={p} inventory={inventoryEntryFor(inventory, p)} />
           ))}
         </div>
       )}

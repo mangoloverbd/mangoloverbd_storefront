@@ -1,10 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import HomeProductCard from "@/components/home-product-card";
 import {
-  fetchStorefrontProductInventory,
   mergeInventory,
-  STOREFRONT_POLL_INTERVAL_MS,
+  type StorefrontInventoryEntry,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 
@@ -14,20 +12,18 @@ const reveal = {
   visible: { filter: "blur(0)", transform: "translateY(0)", opacity: 1 },
 };
 
+// Stock arrives from the page's single batched inventory read rather than a
+// per-card poll, so a grid costs one request instead of one per product.
 export default function StorefrontProductCard({
   product,
   index,
+  inventory,
 }: {
   product: StorefrontProduct;
   index: number;
+  inventory?: StorefrontInventoryEntry | null;
 }) {
-  const { data: inventory } = useQuery({
-    queryKey: ["merchant-suite-inventory", product.slug],
-    queryFn: () => fetchStorefrontProductInventory(product.slug),
-    enabled: Boolean(product.slug),
-    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
-  });
-  const merged = mergeInventory(product, inventory?.inventory) ?? product;
+  const merged = mergeInventory(product, inventory) ?? product;
 
   return (
     <motion.div
