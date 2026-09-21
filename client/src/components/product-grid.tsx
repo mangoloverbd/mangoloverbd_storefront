@@ -3,28 +3,23 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import {
   fetchStorefrontProducts,
-  fetchStorefrontProductInventory,
   formatProductPrice,
   formatProductPriceRange,
-  getProductImage,
+  getProductImageSet,
   hasPublishedProducts,
   mergeInventory,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
+  type StorefrontInventoryEntry,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
+import { inventoryEntryFor, useCatalogInventory } from "@/lib/use-catalog-inventory";
 
-function ProductCard({ p }: { p: StorefrontProduct }) {
+function ProductCard({ p, inventory }: { p: StorefrontProduct; inventory?: StorefrontInventoryEntry | null }) {
   const [, setLocation] = useLocation();
-  const { data: inventory } = useQuery({
-    queryKey: ["merchant-suite-inventory", p.slug],
-    queryFn: () => fetchStorefrontProductInventory(p.slug),
-    enabled: Boolean(p.slug),
-    refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
-  });
-  const product = mergeInventory(p, inventory?.inventory) ?? p;
-  const image = getProductImage(product);
+  const product = mergeInventory(p, inventory) ?? p;
+  const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
 
   return (
     <motion.div
@@ -41,6 +36,10 @@ function ProductCard({ p }: { p: StorefrontProduct }) {
         {image ? (
           <img
             src={image}
+            srcSet={imageSrcSet}
+            sizes={imageSrcSet ? "(min-width: 1024px) 25vw, 50vw" : undefined}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-contain p-8 mix-blend-multiply transition-transform duration-1000 group-hover:scale-105 md:p-12"
             alt={product.name}
           />
@@ -88,6 +87,7 @@ export default function ProductGrid() {
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
+  const inventory = useCatalogInventory(products);
 
   return (
     <section className="bg-brand-ivory">
@@ -136,7 +136,7 @@ export default function ProductGrid() {
           "
         >
           {products.map((p) => (
-            <ProductCard key={p.id || p.slug} p={p} />
+            <ProductCard key={p.id || p.slug} p={p} inventory={inventoryEntryFor(inventory, p)} />
           ))}
         </div>
       )}

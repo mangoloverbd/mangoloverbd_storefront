@@ -13,6 +13,7 @@ import {
   STOREFRONT_CATALOG_QUERY_OPTIONS,
   STOREFRONT_POLL_INTERVAL_MS,
 } from "@/lib/storefront-products";
+import { inventoryEntryFor, useCatalogInventory } from "@/lib/use-catalog-inventory";
 
 export default function CollectionPage({ params }: { params: { slug: string } }) {
   const collection = getCollection(params.slug);
@@ -24,6 +25,9 @@ export default function CollectionPage({ params }: { params: { slug: string } })
     initialDataUpdatedAt: 0,
     refetchInterval: STOREFRONT_POLL_INTERVAL_MS,
   });
+  // Keyed on the full catalog (not the filtered slice) so /products and every
+  // /collection page share one inventory query instead of one per page.
+  const inventory = useCatalogInventory(products ?? []);
 
   if (!collection) {
     return <NotFound />;
@@ -68,7 +72,7 @@ export default function CollectionPage({ params }: { params: { slug: string } })
         {filteredProducts.length > 0 && (
           <div className="grid grid-cols-2 gap-2 md:gap-4 lg:grid-cols-4">
             {filteredProducts.map((product, index) => (
-              <StorefrontProductCard key={product.slug} product={product} index={index} />
+              <StorefrontProductCard key={product.slug} product={product} index={index} inventory={inventoryEntryFor(inventory, product)} />
             ))}
           </div>
         )}

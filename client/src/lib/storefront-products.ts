@@ -12,7 +12,13 @@ const PRODUCT_CACHE_PREFIX = "merchant-suite-product:";
 // How often the storefront re-checks the Suite for stock/image/price changes.
 // The Suite's inventory feed purges its cache the moment stock changes, so a
 // fresh poll reflects an edit within roughly this window — Shopify-like sync.
-export const STOREFRONT_POLL_INTERVAL_MS = 8000;
+//
+// Listing pages read stock for every card in ONE batched request (see
+// useCatalogInventory), so this interval sets the request rate per open tab,
+// not per product. Checkout re-validates stock server-side and rejects a sale
+// that no longer has inventory, so a stale card is a display lag, never an
+// oversell.
+export const STOREFRONT_POLL_INTERVAL_MS = 30000;
 export const STOREFRONT_CATALOG_QUERY_OPTIONS = {
   staleTime: 0,
   refetchOnMount: "always" as const,
@@ -86,6 +92,77 @@ export function getProductImage(product: Pick<StorefrontProduct, "image_urls" | 
   const [firstImage] = getProductGallery(product);
 
   return firstImage || "";
+}
+
+// ── Responsive images ──────────────────────────────────────────────────────
+// The Suite pre-renders every upload at 320/640/960 and returns them in
+// `images[].sources`. Without a srcSet the browser always takes the 960px file,
+// so a phone showing a 160px-wide card downloads roughly 6x the bytes it needs.
+
+export const PRODUCT_IMAGE_WIDTHS = [320, 640, 960] as const;
+
+export type ProductImageSources = Partial<Record<"320" | "640" | "960", string>>;
+
+export type ProductImageSet = {
+  src: string;
+  srcSet?: string;
+};
+
+function describeImage(image: ProductImage): { url: string; sources?: ProductImageSources } | null {
+  if (typeof image === "string") {
+    return image ? { url: image } : null;
+  }
+
+  const url = image.url || image.src || image.image_url || "";
+  return url ? { url, sources: image.sources } : null;
+}
+
+export function buildProductSrcSet(sources: ProductImageSources | undefined): string | undefined {
+  if (!sources) return undefined;
+
+  const entries = PRODUCT_IMAGE_WIDTHS
+    .map((width) => {
+      const url = sources[String(width) as keyof ProductImageSources];
+      return url ? `${url} ${width}w` : "";
+    })
+    .filter(Boolean);
+
+  // A single candidate tells the browser nothing it doesn't already know.
+  return entries.length > 1 ? entries.join(", ") : undefined;
+}
+
+// Resolves the srcSet for whichever image getProductImage would display, so the
+// two can never disagree about which photo is shown. Products uploaded before
+// the variant backfill simply get no srcSet and keep their original behaviour.
+export function getProductImageSet(
+  product: Pick<StorefrontProduct, "image_urls" | "images" | "image_url">,
+): ProductImageSet {
+  const src = getProductImage(product);
+  if (!src) return { src: "" };
+
+  const match = (product.images ?? [])
+    .map(describeImage)
+    .find((image) => image?.url === src);
+
+  return { src, srcSet: buildProductSrcSet(match?.sources) };
+}
+
+// url -> srcSet, for callers that already hold a flat gallery of URLs (the
+// product detail page) and need the variants for each one.
+export function buildProductSrcSetIndex(
+  product: Pick<StorefrontProduct, "images"> | null | undefined,
+): Record<string, string> {
+  const index: Record<string, string> = {};
+
+  for (const image of product?.images ?? []) {
+    const described = describeImage(image);
+    if (!described) continue;
+
+    const srcSet = buildProductSrcSet(described.sources);
+    if (srcSet) index[described.url] = srcSet;
+  }
+
+  return index;
 }
 
 export function hasPublishedProducts(products: StorefrontProduct[]) {
@@ -254,6 +331,29 @@ export type StorefrontProductInventory = {
   inventory: StorefrontInventoryEntry | null;
   as_of: string;
 };
+
+// Stock for many products in one request, keyed by product id. Listing pages
+// use this instead of one /inventory call per card.
+export type StorefrontInventoryMap = Record<string, StorefrontInventoryEntry>;
+
+export const STOREFRONT_INVENTORY_BATCH_LIMIT = 100;
+
+export async function fetchStorefrontInventoryBatch(ids: string[]): Promise<StorefrontInventoryMap> {
+  const requested = ids.filter(Boolean).slice(0, STOREFRONT_INVENTORY_BATCH_LIMIT);
+  if (!requested.length) return {};
+
+  const res = await fetch(
+    `${STOREFRONT_API_BASE}/inventory?ids=${encodeURIComponent(requested.join(","))}`,
+    { headers: STOREFRONT_FETCH_HEADERS },
+  );
+
+  if (!res.ok) {
+    throw new Error("Could not load inventory.");
+  }
+
+  const data = (await res.json()) as { inventory?: StorefrontInventoryMap } | null;
+  return data?.inventory ?? {};
+}
 
 export async function fetchStorefrontProductInventory(slug: string) {
   const res = await fetch(`${STOREFRONT_API_BASE}/products/${encodeURIComponent(slug)}/inventory`, {
