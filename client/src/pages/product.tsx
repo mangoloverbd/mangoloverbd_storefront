@@ -594,7 +594,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 srcSet={srcSetFor[url]}
                                 sizes={srcSetFor[url] ? "56px" : undefined}
                                 alt={`${product.name} ${idx + 1}`}
-                                loading="lazy"
+                                loading="eager"
                                 decoding="async"
                                 className="h-full w-full object-cover object-center"
                               />
