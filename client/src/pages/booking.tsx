@@ -1,6 +1,8 @@
 import Layout from "@/components/layout";
 import BookingForm from "@/components/booking-form";
-import studioImage from "@assets/image_1768632360954.png";
+import studioImage640 from "@assets/booking-studio-640.webp";
+import studioImage1280 from "@assets/booking-studio-1280.webp";
+import studioImage1638 from "@assets/booking-studio-1638.webp";
 
 export default function BookingPage() {
   return (
@@ -26,9 +28,14 @@ export default function BookingPage() {
           {/* Right Column: Image and Details */}
           <div className="lg:col-span-5 flex flex-col min-h-[70vh] lg:min-h-0">
             <div className="flex-grow relative overflow-hidden group border-b border-black">
-              <img 
-                src={studioImage} 
-                alt="Studio Atmosphere" 
+              <img
+                src={studioImage1280}
+                srcSet={`${studioImage640} 640w, ${studioImage1280} 1280w, ${studioImage1638} 1638w`}
+                sizes="(min-width: 1024px) 42vw, 100vw"
+                width={1638}
+                height={2048}
+                decoding="async"
+                alt="Studio Atmosphere"
                 className="absolute inset-0 w-full h-full object-cover grayscale transition-all duration-1000 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/5"></div>
