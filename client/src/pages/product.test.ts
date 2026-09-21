@@ -47,6 +47,23 @@ test("does not mark a live product unavailable while inventory is still loading"
   assert.match(productSource, /const inventoryUnavailable = merchantInventory\?\.inventory \? !isProductOrderable\(product\) : false/);
 });
 
+test("loads visible product thumbnails eagerly while keeping the desktop gallery lazy", () => {
+  const thumbnailStackStart = productSource.indexOf('className="absolute left-2 top-1/2 z-20');
+  const desktopGalleryStart = productSource.indexOf("{/* Desktop: Pinterest style");
+
+  assert.notEqual(thumbnailStackStart, -1);
+  assert.notEqual(desktopGalleryStart, -1);
+
+  const thumbnailStack = productSource.slice(thumbnailStackStart, desktopGalleryStart);
+  const desktopGallery = productSource.slice(desktopGalleryStart);
+
+  assert.match(thumbnailStack, /sizes=\{srcSetFor\[url\] \? "56px" : undefined\}/);
+  assert.match(thumbnailStack, /loading="eager"/);
+  assert.match(thumbnailStack, /decoding="async"/);
+  assert.doesNotMatch(thumbnailStack, /loading="lazy"/);
+  assert.match(desktopGallery, /loading="lazy"/);
+});
+
 test("only clears stale product data after the Merchant Suite confirms a 404", () => {
   assert.match(productSource, /isFetchedAfterMount, isSuccess/);
   assert.match(productSource, /const productMissingFromMerchant = isFetchedAfterMount && isSuccess && merchantProduct === null/);
