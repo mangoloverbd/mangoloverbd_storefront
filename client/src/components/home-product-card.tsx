@@ -4,10 +4,14 @@ import { Link } from "wouter";
 import { useCart } from "@/contexts/cart-context";
 import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
-  getProductImage,
+  getProductImageSet,
   getProductNumericId,
   type StorefrontProduct,
 } from "@/lib/storefront-products";
+
+// Two columns on phones, three from md, four from lg — matches the grids this
+// card is rendered in so the browser can pick the smallest sufficient variant.
+const CARD_IMAGE_SIZES = "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
 
 type HomeProductCardProps = {
   product: StorefrontProduct;
@@ -27,7 +31,7 @@ function formatCardAmount(value: unknown) {
 
 export default function HomeProductCard({ product, className = "" }: HomeProductCardProps) {
   const { addToCart } = useCart();
-  const image = getProductImage(product);
+  const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
   const firstVariant = product.variants?.[0];
   const currentPrice = Number(firstVariant?.price ?? product.price);
   const compareAtPrice = Number(product.compare_at_price);
@@ -44,8 +48,11 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
           {image ? (
             <img
               src={image}
+              srcSet={imageSrcSet}
+              sizes={imageSrcSet ? CARD_IMAGE_SIZES : undefined}
               alt={product.name}
               loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             />
           ) : (

@@ -21,6 +21,7 @@ import {
   findGeneratedStorefrontProduct,
   formatProductPrice,
   getCachedStorefrontProduct,
+  buildProductSrcSetIndex,
   getProductGallery,
   getProductImage,
   getProductNumericId,
@@ -319,6 +320,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const gallery = product ? getProductGallery(product) : [];
   const displayImage = (product ? getProductImage(product) : "") || productImage;
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
+  const srcSetFor = buildProductSrcSetIndex(product);
   const isLoading = !merchantAvailabilityKnown && !cachedProduct && !generatedProduct;
   const compareAtAmount = Number(product?.compare_at_price);
   const detailSections = getProductDetailSections(product);
@@ -587,7 +589,15 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                 activeImage === idx ? "border-black opacity-100" : "border-white/70 opacity-70 hover:opacity-100"
                               }`}
                             >
-                              <img src={url} alt={`${product.name} ${idx + 1}`} className="h-full w-full object-cover object-center" />
+                              <img
+                                src={url}
+                                srcSet={srcSetFor[url]}
+                                sizes={srcSetFor[url] ? "56px" : undefined}
+                                alt={`${product.name} ${idx + 1}`}
+                                loading="lazy"
+                                decoding="async"
+                                className="h-full w-full object-cover object-center"
+                              />
                             </button>
                           ))}
                         </div>
@@ -620,10 +630,13 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           <div key={url} className="overflow-hidden rounded-[8px] bg-[#f6f6f6]">
                             <img
                               src={url}
+                              srcSet={srcSetFor[url]}
+                              sizes={srcSetFor[url] ? "540px" : undefined}
                               alt={`${product.name} ${idx + 2}`}
                               width={540}
                               height={540}
                               loading="lazy"
+                              decoding="async"
                               className="h-auto w-full object-cover object-center transition-transform duration-500 hover:scale-[1.02]"
                             />
                           </div>

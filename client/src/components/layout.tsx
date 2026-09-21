@@ -11,9 +11,10 @@ import CartDrawer from "@/components/cart-drawer";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
 import {
   fetchStorefrontProducts,
-  getProductImage,
+  getProductImageSet,
   searchStorefrontProducts,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
+  type StorefrontProduct,
 } from "@/lib/storefront-products";
 import { generatedStorefrontProducts } from "@/lib/generated-storefront-products";
 import { getVisibleFeaturedCollections } from "@/lib/featured-collections";
@@ -111,6 +112,25 @@ const pad = (value: number) => value.toString().padStart(2, "0");
 
 // Wall-clock time in Bangladesh whatever timezone the visitor is in, so the
 // footer clock follows the shop's own day.
+// A 40px search suggestion thumbnail was pulling the 960px original; `sizes`
+// lets the browser take the 320px variant instead.
+function SuggestionThumbnail({ product }: { product: StorefrontProduct }) {
+  const { src, srcSet } = getProductImageSet(product);
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      srcSet={srcSet}
+      sizes={srcSet ? "40px" : undefined}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      className="h-full w-full object-cover"
+    />
+  );
+}
+
 function dhakaClock(now: Date) {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: DHAKA_TIME_ZONE,
@@ -375,9 +395,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     >
                       <span className="flex min-w-0 items-center gap-3">
                         <span className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-black/5">
-                          {getProductImage(product) ? (
-                            <img src={getProductImage(product)} alt="" className="h-full w-full object-cover" />
-                          ) : null}
+                          <SuggestionThumbnail product={product} />
                         </span>
                         <span className="truncate">{product.name}</span>
                       </span>

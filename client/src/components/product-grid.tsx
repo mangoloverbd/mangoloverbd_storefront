@@ -5,7 +5,7 @@ import {
   fetchStorefrontProducts,
   formatProductPrice,
   formatProductPriceRange,
-  getProductImage,
+  getProductImageSet,
   hasPublishedProducts,
   mergeInventory,
   STOREFRONT_CATALOG_QUERY_OPTIONS,
@@ -19,7 +19,7 @@ import { inventoryEntryFor, useCatalogInventory } from "@/lib/use-catalog-invent
 function ProductCard({ p, inventory }: { p: StorefrontProduct; inventory?: StorefrontInventoryEntry | null }) {
   const [, setLocation] = useLocation();
   const product = mergeInventory(p, inventory) ?? p;
-  const image = getProductImage(product);
+  const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
 
   return (
     <motion.div
@@ -36,6 +36,10 @@ function ProductCard({ p, inventory }: { p: StorefrontProduct; inventory?: Store
         {image ? (
           <img
             src={image}
+            srcSet={imageSrcSet}
+            sizes={imageSrcSet ? "(min-width: 1024px) 25vw, 50vw" : undefined}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-contain p-8 mix-blend-multiply transition-transform duration-1000 group-hover:scale-105 md:p-12"
             alt={product.name}
           />

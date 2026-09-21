@@ -94,6 +94,77 @@ export function getProductImage(product: Pick<StorefrontProduct, "image_urls" | 
   return firstImage || "";
 }
 
+// ── Responsive images ──────────────────────────────────────────────────────
+// The Suite pre-renders every upload at 320/640/960 and returns them in
+// `images[].sources`. Without a srcSet the browser always takes the 960px file,
+// so a phone showing a 160px-wide card downloads roughly 6x the bytes it needs.
+
+export const PRODUCT_IMAGE_WIDTHS = [320, 640, 960] as const;
+
+export type ProductImageSources = Partial<Record<"320" | "640" | "960", string>>;
+
+export type ProductImageSet = {
+  src: string;
+  srcSet?: string;
+};
+
+function describeImage(image: ProductImage): { url: string; sources?: ProductImageSources } | null {
+  if (typeof image === "string") {
+    return image ? { url: image } : null;
+  }
+
+  const url = image.url || image.src || image.image_url || "";
+  return url ? { url, sources: image.sources } : null;
+}
+
+export function buildProductSrcSet(sources: ProductImageSources | undefined): string | undefined {
+  if (!sources) return undefined;
+
+  const entries = PRODUCT_IMAGE_WIDTHS
+    .map((width) => {
+      const url = sources[String(width) as keyof ProductImageSources];
+      return url ? `${url} ${width}w` : "";
+    })
+    .filter(Boolean);
+
+  // A single candidate tells the browser nothing it doesn't already know.
+  return entries.length > 1 ? entries.join(", ") : undefined;
+}
+
+// Resolves the srcSet for whichever image getProductImage would display, so the
+// two can never disagree about which photo is shown. Products uploaded before
+// the variant backfill simply get no srcSet and keep their original behaviour.
+export function getProductImageSet(
+  product: Pick<StorefrontProduct, "image_urls" | "images" | "image_url">,
+): ProductImageSet {
+  const src = getProductImage(product);
+  if (!src) return { src: "" };
+
+  const match = (product.images ?? [])
+    .map(describeImage)
+    .find((image) => image?.url === src);
+
+  return { src, srcSet: buildProductSrcSet(match?.sources) };
+}
+
+// url -> srcSet, for callers that already hold a flat gallery of URLs (the
+// product detail page) and need the variants for each one.
+export function buildProductSrcSetIndex(
+  product: Pick<StorefrontProduct, "images"> | null | undefined,
+): Record<string, string> {
+  const index: Record<string, string> = {};
+
+  for (const image of product?.images ?? []) {
+    const described = describeImage(image);
+    if (!described) continue;
+
+    const srcSet = buildProductSrcSet(described.sources);
+    if (srcSet) index[described.url] = srcSet;
+  }
+
+  return index;
+}
+
 export function hasPublishedProducts(products: StorefrontProduct[]) {
   return products.length > 0;
 }
