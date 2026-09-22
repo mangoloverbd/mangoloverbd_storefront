@@ -5,7 +5,9 @@ import { test } from "node:test";
 const cartDrawerSource = readFileSync(new URL("./cart-drawer.tsx", import.meta.url), "utf8");
 
 test("keeps the cart drawer English-only", () => {
-  assert.doesNotMatch(cartDrawerSource, /[\u0980-\u09FF]/);
+  // The taka sign (U+09F3) is allowed: it is currency, not Bengali copy.
+  const copySource = cartDrawerSource.replace(/\u09F3/g, "");
+  assert.doesNotMatch(copySource, /[\u0980-\u09F2]/);
   assert.match(cartDrawerSource, /Your Cart/);
   assert.match(cartDrawerSource, /Your cart is empty/);
   assert.match(cartDrawerSource, /Proceed to Checkout/);
@@ -22,4 +24,9 @@ test("renders the empty-cart Continue Shopping action as an underlined text cont
   assert.notEqual(emptyCartAction, "");
   assert.match(emptyCartAction, /variant="ghost"/);
   assert.match(emptyCartAction, /className="[^"]*rounded-none[^"]*border-0[^"]*border-b border-black/);
+});
+
+test("shows the subtotal with the taka sign, not the BDT code", () => {
+  assert.match(cartDrawerSource, /toLocaleString\("en-US"\)\}/);
+  assert.doesNotMatch(cartDrawerSource, /BDT \{subtotal/);
 });

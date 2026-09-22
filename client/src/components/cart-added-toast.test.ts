@@ -12,9 +12,10 @@ test("the toast announces the addition without blocking the page", () => {
   assert.match(toastSource, /<AnimatePresence>/);
   assert.match(toastSource, /NOTICE_DURATION_MS = 3500/);
   assert.doesNotMatch(toastSource, /fixed inset-0/);
-  // Translucent black capsule, matching the frosted-glass dock and overlays.
-  assert.match(toastSource, /rounded-full bg-black\/80/);
-  assert.match(toastSource, /backdrop-blur-md/);
+  // Pure black capsule, no blur: maximum contrast behind white text.
+  assert.match(toastSource, /rounded-full bg-black py-2/);
+  assert.doesNotMatch(toastSource, /bg-black\//);
+  assert.doesNotMatch(toastSource, /backdrop-blur-md/);
   assert.doesNotMatch(toastSource, /rounded-full bg-\[#163B33\]/);
 });
 
