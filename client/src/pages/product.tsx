@@ -304,6 +304,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     const label = String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
     return label === selectedBundle.title;
   }) || null;
+  // Checkout identifies what was bought by these two ids; the Suite rejects an
+  // order without them. Resolve them once so the buttons, the cart row and the
+  // order payload can never disagree about whether this product is sellable.
+  const canonicalProductId = product?.id != null ? String(product.id) : "";
+  const canonicalVariantId = selectedVariant?.id != null ? String(selectedVariant.id) : "";
+  const checkoutIdsResolved = Boolean(canonicalProductId) && Boolean(canonicalVariantId);
   const productAnalyticsItem = useMemo(() => toGoogleAnalyticsItem({
     id: selectedVariant?.id ?? product?.id ?? product?.slug ?? slug,
     name: product?.name ?? slug,
@@ -316,7 +322,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   const merchantProductUnavailable = productMissingFromMerchant || merchantProduct?.available === false;
   const inventoryUnavailable = merchantInventory?.inventory ? !isProductOrderable(product) : false;
   const merchantUnavailable = merchantProductUnavailable || inventoryUnavailable;
-  const isUnavailable = availabilityBlocked || merchantUnavailable;
+  const isUnavailable = availabilityBlocked || merchantUnavailable || !checkoutIdsResolved;
   const gallery = product ? getProductGallery(product) : [];
   const displayImage = (product ? getProductImage(product) : "") || productImage;
   const displayGallery = gallery.length ? gallery : [displayImage].filter(Boolean);
@@ -515,8 +521,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
           quantity,
           unitPrice: selectedBundle.amount,
         }],
-        items: selectedVariant?.id !== undefined && product.id !== undefined
-          ? [{ productId: String(product.id), variantId: String(selectedVariant.id), quantity }]
+        items: checkoutIdsResolved
+          ? [{ productId: canonicalProductId, variantId: canonicalVariantId, quantity }]
           : undefined,
       } : null;
 
@@ -766,8 +772,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                             price: selectedBundle.price,
                             image: displayImage,
                             analyticsItem: productAnalyticsItem,
-                            productUuid: String(product.id ?? ""),
-                            variantId: String(selectedVariant?.id ?? ""),
+                            productUuid: canonicalProductId,
+                            variantId: canonicalVariantId,
                           },
                           selectedBundle.title,
                           quantity,

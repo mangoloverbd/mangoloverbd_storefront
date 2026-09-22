@@ -13,5 +13,9 @@ test("uses one styled product card across all homepage catalog sections", () => 
   assert.match(cardSource, /compareAtPrice/);
   assert.match(cardSource, /Add to Cart/);
   assert.match(cardSource, /addToCart/);
-  assert.match(cardSource, /disabled=\{product\.available === false\}/);
+  // The button is disabled when the product is unavailable and also when the
+  // card cannot resolve the ids checkout needs, so it can never add an item
+  // the Suite would reject.
+  assert.match(cardSource, /disabled=\{!canAddToCart\}/);
+  assert.match(cardSource, /product\.available !== false && Boolean\(productUuid\) && Boolean\(variantId\)/);
 });

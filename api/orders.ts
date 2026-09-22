@@ -25,7 +25,10 @@ export type OrderRequest = {
   clientSessionId?: string;
   checkoutStartedAt?: string;
   landingPagePath?: string;
-  items?: Array<{ productId: string; variantId: string; quantity: number }>;
+  // Required: the Suite rejects an order with no line items, and a rejection
+  // reaches the customer as a bare "could not confirm order". Refusing the
+  // payload here turns a silent checkout failure into a visible one.
+  items: Array<{ productId: string; variantId: string; quantity: number }>;
   shippingZoneId?: string;
 };
 
@@ -170,20 +173,17 @@ export function validateOrder(body: unknown): OrderRequest {
     if (!landingPagePath) throw new OrderValidationError();
   }
 
-  let items: OrderRequest["items"];
-  if (value.items !== undefined) {
-    if (!Array.isArray(value.items) || value.items.length < 1 || value.items.length > 50) throw new OrderValidationError();
-    items = value.items.map((item) => {
-      if (!item || typeof item !== "object" || Array.isArray(item)) throw new OrderValidationError();
-      const candidate = item as Record<string, unknown>;
-      if (typeof candidate.productId !== "string" || candidate.productId.trim().length < 1 || candidate.productId.length > 120
-        || typeof candidate.variantId !== "string" || candidate.variantId.trim().length < 1 || candidate.variantId.length > 120
-        || typeof candidate.quantity !== "number" || !Number.isSafeInteger(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 100) {
-        throw new OrderValidationError();
-      }
-      return { productId: candidate.productId.trim(), variantId: candidate.variantId.trim(), quantity: candidate.quantity };
-    });
-  }
+  if (!Array.isArray(value.items) || value.items.length < 1 || value.items.length > 50) throw new OrderValidationError();
+  const items: OrderRequest["items"] = value.items.map((item) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) throw new OrderValidationError();
+    const candidate = item as Record<string, unknown>;
+    if (typeof candidate.productId !== "string" || candidate.productId.trim().length < 1 || candidate.productId.length > 120
+      || typeof candidate.variantId !== "string" || candidate.variantId.trim().length < 1 || candidate.variantId.length > 120
+      || typeof candidate.quantity !== "number" || !Number.isSafeInteger(candidate.quantity) || candidate.quantity < 1 || candidate.quantity > 100) {
+      throw new OrderValidationError();
+    }
+    return { productId: candidate.productId.trim(), variantId: candidate.variantId.trim(), quantity: candidate.quantity };
+  });
   const shippingZoneId = optionalString("shippingZoneId", 120);
 
   return {
@@ -203,7 +203,7 @@ export function validateOrder(body: unknown): OrderRequest {
     ...(clientSessionId !== undefined ? { clientSessionId } : {}),
     ...(checkoutStartedAt !== undefined ? { checkoutStartedAt } : {}),
     ...(landingPagePath ? { landingPagePath } : {}),
-    ...(items ? { items } : {}),
+    items,
     ...(shippingZoneId !== undefined ? { shippingZoneId } : {}),
   };
 }

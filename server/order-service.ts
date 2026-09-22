@@ -28,11 +28,14 @@ export const orderRequestSchema = z.object({
     if (!normalized) throw new Error("Invalid landing page path");
     return normalized;
   }).optional(),
+  // Required: the Suite rejects an order with no line items, and a rejection
+  // reaches the customer as a bare "could not confirm order". Refusing the
+  // payload here turns a silent checkout failure into a visible one.
   items: z.array(z.object({
     productId: z.string().trim().min(1).max(120),
     variantId: z.string().trim().min(1).max(120),
     quantity: z.number().int().min(1).max(100).refine(Number.isSafeInteger),
-  })).min(1).max(50).optional(),
+  })).min(1).max(50),
   shippingZoneId: z.string().trim().min(1).max(120).optional(),
 }).refine(
   (order) => order.paymentMethod !== "bkash" || order.bkashTrxId.length > 0,

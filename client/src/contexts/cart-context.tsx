@@ -5,8 +5,11 @@ import { trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/googl
 export interface CartItem {
     id: string;
     productId: number;
-    productUuid?: string;
-    variantId?: string;
+    // Canonical Suite ids. Checkout posts these as the order's line items and
+    // the Suite rejects an order without them, so they are required: an item
+    // the cart cannot identify is an item the cart cannot sell.
+    productUuid: string;
+    variantId: string;
     title: string;
     price: string;
     image: string;
@@ -15,9 +18,29 @@ export interface CartItem {
     analyticsItem?: GoogleAnalyticsItem;
 }
 
+export type AddToCartProduct = {
+    id: number;
+    title: string;
+    price: string;
+    image: string;
+    productUuid: string;
+    variantId: string;
+    analyticsItem?: GoogleAnalyticsItem;
+};
+
+// Carts saved before the ids were persisted deserialize without them. Such a
+// row can never be checked out, so drop it on load instead of leaving a
+// customer with a cart that fails every time they press Confirm Order.
+function isOrderableCartItem(value: unknown): value is CartItem {
+    if (!value || typeof value !== 'object') return false;
+    const item = value as Partial<CartItem>;
+    return typeof item.productUuid === 'string' && item.productUuid.length > 0
+        && typeof item.variantId === 'string' && item.variantId.length > 0;
+}
+
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string }, size: string, quantity?: number) => void;
+    addToCart: (product: AddToCartProduct, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, quantity: number) => void;
     clearCart: () => void;
@@ -37,7 +60,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const savedCart = localStorage.getItem('mango-lover-cart') ?? localStorage.getItem('stepprs-cart');
         if (savedCart) {
             try {
-                setItems(JSON.parse(savedCart));
+                const parsed: unknown = JSON.parse(savedCart);
+                setItems(Array.isArray(parsed) ? parsed.filter(isOrderableCartItem) : []);
             } catch (e) {
                 console.error('Failed to parse cart from localStorage', e);
             }
@@ -51,7 +75,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }, [items]);
 
     const addToCart = (
-        product: { id: number; title: string; price: string; image: string; analyticsItem?: GoogleAnalyticsItem; productUuid?: string; variantId?: string },
+        product: AddToCartProduct,
         size: string,
         quantity: number = 1
     ) => {
@@ -74,6 +98,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                     {
                         id: itemId,
                         productId: product.id,
+                        productUuid: product.productUuid,
+                        variantId: product.variantId,
                         title: product.title,
                         price: product.price,
                         image: product.image,

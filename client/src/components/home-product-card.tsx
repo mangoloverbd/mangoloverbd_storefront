@@ -29,10 +29,31 @@ function formatCardAmount(value: unknown) {
   return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
 }
 
+function isVariantInStock(variant: NonNullable<StorefrontProduct["variants"]>[number]) {
+  if (variant.available === false) return false;
+  return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
+}
+
+// Same label the product page shows for a variant, so a card add and a product
+// page add of the same variant collapse into one cart row.
+function getVariantLabel(variant: NonNullable<StorefrontProduct["variants"]>[number] | undefined) {
+  if (!variant) return "Default";
+  return String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
+}
+
 export default function HomeProductCard({ product, className = "" }: HomeProductCardProps) {
   const { addToCart } = useCart();
   const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
-  const firstVariant = product.variants?.[0];
+  // The card sells whichever variant it prices, so one variant drives both.
+  // Prefer an in-stock one; fall back to the first so the price still renders
+  // for a product whose whole range is sold out.
+  const firstVariant = product.variants?.find(isVariantInStock) ?? product.variants?.[0];
+  const variantLabel = getVariantLabel(firstVariant);
+  const variantId = firstVariant?.id != null ? String(firstVariant.id) : "";
+  const productUuid = product.id != null ? String(product.id) : "";
+  // Checkout posts product + variant ids to the Suite, which rejects an order
+  // without them. No ids means no sale, so don't offer the button.
+  const canAddToCart = product.available !== false && Boolean(productUuid) && Boolean(variantId);
   const currentPrice = Number(firstVariant?.price ?? product.price);
   const compareAtPrice = Number(product.compare_at_price);
   const hasDiscount = Number.isFinite(currentPrice) && Number.isFinite(compareAtPrice) && compareAtPrice > currentPrice;
@@ -90,25 +111,27 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
       </Link>
       <button
         type="button"
-        disabled={product.available === false}
+        disabled={!canAddToCart}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
           addToCart(
             {
               id: getProductNumericId(product),
-              title: product.name,
+              title: `${product.name} (${variantLabel})`,
               price: formatCardAmount(currentPrice),
               image,
+              productUuid,
+              variantId,
               analyticsItem: toGoogleAnalyticsItem({
                 id: product.id ?? product.slug,
                 name: product.name,
-                variant: "Default",
+                variant: variantLabel,
                 price: currentPrice,
                 quantity: 1,
               }),
             },
-            "Default",
+            variantLabel,
           );
         }}
         className="mt-auto w-full border border-black/15 bg-[#FBBB14] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
