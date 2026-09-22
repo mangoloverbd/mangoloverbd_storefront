@@ -82,6 +82,31 @@
   @apply border-border;
 }
 
+/* Add-to-cart toast progress: shrinks over NOTICE_DURATION_MS (3.5s) in
+   cart-added-toast.tsx. Paused via inline animationPlayState on hover/focus. */
+@keyframes cart-toast-progress {
+  from { width: calc(100% - 3rem); }
+  to { width: 0; }
+}
+.cart-toast-progress {
+  animation: cart-toast-progress 3.5s linear forwards;
+}
+/* One-shot pulse on the mobile dock cart after a toast auto-dismisses. */
+@keyframes cart-dock-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.cart-dock-pulse {
+  animation: cart-dock-pulse 0.55s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-toast-progress,
+  .cart-dock-pulse {
+    animation: none;
+  }
+}
+
 .katimon-hero-button {
   position: relative;
   border: none;
