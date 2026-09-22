@@ -3,6 +3,7 @@ import { Link } from "wouter";
 
 import { useCart } from "@/contexts/cart-context";
 import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
+import { getDefaultBundleIndex } from "@/lib/product-selection";
 import {
   getProductImageSet,
   getProductNumericId,
@@ -41,13 +42,24 @@ function getVariantLabel(variant: NonNullable<StorefrontProduct["variants"]>[num
   return String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
 }
 
+// The variant the product page preselects: in-stock options in catalog order,
+// then the per-slug preference. Sharing getDefaultBundleIndex keeps the card
+// price and the product page's opening price from drifting apart.
+function selectDefaultVariant(product: StorefrontProduct) {
+  const inStock = product.variants?.filter(isVariantInStock) ?? [];
+  if (!inStock.length) return undefined;
+  return inStock[getDefaultBundleIndex(product.slug, inStock.map((variant) => ({ title: getVariantLabel(variant) })))];
+}
+
 export default function HomeProductCard({ product, className = "" }: HomeProductCardProps) {
   const { addToCart } = useCart();
   const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
   // The card sells whichever variant it prices, so one variant drives both.
-  // Prefer an in-stock one; fall back to the first so the price still renders
-  // for a product whose whole range is sold out.
-  const firstVariant = product.variants?.find(isVariantInStock) ?? product.variants?.[0];
+  // It resolves that variant exactly as the product page does — in-stock
+  // options only, then the per-slug default — so the price on the card is the
+  // price the product page opens on. Falls back to the first variant so a
+  // fully sold-out product still renders a price.
+  const firstVariant = selectDefaultVariant(product) ?? product.variants?.[0];
   const variantLabel = getVariantLabel(firstVariant);
   const variantId = firstVariant?.id != null ? String(firstVariant.id) : "";
   const productUuid = product.id != null ? String(product.id) : "";
