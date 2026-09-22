@@ -82,6 +82,43 @@
   @apply border-border;
 }
 
+/* Add-to-cart toast placement (plain CSS, not a Tailwind arbitrary class, so it
+   cannot be purged and the toast can never drop into page flow). 96px clears
+   the 76px mobile dock (bottom-3 + h-16) with a 20px gap, plus the iOS safe
+   area; desktop keeps the standard bottom-6 offset. */
+.cart-added-toast {
+  bottom: calc(env(safe-area-inset-bottom) + 96px);
+}
+@media (min-width: 768px) {
+  .cart-added-toast {
+    bottom: 1.5rem;
+  }
+}
+/* Add-to-cart toast progress: shrinks over NOTICE_DURATION_MS (3.5s) in
+   cart-added-toast.tsx. Paused via inline animationPlayState on hover/focus. */
+@keyframes cart-toast-progress {
+  from { width: calc(100% - 3rem); }
+  to { width: 0; }
+}
+.cart-toast-progress {
+  animation: cart-toast-progress 3.5s linear forwards;
+}
+/* One-shot pulse on the mobile dock cart after a toast auto-dismisses. */
+@keyframes cart-dock-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.cart-dock-pulse {
+  animation: cart-dock-pulse 0.55s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-toast-progress,
+  .cart-dock-pulse {
+    animation: none;
+  }
+}
+
 .katimon-hero-button {
   position: relative;
   border: none;

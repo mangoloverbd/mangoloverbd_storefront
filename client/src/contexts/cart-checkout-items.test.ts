@@ -49,3 +49,17 @@ test("a product with no resolvable ids cannot be ordered", () => {
   assert.match(productPage, /const checkoutIdsResolved = Boolean\(canonicalProductId\) && Boolean\(canonicalVariantId\)/);
   assert.match(productPage, /const isUnavailable = .*!checkoutIdsResolved/);
 });
+
+test("adding to the cart shows a notice instead of opening the drawer", () => {
+  const addToCartBody = cartContext.slice(cartContext.indexOf("const addToCart = ("));
+  assert.doesNotMatch(addToCartBody, /setIsOpen\(true\)/);
+  assert.match(addToCartBody, /setNotice\(\{/);
+});
+
+test("the cart exposes notice and dock-pulse controls", () => {
+  assert.match(cartContext, /notice: CartNotice \| null;/);
+  assert.match(cartContext, /dismissNotice: \(\) => void;/);
+  assert.match(cartContext, /cartPulseKey: number;/);
+  assert.match(cartContext, /signalCartPulse: \(\) => void;/);
+  assert.match(cartContext, /consumeCartPulse: \(\) => void;/);
+});

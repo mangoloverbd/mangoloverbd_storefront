@@ -180,7 +180,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                 </span>
                                 {subtotal > 0 ? (
                                     <span className="font-garet text-xl font-bold text-black md:text-2xl">
-                                        BDT {subtotal.toLocaleString()}
+                                        ৳{subtotal.toLocaleString("en-US")}
                                     </span>
                                 ) : (
                                     <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-gold">

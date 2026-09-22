@@ -118,3 +118,19 @@ test("uses Mango Lover WhatsApp in customer navigation and Arc Labs WhatsApp onl
   assert.doesNotMatch(customerNavigationSource, /phone=8801733670129/);
   assert.match(layoutSource.slice(bottomBarIndex), /phone=8801733670129/);
 });
+
+test("mounts the floating add-to-cart toast beside the cart drawer", () => {
+  assert.match(layoutSource, /import CartAddedToast from "@\/components\/cart-added-toast"/);
+  assert.match(layoutSource, /<CartDrawer \/>\n\s+<CartAddedToast \/>/);
+});
+
+test("shows a numeric badge on the mobile dock cart instead of a dot", () => {
+  assert.match(layoutSource, /itemCount > 99 \? "99\+" : itemCount/);
+  assert.doesNotMatch(layoutSource, /h-1\.5 w-1\.5 rounded-full bg-\[#163B33\]/);
+});
+
+test("pulses the dock cart once per toast handoff, then clears the signal", () => {
+  assert.match(layoutSource, /cartPulseKey, consumeCartPulse/);
+  assert.match(layoutSource, /cartPulseKey > 0 \? "cart-dock-pulse" : ""/);
+  assert.match(layoutSource, /if \(cartPulseKey > 0\) consumeCartPulse\(\);/);
+});
