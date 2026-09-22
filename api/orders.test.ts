@@ -10,6 +10,12 @@ import {
   validateOrder,
 } from "./orders.ts";
 
+const canonicalItems = [{
+  productId: "11111111-1111-4111-8111-111111111111",
+  variantId: "22222222-2222-4222-8222-222222222222",
+  quantity: 3,
+}];
+
 const validOrder = {
   bundleTitle: "Test product",
   bundleDetails: "1 kg",
@@ -20,6 +26,7 @@ const validOrder = {
   phone: "01712345678",
   address: "House 1 Road 2 Dhaka",
   paymentMethod: "cash_on_delivery",
+  items: canonicalItems,
 };
 
 test("retains a positive whole-number quantity", () => {
@@ -55,12 +62,6 @@ const dependencies = {
   storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
-
-const canonicalItems = [{
-  productId: "11111111-1111-4111-8111-111111111111",
-  variantId: "22222222-2222-4222-8222-222222222222",
-  quantity: 3,
-}];
 
 test("strips retired tracking fields from checkout input", () => {
   const order = validateOrder({ ...validOrder, trackingMode: "google_only", metaEventId: "meta-secret" });

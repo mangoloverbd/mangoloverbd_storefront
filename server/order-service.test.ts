@@ -10,6 +10,12 @@ import {
 } from "./order-service.ts";
 import { registerRoutes } from "./routes.ts";
 
+const canonicalItems = [{
+  productId: "11111111-1111-4111-8111-111111111111",
+  variantId: "22222222-2222-4222-8222-222222222222",
+  quantity: 2,
+}];
+
 const validOrder = {
   bundleTitle: "Test bundle",
   bundleDetails: "Test details",
@@ -20,6 +26,7 @@ const validOrder = {
   phone: "০১৭১২৩৪৫৬৭৮",
   address: "House 1 Road 2 Dhaka",
   paymentMethod: "cash_on_delivery" as const,
+  items: canonicalItems,
 };
 const validEnglishOrder = { ...validOrder, phone: "01712345678" };
 
@@ -28,12 +35,6 @@ const dependencies = {
   storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
-
-const canonicalItems = [{
-  productId: "11111111-1111-4111-8111-111111111111",
-  variantId: "22222222-2222-4222-8222-222222222222",
-  quantity: 2,
-}];
 
 test("accepts exactly 11 English phone digits", () => {
   const order = orderRequestSchema.parse(validEnglishOrder);
@@ -147,6 +148,7 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
     customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
+    items: canonicalItems,
     notes: "Test bundle - Test details",
   });
   assert.ok(outboundSignal);
@@ -241,6 +243,7 @@ test("forwards a validated checkout draft key only through the secret-backed ord
     customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
+    items: canonicalItems,
     notes: "Test bundle - Test details",
     abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   });

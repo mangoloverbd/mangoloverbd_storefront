@@ -3,6 +3,7 @@ import { Link } from "wouter";
 
 import { useCart } from "@/contexts/cart-context";
 import { toGoogleAnalyticsItem } from "@/lib/google-analytics";
+import { getDefaultBundleIndex } from "@/lib/product-selection";
 import {
   getProductImageSet,
   getProductNumericId,
@@ -29,10 +30,42 @@ function formatCardAmount(value: unknown) {
   return Number.isFinite(amount) ? `৳${amount.toLocaleString("en-US")}` : "৳0";
 }
 
+function isVariantInStock(variant: NonNullable<StorefrontProduct["variants"]>[number]) {
+  if (variant.available === false) return false;
+  return typeof variant.stock_quantity !== "number" || variant.stock_quantity > 0;
+}
+
+// Same label the product page shows for a variant, so a card add and a product
+// page add of the same variant collapse into one cart row.
+function getVariantLabel(variant: NonNullable<StorefrontProduct["variants"]>[number] | undefined) {
+  if (!variant) return "Default";
+  return String(variant.attributes?.size ?? Object.values(variant.attributes ?? {})[0] ?? "Default");
+}
+
+// The variant the product page preselects: in-stock options in catalog order,
+// then the per-slug preference. Sharing getDefaultBundleIndex keeps the card
+// price and the product page's opening price from drifting apart.
+function selectDefaultVariant(product: StorefrontProduct) {
+  const inStock = product.variants?.filter(isVariantInStock) ?? [];
+  if (!inStock.length) return undefined;
+  return inStock[getDefaultBundleIndex(product.slug, inStock.map((variant) => ({ title: getVariantLabel(variant) })))];
+}
+
 export default function HomeProductCard({ product, className = "" }: HomeProductCardProps) {
   const { addToCart } = useCart();
   const { src: image, srcSet: imageSrcSet } = getProductImageSet(product);
-  const firstVariant = product.variants?.[0];
+  // The card sells whichever variant it prices, so one variant drives both.
+  // It resolves that variant exactly as the product page does — in-stock
+  // options only, then the per-slug default — so the price on the card is the
+  // price the product page opens on. Falls back to the first variant so a
+  // fully sold-out product still renders a price.
+  const firstVariant = selectDefaultVariant(product) ?? product.variants?.[0];
+  const variantLabel = getVariantLabel(firstVariant);
+  const variantId = firstVariant?.id != null ? String(firstVariant.id) : "";
+  const productUuid = product.id != null ? String(product.id) : "";
+  // Checkout posts product + variant ids to the Suite, which rejects an order
+  // without them. No ids means no sale, so don't offer the button.
+  const canAddToCart = product.available !== false && Boolean(productUuid) && Boolean(variantId);
   const currentPrice = Number(firstVariant?.price ?? product.price);
   const compareAtPrice = Number(product.compare_at_price);
   const hasDiscount = Number.isFinite(currentPrice) && Number.isFinite(compareAtPrice) && compareAtPrice > currentPrice;
@@ -90,25 +123,27 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
       </Link>
       <button
         type="button"
-        disabled={product.available === false}
+        disabled={!canAddToCart}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
           addToCart(
             {
               id: getProductNumericId(product),
-              title: product.name,
+              title: `${product.name} (${variantLabel})`,
               price: formatCardAmount(currentPrice),
               image,
+              productUuid,
+              variantId,
               analyticsItem: toGoogleAnalyticsItem({
                 id: product.id ?? product.slug,
                 name: product.name,
-                variant: "Default",
+                variant: variantLabel,
                 price: currentPrice,
                 quantity: 1,
               }),
             },
-            "Default",
+            variantLabel,
           );
         }}
         className="mt-auto w-full border border-black/15 bg-[#FBBB14] px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition-colors hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-40"

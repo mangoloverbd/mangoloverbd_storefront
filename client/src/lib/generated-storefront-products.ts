@@ -2,13 +2,195 @@ import type { StorefrontProduct } from "./storefront-products";
 
 export const generatedStorefrontProducts: StorefrontProduct[] = [
   {
+    "id": "5979f57b-1ae6-4eb4-a2eb-cb1862ba3842",
+    "name": "ঝালমুড়ি মসলা | Jhalmuri Moshla",
+    "slug": "jhalmuri-moshla",
+    "description": "ঝাল, মসলাদার আর মুখরোচক স্বাদের পারফেক্ট মিশ্রণ— ম্যাংগো লাভার ঝালমুড়ি মসলা । মরিচ, ভাজা জিরা, ধনিয়া, বিট লবণসহ নির্বাচিত মসলার সমন্বয়ে তৈরি। মুড়ি, চানাচুর, বাদাম, পেঁয়াজ ও কাঁচামরিচের সঙ্গে মিশিয়ে মুহূর্তেই তৈরি করুন জমজমাট স্ট্রিট-ফুড স্টাইল ঝালমুড়ি।",
+    "url": null,
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/960.webp",
+    "images": [
+      {
+        "id": "f853e6fb-d5a6-465c-838d-cbe591e3187b",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/960.webp"
+        },
+        "alt_text": "ঝালমুড়ি মসলা | Jhalmuri Moshla",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "53ef3bc2-54f6-4856-a0eb-180e4d198249",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9438e4a9-b0a7-48b7-aadf-2cf41e34cd46/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9438e4a9-b0a7-48b7-aadf-2cf41e34cd46/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9438e4a9-b0a7-48b7-aadf-2cf41e34cd46/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9438e4a9-b0a7-48b7-aadf-2cf41e34cd46/960.webp"
+        },
+        "alt_text": "ঝালমুড়ি মসলা | Jhalmuri Moshla",
+        "sort_order": 1,
+        "is_primary": false
+      },
+      {
+        "id": "e105573b-84a4-4982-9741-7b7e3ae86444",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/4ab4ca6d-ce63-4433-bfca-fec2229ca9c1/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/4ab4ca6d-ce63-4433-bfca-fec2229ca9c1/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/4ab4ca6d-ce63-4433-bfca-fec2229ca9c1/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/4ab4ca6d-ce63-4433-bfca-fec2229ca9c1/960.webp"
+        },
+        "alt_text": "ঝালমুড়ি মসলা | Jhalmuri Moshla",
+        "sort_order": 2,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9e6a3338-9696-46c8-b56b-5114a62da387/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/9438e4a9-b0a7-48b7-aadf-2cf41e34cd46/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/5979f57b-1ae6-4eb4-a2eb-cb1862ba3842/4ab4ca6d-ce63-4433-bfca-fec2229ca9c1/960.webp"
+    ],
+    "price": 600,
+    "compare_at_price": 750,
+    "available": true,
+    "variants": [
+      {
+        "id": "276f5cf1-ae81-4f80-b34d-5d99ea51f7dc",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 600,
+        "available": true
+      },
+      {
+        "id": "956c7170-96b8-4e4e-926e-38940c070f90",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 1000,
+        "available": true
+      }
+    ]
+  },
+  {
+    "id": "db9134d3-4771-4f66-960c-7fac1fb782e1",
+    "name": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+    "slug": "homemade-pumpkin-bori",
+    "description": "ঘরোয়া পদ্ধতিতে তৈরি হোমমেড কুমড়ো বড়ি—কুমড়ো ও ডালের স্বাদে ভরপুর। তরকারি, মাছ কিংবা শাকের সঙ্গে রান্নায় যোগ করে দারুণ স্বাদ, ঘ্রাণ ও ঐতিহ্যবাহী বাঙালি খাবারের পরিচিত অনুভূতি।",
+    "url": null,
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/960.webp",
+    "images": [
+      {
+        "id": "8661d585-8048-4222-9eed-931125de9952",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/960.webp"
+        },
+        "alt_text": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+        "sort_order": 0,
+        "is_primary": true
+      },
+      {
+        "id": "6592522a-b285-4831-87fd-4a2d1aa3cb20",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/2fae2279-3268-4b51-8f8b-7b449234fac5/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/2fae2279-3268-4b51-8f8b-7b449234fac5/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/2fae2279-3268-4b51-8f8b-7b449234fac5/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/2fae2279-3268-4b51-8f8b-7b449234fac5/960.webp"
+        },
+        "alt_text": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+        "sort_order": 2,
+        "is_primary": false
+      },
+      {
+        "id": "f6bacc10-b419-4e92-9a39-950c676de86b",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/0ebe640d-57c1-4b1d-9859-4d7c355ee4f7/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/0ebe640d-57c1-4b1d-9859-4d7c355ee4f7/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/0ebe640d-57c1-4b1d-9859-4d7c355ee4f7/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/0ebe640d-57c1-4b1d-9859-4d7c355ee4f7/960.webp"
+        },
+        "alt_text": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+        "sort_order": 3,
+        "is_primary": false
+      },
+      {
+        "id": "c3d8f72a-f2d0-4d75-9bd3-6458ab432257",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b4533922-8c5a-407c-a59a-ecbd20bc9e42/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b4533922-8c5a-407c-a59a-ecbd20bc9e42/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b4533922-8c5a-407c-a59a-ecbd20bc9e42/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b4533922-8c5a-407c-a59a-ecbd20bc9e42/960.webp"
+        },
+        "alt_text": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+        "sort_order": 4,
+        "is_primary": false
+      },
+      {
+        "id": "92ba4265-0f68-4ca6-a876-7c39171dc8fa",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/5d991461-aeea-4ff7-8051-addf23c8f77a/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/5d991461-aeea-4ff7-8051-addf23c8f77a/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/5d991461-aeea-4ff7-8051-addf23c8f77a/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/5d991461-aeea-4ff7-8051-addf23c8f77a/960.webp"
+        },
+        "alt_text": "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+        "sort_order": 5,
+        "is_primary": false
+      }
+    ],
+    "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b1d7185b-da63-4879-851e-cbddc95d3712/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/2fae2279-3268-4b51-8f8b-7b449234fac5/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/0ebe640d-57c1-4b1d-9859-4d7c355ee4f7/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/b4533922-8c5a-407c-a59a-ecbd20bc9e42/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/db9134d3-4771-4f66-960c-7fac1fb782e1/5d991461-aeea-4ff7-8051-addf23c8f77a/960.webp"
+    ],
+    "price": 400,
+    "compare_at_price": 650,
+    "available": true,
+    "variants": [
+      {
+        "id": "94365739-df85-4c98-afb5-91b3992c3d62",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 400,
+        "available": true
+      },
+      {
+        "id": "c5d6dba4-4a34-4980-9a55-e05b273ad673",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 700,
+        "available": true
+      }
+    ]
+  },
+  {
     "id": "ad6ce851-b1d2-4da5-bcef-f538554fffb6",
     "name": "কাটিমন আম | Katimon Mango",
     "slug": "katimon-mango",
     "description": "বাগান থেকে সরাসরি সংগ্রহ করা অথেনটিক অফসিজনের সুমিষ্ট কাটিমন আম—গড়ে প্রতি কেজিতে ৪± পিস। পরিপক্ক কাঁচা অবস্থায় সংগ্রহ করা হয় এবং ধীরে ধীরে পেকে নরম, সুগন্ধি ও আরও মিষ্টি হয়ে ওঠে। ক্ষতিকর কেমিক্যালমুক্ত, প্রাকৃতিক স্বাদে ভরপুর।",
     "url": null,
-    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/960.webp",
     "images": [
+      {
+        "id": "5fbcd907-fb32-4a62-ae54-1a19945d7e24",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/960.webp"
+        },
+        "alt_text": "কাটিমন আম | Katimon Mango",
+        "sort_order": 0,
+        "is_primary": true
+      },
       {
         "id": "a4018273-3e20-4c2e-9b8f-1a4f851853b0",
         "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
@@ -18,8 +200,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp"
         },
         "alt_text": "কাটিমন আম | Katimon Mango",
-        "sort_order": 0,
-        "is_primary": true
+        "sort_order": 1,
+        "is_primary": false
       },
       {
         "id": "d06354ef-d99b-48c0-8ea1-2b9a535f8df2",
@@ -30,7 +212,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/960.webp"
         },
         "alt_text": "কাটিমন আম | Katimon Mango",
-        "sort_order": 1,
+        "sort_order": 2,
         "is_primary": false
       },
       {
@@ -42,7 +224,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/960.webp"
         },
         "alt_text": "কাটিমন আম | Katimon Mango",
-        "sort_order": 2,
+        "sort_order": 3,
         "is_primary": false
       },
       {
@@ -54,7 +236,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/290b12cc-585c-4af1-bc7d-a29dd38826ac/960.webp"
         },
         "alt_text": "কাটিমন আম | Katimon Mango",
-        "sort_order": 3,
+        "sort_order": 4,
         "is_primary": false
       },
       {
@@ -66,11 +248,12 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/fbeab183-d4a2-45e2-a855-eb19579931e7/960.webp"
         },
         "alt_text": "কাটিমন আম | Katimon Mango",
-        "sort_order": 4,
+        "sort_order": 5,
         "is_primary": false
       }
     ],
     "image_urls": [
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/7448932b-6923-4622-a3b8-787ab9fdc415/960.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/ee2645b1-c12d-46b4-9ffc-1a76a080f31e/960.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/df290b89-74ce-4c87-91da-afc2af6b195f/960.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/ad6ce851-b1d2-4da5-bcef-f538554fffb6/44063f7b-c0a6-42cc-b3d3-2255802b4e30/960.webp",
@@ -282,19 +465,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "52de41bc-4bdb-4113-bd5c-61108a6da886",
-        "attributes": {
-          "size": "৫০০ গ্রাম"
-        },
-        "price": 450,
-        "available": true
-      },
-      {
         "id": "1ac50c09-7c7b-4e61-80e2-4b364221f2f5",
         "attributes": {
           "size": "১ কেজি"
         },
         "price": 800,
+        "available": true
+      },
+      {
+        "id": "52de41bc-4bdb-4113-bd5c-61108a6da886",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 450,
         "available": true
       }
     ]
@@ -451,7 +634,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "attributes": {
           "size": "২ কেজি"
         },
-        "price": 1300,
+        "price": 1100,
         "available": true
       }
     ]
@@ -524,14 +707,6 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "41b47539-729a-492a-a23e-31a5669a60fa",
-        "attributes": {
-          "size": "২ লিটার"
-        },
-        "price": 700,
-        "available": true
-      },
-      {
         "id": "823862e1-56f9-4594-9191-a50c43a0f75d",
         "attributes": {
           "size": "১ লিটার"
@@ -545,6 +720,14 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
           "size": "৫ লিটার"
         },
         "price": 1650,
+        "available": true
+      },
+      {
+        "id": "41b47539-729a-492a-a23e-31a5669a60fa",
+        "attributes": {
+          "size": "২ লিটার"
+        },
+        "price": 700,
         "available": true
       }
     ]
@@ -668,19 +851,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "7e440bd7-6a44-432c-8085-41c47f2f1d09",
-        "attributes": {
-          "size": "৫০০ গ্রাম"
-        },
-        "price": 400,
-        "available": true
-      },
-      {
         "id": "dc4e8fb0-f7e3-40fb-b1cf-a45127fd3182",
         "attributes": {
           "size": "১ কেজি"
         },
         "price": 800,
+        "available": true
+      },
+      {
+        "id": "7e440bd7-6a44-432c-8085-41c47f2f1d09",
+        "attributes": {
+          "size": "৫০০ গ্রাম"
+        },
+        "price": 400,
         "available": true
       }
     ]
@@ -812,8 +995,8 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/e1b38561-e8f4-4384-81b3-0afffa959d5c/6fbff63f-b687-4d07-9f70-970dba6e7363/960.webp",
       "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/e1b38561-e8f4-4384-81b3-0afffa959d5c/b79e2dff-07d7-4ea8-9ef9-e41b67461b97/960.webp"
     ],
-    "price": 990,
-    "compare_at_price": 1238,
+    "price": 890,
+    "compare_at_price": 1050,
     "available": true,
     "variants": [
       {
@@ -821,7 +1004,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
-        "price": 990,
+        "price": 890,
         "available": true
       },
       {
@@ -829,7 +1012,7 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
         "attributes": {
           "size": "১ কেজি"
         },
-        "price": 1600,
+        "price": 1300,
         "available": true
       }
     ]
@@ -966,19 +1149,19 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "available": true,
     "variants": [
       {
-        "id": "ea3a65b4-066c-4b40-80c2-01564c0c26ef",
-        "attributes": {
-          "size": "১ কেজি"
-        },
-        "price": 900,
-        "available": true
-      },
-      {
         "id": "f4ac2bc0-9c89-4e40-bdd9-46278c808d67",
         "attributes": {
           "size": "৫০০ গ্রাম"
         },
         "price": 460,
+        "available": true
+      },
+      {
+        "id": "ea3a65b4-066c-4b40-80c2-01564c0c26ef",
+        "attributes": {
+          "size": "১ কেজি"
+        },
+        "price": 900,
         "available": true
       }
     ]
@@ -1074,53 +1257,68 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "slug": "sundarbans-natural-honey",
     "description": "আমাদের নিজস্ব মৌয়ালরা সুন্দরবনের গহীন থেকে তাদের প্রানের ঝুঁকি নিয়ে সুন্দরবনের প্রাকৃতিক চাকের মধু সংগ্রহ করছে। আর সেই “র” মধুটাই আমরা পৌঁছে দিচ্ছি আপনাদের হাতে। সুন্দরবনের প্রাকৃতিক চাকের মধুতে খলিশা, গেওয়া, গরান, কেওড়া, বাইন, শেয়াল, হরকোচা, উড়া আর ও অনেক রকমের ফুল থাকার কারনে এই সুন্দরবনের প্রাকৃতিক চাকের মধু দেখতে যেমন সুন্দর তার সাথে এইটা খেতেও টক মিষ্টি দুর্দান্ত স্বাদের।",
     "url": null,
-    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/960.webp",
     "images": [
       {
         "id": "6606043b-e0ca-45f7-8652-d3f87018dadc",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/960.webp"
+        },
         "alt_text": "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
         "sort_order": 0,
         "is_primary": true
       },
       {
         "id": "37e01129-b4f9-4488-8ce5-5b33dd597b3c",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/6f2615bc-0849-4557-97f9-710ffc3aa5fc.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/7dc78933-5957-4bd8-8264-e1c075253527/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/7dc78933-5957-4bd8-8264-e1c075253527/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/7dc78933-5957-4bd8-8264-e1c075253527/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/7dc78933-5957-4bd8-8264-e1c075253527/960.webp"
+        },
         "alt_text": "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
         "sort_order": 1,
         "is_primary": false
       },
       {
         "id": "8d87b733-213f-4c34-9f52-f8b4386091f4",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/2a5ec3ce-f08d-4f31-8885-d001542a792c.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/546d6f68-beac-4516-9728-a0bad41e92a2/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/546d6f68-beac-4516-9728-a0bad41e92a2/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/546d6f68-beac-4516-9728-a0bad41e92a2/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/546d6f68-beac-4516-9728-a0bad41e92a2/960.webp"
+        },
         "alt_text": "সুন্দরবনের চাকের মধু | Sundarbans Natural Honey",
         "sort_order": 2,
         "is_primary": false
       }
     ],
     "image_urls": [
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/977eb6df-1f95-4f3c-9539-becdd54250e3.webp",
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/6f2615bc-0849-4557-97f9-710ffc3aa5fc.webp",
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/2a5ec3ce-f08d-4f31-8885-d001542a792c.webp"
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/06e05182-e070-4f4f-8671-fe104d7c2f0a/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/7dc78933-5957-4bd8-8264-e1c075253527/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/4d3a76b0-89e7-4601-96e5-86a3b971791c/546d6f68-beac-4516-9728-a0bad41e92a2/960.webp"
     ],
     "price": 800,
     "compare_at_price": 950,
     "available": true,
     "variants": [
       {
-        "id": "801cde55-42ff-4a9e-aeee-eb02b23a8f8d",
-        "attributes": {
-          "size": "1KG"
-        },
-        "price": 1600,
-        "available": true
-      },
-      {
         "id": "0bf1a8d5-ba53-4ad0-b336-7d32541c7582",
         "attributes": {
           "size": "0.5KG"
         },
         "price": 800,
+        "available": true
+      },
+      {
+        "id": "801cde55-42ff-4a9e-aeee-eb02b23a8f8d",
+        "attributes": {
+          "size": "1KG"
+        },
+        "price": 1600,
         "available": true
       }
     ]
@@ -1131,34 +1329,49 @@ export const generatedStorefrontProducts: StorefrontProduct[] = [
     "slug": "black-seed-flower-honey",
     "description": "পবিত্র কোরআন ও হাদিসের ভাষ্যমতে যেহেতু কালোজিরা কে সাম অর্থাৎ মৃত্যু বাদে সকল রোগের মহৌষধ বলা হয়েছে সেহেতু নিঃসন্দেহে এই মধু সর্বোত্তম। আপনি যদি কালোজিরা মধুর সর্বোত্তম উপকারিতা পেতে চান অবশ্যই আপনাকে রিফাইনকৃত কালোজিরা ফুলের মধু ব্যবহার করতে হবে।",
     "url": null,
-    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
+    "image_url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/960.webp",
     "images": [
       {
         "id": "03750b27-c500-4a5b-a768-b32c3a808427",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/960.webp"
+        },
         "alt_text": "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
         "sort_order": 0,
         "is_primary": true
       },
       {
         "id": "9378be67-9061-4a11-921a-b00dfc4c0298",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/c84f4800-e0e3-40b8-916b-27209df751d4.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/3d30aa71-4aa1-40d5-ab5c-00d556d75695/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/3d30aa71-4aa1-40d5-ab5c-00d556d75695/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/3d30aa71-4aa1-40d5-ab5c-00d556d75695/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/3d30aa71-4aa1-40d5-ab5c-00d556d75695/960.webp"
+        },
         "alt_text": "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
         "sort_order": 1,
         "is_primary": false
       },
       {
         "id": "f246788b-a8f2-43d6-a8d6-dfd291666234",
-        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/28158f7a-d8b2-44a1-b02f-71145a32a385.webp",
+        "url": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/ff3ca3a4-d332-4780-b29c-24d686e14778/960.webp",
+        "sources": {
+          "320": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/ff3ca3a4-d332-4780-b29c-24d686e14778/320.webp",
+          "640": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/ff3ca3a4-d332-4780-b29c-24d686e14778/640.webp",
+          "960": "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/ff3ca3a4-d332-4780-b29c-24d686e14778/960.webp"
+        },
         "alt_text": "কালোজিরা ফুলের মধু | Black Seed Flower Honey",
         "sort_order": 2,
         "is_primary": false
       }
     ],
     "image_urls": [
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/05e5a077-a545-4e4d-8402-cc5b1204a6c7.webp",
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/c84f4800-e0e3-40b8-916b-27209df751d4.webp",
-      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/28158f7a-d8b2-44a1-b02f-71145a32a385.webp"
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/d832e3f8-8ea2-4d7a-aed6-e6952a846413/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/3d30aa71-4aa1-40d5-ab5c-00d556d75695/960.webp",
+      "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/object/public/product-images/3cd26e57-85ef-4970-94a4-cd99c0f1b554/814979aa-8446-429b-917f-e6d94cf6b334/ff3ca3a4-d332-4780-b29c-24d686e14778/960.webp"
     ],
     "price": 700,
     "compare_at_price": 950,

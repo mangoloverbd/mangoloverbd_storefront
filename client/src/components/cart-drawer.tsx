@@ -262,9 +262,9 @@ export default function CartDrawer() {
                 quantity: item.quantity,
                 unitPrice: parseCurrencyAmount(item.price),
             })),
-            items: items.every((item) => item.productUuid && item.variantId)
-                ? items.map((item) => ({ productId: item.productUuid!, variantId: item.variantId!, quantity: item.quantity }))
-                : undefined,
+            // Every cart item carries its canonical ids, so checkout always has
+            // line items. Sending none makes the Suite reject the order.
+            items: items.map((item) => ({ productId: item.productUuid, variantId: item.variantId, quantity: item.quantity })),
         };
     }, [items]);
 
