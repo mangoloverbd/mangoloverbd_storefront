@@ -70,7 +70,7 @@ export default function CartAddedToast() {
           onMouseLeave={() => setPaused(false)}
           onFocus={() => setPaused(true)}
           onBlur={() => setPaused(false)}
-          className="fixed z-[90] left-3 right-3 bottom-[calc(env(safe-area-inset-bottom)+96px)] md:left-auto md:right-6 md:bottom-6 md:w-[380px]"
+          className="cart-added-toast fixed z-[90] left-3 right-3 md:left-auto md:right-6 md:w-[380px]"
         >
           <div className="relative flex items-center gap-3 overflow-hidden rounded-full bg-black py-2 pl-2 pr-2 text-white shadow-2xl">
             {notice.image ? (

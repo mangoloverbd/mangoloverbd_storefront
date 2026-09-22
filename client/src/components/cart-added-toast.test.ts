@@ -6,6 +6,15 @@ const toastPath = new URL("./cart-added-toast.tsx", import.meta.url);
 const toastSource = existsSync(toastPath) ? readFileSync(toastPath, "utf8") : "";
 const cssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
+test("the toast floats above the mobile dock with an explicit offset", () => {
+  // Placement lives in plain CSS, not a Tailwind arbitrary class, so it
+  // cannot be purged and the toast can never drop into page flow. 96px
+  // clears the 76px mobile dock (bottom-3 + h-16) with a 20px gap.
+  assert.match(toastSource, /className="cart-added-toast fixed/);
+  assert.match(cssSource, /\.cart-added-toast \{\n\s+bottom: calc\(env\(safe-area-inset-bottom\) \+ 96px\);/);
+  assert.match(cssSource, /@media \(min-width: 768px\) \{\n\s+\.cart-added-toast \{\n\s+bottom: 1\.5rem;/);
+  assert.doesNotMatch(toastSource, /bottom-\[calc/);
+});
 test("the toast announces the addition without blocking the page", () => {
   assert.match(toastSource, /role="status"/);
   assert.match(toastSource, /aria-live="polite"/);
