@@ -12,6 +12,10 @@ test("the toast announces the addition without blocking the page", () => {
   assert.match(toastSource, /<AnimatePresence>/);
   assert.match(toastSource, /NOTICE_DURATION_MS = 3500/);
   assert.doesNotMatch(toastSource, /fixed inset-0/);
+  // Translucent black capsule, matching the frosted-glass dock and overlays.
+  assert.match(toastSource, /rounded-full bg-black\/80/);
+  assert.match(toastSource, /backdrop-blur-md/);
+  assert.doesNotMatch(toastSource, /rounded-full bg-\[#163B33\]/);
 });
 
 test("viewing the cart opens the existing drawer and skips the dock handoff", () => {

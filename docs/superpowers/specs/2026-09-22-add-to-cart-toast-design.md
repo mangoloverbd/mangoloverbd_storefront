@@ -86,7 +86,7 @@ The existing dock cart button continues to use `itemCount`. Change its indicator
 - Hover and keyboard focus both pause auto-dismissal.
 - The mobile badge has accessible text through the existing cart button label; the visible badge itself remains hidden from screen readers to avoid duplicate announcements.
 - Interactive targets remain at least 44px on touch devices.
-- Text and controls meet contrast requirements against the dark green capsule and yellow action.
+- Text and controls meet contrast requirements against the translucent black capsule and yellow action.
 
 ## Edge Cases
 
