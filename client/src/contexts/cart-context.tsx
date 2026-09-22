@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 
@@ -28,6 +28,17 @@ export type AddToCartProduct = {
     analyticsItem?: GoogleAnalyticsItem;
 };
 
+// The latest successful addition, shown as a floating confirmation. Only one
+// notice exists at a time: a new add replaces it and restarts its lifecycle.
+export type CartNotice = {
+    key: number;
+    itemId: string;
+    title: string;
+    size: string;
+    image: string;
+    quantityAdded: number;
+};
+
 // Carts saved before the ids were persisted deserialize without them. Such a
 // row can never be checked out, so drop it on load instead of leaving a
 // customer with a cart that fails every time they press Confirm Order.
@@ -47,6 +58,13 @@ interface CartContextType {
     isOpen: boolean;
     setIsOpen: (open: boolean) => void;
     itemCount: number;
+    notice: CartNotice | null;
+    dismissNotice: () => void;
+    // One-shot handoff: incremented when an auto-dismissed toast should pulse
+    // the mobile dock cart, reset once the pulse animation has played.
+    cartPulseKey: number;
+    signalCartPulse: () => void;
+    consumeCartPulse: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -54,6 +72,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [notice, setNotice] = useState<CartNotice | null>(null);
+    const [cartPulseKey, setCartPulseKey] = useState(0);
+    const noticeSeq = useRef(0);
 
     // Load cart from localStorage on mount (migrates legacy stepprs-cart key)
     useEffect(() => {
@@ -111,8 +132,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             }
         });
 
-        // Open cart drawer after adding
-        setIsOpen(true);
+        // Show the floating confirmation instead of opening the drawer. The
+        // shopper stays on the page; the drawer opens only on demand.
+        noticeSeq.current += 1;
+        setNotice({ key: noticeSeq.current, itemId, title: product.title, size, image: product.image, quantityAdded: quantity });
         trackMerchantSuiteEvent("cart");
 
         const value = Number(String(product.price).replace(/[^0-9.]/g, "")) || 0;
@@ -160,6 +183,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setItems([]);
     };
 
+    const dismissNotice = () => setNotice(null);
+    const signalCartPulse = () => setCartPulseKey((key) => key + 1);
+    const consumeCartPulse = () => setCartPulseKey(0);
+
     const itemCount = items.reduce((total, item) => total + item.quantity, 0);
 
     return (
@@ -172,7 +199,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 clearCart,
                 isOpen,
                 setIsOpen,
-                itemCount
+                itemCount,
+                notice,
+                dismissNotice,
+                cartPulseKey,
+                signalCartPulse,
+                consumeCartPulse
             }}
         >
             {children}
