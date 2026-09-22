@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCart } from "@/contexts/cart-context";
 import CartDrawer from "@/components/cart-drawer";
+import CartAddedToast from "@/components/cart-added-toast";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
 import {
   fetchStorefrontProducts,
@@ -152,7 +153,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [time, setTime] = useState('');
   const [isAtPageBottom, setIsAtPageBottom] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-  const { setIsOpen: setCartOpen, itemCount } = useCart();
+  const { setIsOpen: setCartOpen, itemCount, cartPulseKey, consumeCartPulse } = useCart();
   const { data: searchableProducts = [] } = useQuery({
     queryKey: ["merchant-suite-products-listing"],
     queryFn: fetchStorefrontProducts,
@@ -331,11 +332,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           variant="ghost"
           aria-label={`Cart${itemCount > 0 ? `, ${itemCount} items` : ""}`}
           onClick={() => setCartOpen(true)}
-          className="relative flex h-12 w-16 flex-col items-center justify-center rounded-full bg-[#C8F45A] p-0 text-black shadow-none hover:bg-[#C8F45A]"
+          onAnimationEnd={() => { if (cartPulseKey > 0) consumeCartPulse(); }}
+          className={`relative flex h-12 w-16 flex-col items-center justify-center rounded-full bg-[#C8F45A] p-0 text-black shadow-none hover:bg-[#C8F45A]${cartPulseKey > 0 ? "cart-dock-pulse" : ""}`}
         >
           <BagIcon className="!h-8 !w-8" />
           {itemCount > 0 && (
-            <span className="absolute right-3 top-2 h-1.5 w-1.5 rounded-full bg-[#163B33]" aria-label={`${itemCount} items in cart`} />
+            <span aria-hidden="true" className="absolute right-2 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#163B33] px-1 text-[10px] font-bold text-[#C8F45A]">
+              {itemCount > 99 ? "99+" : itemCount}
+            </span>
           )}
           <span className="sr-only">Cart</span>
         </Button>
@@ -536,6 +540,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Cart Drawer */}
       <CartDrawer />
+      <CartAddedToast />
 
       {/* Main Content with Transition */}
       <main className="flex-grow overflow-hidden bg-brand-ivory pb-20 md:pb-0">
