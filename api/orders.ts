@@ -71,6 +71,7 @@ type OrderServiceDependencies = {
 
 type OrderHandlerDependencies = {
   processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
+  signContext?: typeof createSignedClientContext;
 };
 
 function byteLength(value: unknown) {
@@ -141,7 +142,6 @@ export function validateOrder(body: unknown): OrderRequest {
     ? "cash_on_delivery"
     : value.paymentMethod;
   if (!phone
-    || address.split(/\s+/).filter(Boolean).length < 3
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
     || !Number.isSafeInteger(bundlePrice + deliveryCharge)) {
     throw new OrderValidationError();
@@ -172,10 +172,8 @@ export function validateOrder(body: unknown): OrderRequest {
   const checkoutStartedAt = optionalString("checkoutStartedAt", 64);
   if (checkoutStartedAt && !Number.isFinite(Date.parse(checkoutStartedAt))) throw new OrderValidationError();
   if (clientSessionId && !/^[a-zA-Z0-9._:-]+$/.test(clientSessionId)) throw new OrderValidationError();
-  const deviceFingerprint = value.deviceFingerprint;
-  if (deviceFingerprint !== undefined && (typeof deviceFingerprint !== "string" || !/^[0-9a-f]{64}$/.test(deviceFingerprint))) {
-    throw new OrderValidationError();
-  }
+  const deviceFingerprint = typeof value.deviceFingerprint === "string" && /^[0-9a-f]{64}$/.test(value.deviceFingerprint)
+    ? value.deviceFingerprint : undefined;
   const checkoutTelemetry = value.checkoutTelemetry === undefined ? undefined : parseCheckoutTelemetry(value.checkoutTelemetry);
 
   let landingPagePath: string | undefined;
@@ -309,9 +307,12 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
 
     try {
       const order = validateOrder(await readBody(req));
-      const clientContextHeader = createSignedClientContext(req, {
-        deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
-      }, process.env.STOREFRONT_CONTEXT_SECRET);
+      let clientContextHeader: string | undefined;
+      try {
+        clientContextHeader = (dependencies.signContext ?? createSignedClientContext)(req, {
+          deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
+        }, process.env.STOREFRONT_CONTEXT_SECRET);
+      } catch { console.warn("[Order] client context signing unavailable"); }
       const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";

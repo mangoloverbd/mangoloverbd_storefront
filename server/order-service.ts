@@ -6,7 +6,6 @@ import { normalizeBdMobile } from "../shared/bd-phone.ts";
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
 
-const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export const orderRequestSchema = z.object({
@@ -25,7 +24,7 @@ export const orderRequestSchema = z.object({
   turnstileToken: z.string().max(4096).optional(),
   clientSessionId: z.string().max(120).regex(/^[a-zA-Z0-9._:-]+$/).optional(),
   checkoutStartedAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value)), "Invalid checkout timestamp").optional(),
-  deviceFingerprint: z.string().regex(/^[0-9a-f]{64}$/).optional(),
+  deviceFingerprint: z.string().regex(/^[0-9a-f]{64}$/).optional().catch(undefined),
   checkoutTelemetry: z.object({
     firstInteractionAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value))).optional(),
     phoneCandidates: z.array(z.string().regex(/^\d{11}$/)).max(5).optional(),
@@ -50,12 +49,6 @@ export const orderRequestSchema = z.object({
   {
     message: "bKash reference ID is required",
     path: ["bkashTrxId"],
-  },
-).refine(
-  (order) => addressWordCount(order.address) >= 3,
-  {
-    message: "Address must contain at least three words",
-    path: ["address"],
   },
 ).refine(
   (order) => Number.isSafeInteger(order.bundlePrice + order.deliveryCharge),

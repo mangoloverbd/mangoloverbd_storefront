@@ -42,6 +42,10 @@ test("accepts exactly 11 English phone digits", () => {
   assert.equal(order.phone, "01712345678");
 });
 
+test("local checkout accepts a concise valid address", () => {
+  assert.equal(orderRequestSchema.parse({ ...validEnglishOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
+});
+
 test("local schema rejects fake phone and preserves validated browser hints", () => {
   assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, phone: "12345678901" }));
   const order = orderRequestSchema.parse({ ...validEnglishOrder, deviceFingerprint: "a".repeat(64),
@@ -82,8 +86,9 @@ test("normalizes Bengali phone digits", () => {
   assert.equal(orderRequestSchema.parse(validOrder).phone, "01712345678");
 });
 
-test("rejects an address with fewer than three words", () => {
-  assert.throws(() => orderRequestSchema.parse({ ...validOrder, address: "Dhaka" }));
+test("rejects a too-short address but accepts a concise real one", () => {
+  assert.throws(() => orderRequestSchema.parse({ ...validOrder, address: "Ab" }));
+  assert.equal(orderRequestSchema.parse({ ...validOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
 });
 
 test("requires a positive whole-number quantity", () => {
@@ -149,7 +154,7 @@ test("enforces the reviewed bounded order contract", () => {
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { address: "Only two" },
+    { address: "Ab" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },

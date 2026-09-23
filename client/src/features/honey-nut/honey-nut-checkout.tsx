@@ -109,11 +109,8 @@ function getFieldErrors(
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   if (!normalizeBdMobile(fields.phone))
     errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
-  if (
-    fields.address.trim().split(/\s+/).filter(Boolean).length < 3 ||
-    fields.address.trim().length > 300
-  )
-    errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
+  if (fields.address.trim().length < 5 || fields.address.trim().length > 300)
+    errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId))
     errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
   if (
@@ -295,7 +292,7 @@ export function HoneyNutCheckout({
     setIsPending(true);
     setProtectionDecision(null);
     const protectionFormData = new FormData(event.currentTarget);
-    const website = String(protectionFormData.get("website") || "");
+    const website = String(protectionFormData.get("hp_x7") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -443,7 +440,7 @@ export function HoneyNutCheckout({
         noValidate
       >
         <div className="space-y-5">
-          <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+          <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#3d211a]">
               প্যাক সাইজ বেছে নিন

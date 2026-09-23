@@ -37,16 +37,43 @@ test("trims whitespace around an otherwise valid phone number", () => {
   assert.equal(validateOrder({ ...validOrder, phone: " 01712345678 " }).phone, "01712345678");
 });
 
+test("accepts concise but real delivery addresses for staff confirmation", () => {
+  assert.equal(validateOrder({ ...validOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
+});
+
 test("accepts Bangla and +880 mobile formats and ignores invalid optional telemetry", () => {
   assert.equal(validateOrder({ ...validOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮" }).phone, "01712345678");
   assert.equal(validateOrder({ ...validOrder, checkoutTelemetry: { phoneCandidates: ["bad"] } }).checkoutTelemetry, undefined);
 });
 
-test("rejects fake phone formats and malformed browser hints", () => {
+test("rejects fake phone formats but drops malformed optional browser hints", () => {
   assert.throws(() => validateOrder({ ...validOrder, phone: "12345678901" }));
-  assert.throws(() => validateOrder({ ...validOrder, deviceFingerprint: "A".repeat(64) }));
+  assert.equal(validateOrder({ ...validOrder, deviceFingerprint: "A".repeat(64) }).deviceFingerprint, undefined);
   assert.deepEqual(validateOrder({ ...validOrder, deviceFingerprint: "a".repeat(64),
     checkoutTelemetry: { pastedFields: ["phone"] } }).checkoutTelemetry, { pastedFields: ["phone"] });
+});
+
+test("a signing failure does not prevent a valid order from reaching Merchant Suite", async () => {
+  const previous = process.env.STOREFRONT_CONTEXT_SECRET;
+  process.env.STOREFRONT_CONTEXT_SECRET = "test-context-secret-0123456789abcdef";
+  const calls: unknown[] = [];
+  let signCalls = 0;
+  try {
+    const handler = createOrderHandler({
+      processOrder: async order => { calls.push(order); return { decision: "allow", orderRef: "ML-1" }; },
+      signContext: () => { signCalls++; throw new Error("signing unavailable"); },
+    });
+    const req = createRequest(validOrder);
+    req.headers["x-vercel-forwarded-for"] = "103.12.44.7";
+    const { response, read } = createResponse();
+    await handler(req, response);
+    assert.equal(signCalls, 1);
+    assert.equal(calls.length, 1);
+    assert.equal(read().status, 201);
+  } finally {
+    if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
+    else process.env.STOREFRONT_CONTEXT_SECRET = previous;
+  }
 });
 
 test("validates and normalizes optional landing-page attribution", () => {
@@ -153,7 +180,7 @@ test("matches the reviewed bounded validation contract without coercion", () => 
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { address: "Only two" },
+    { address: "Ab" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },

@@ -28,7 +28,6 @@ const deliveryOptions = [
 
 const freeDeliveryThreshold = 2600;
 
-const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
 export type OrderDialogBundle = {
   title: string;
@@ -202,8 +201,8 @@ export default function OrderDialog({
       setOrderError("Please enter your delivery address.");
       return;
     }
-    if (addressWordCount(address) < 3) {
-      setOrderError("ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।");
+    if (address.trim().length < 5) {
+      setOrderError("সঠিক ডেলিভারি ঠিকানা লিখুন।");
       return;
     }
 
@@ -236,7 +235,7 @@ export default function OrderDialog({
          address,
         paymentMethod: selectedPaymentMethod,
         items: bundle.items,
-        ...buildProtectionPayload(String(formData.get("website") || "")),
+        ...buildProtectionPayload(String(formData.get("hp_x7") || "")),
         ...(draftKey ? { draftKey } : {}),
       });
       const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
@@ -429,7 +428,7 @@ export default function OrderDialog({
                   className="mt-6 space-y-6"
                   noValidate
                 >
-                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+                  <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
                     <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
                       <img

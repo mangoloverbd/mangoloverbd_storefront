@@ -38,7 +38,8 @@ test("adds the challenge and honeypot to every checkout surface", () => {
     ]) {
       const source = readFileSync(resolve(process.cwd(), file), "utf8");
       assert.ok(source.includes("TurnstileChallenge"));
-      assert.ok(source.includes('name="website"'));
+      assert.ok(source.includes('name="hp_x7"'));
+      assert.ok(!source.includes('name="website"'));
       assert.ok(source.includes("buildProtectionPayload"));
       assert.ok(source.includes("formHandlers.onFocusCapture"));
       assert.ok(source.includes("formHandlers.onPasteCapture"));
