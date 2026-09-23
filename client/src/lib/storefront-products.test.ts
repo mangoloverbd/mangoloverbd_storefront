@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { fetchStorefrontProduct, findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
+import { STOREFRONT_POLL_INTERVAL_MS, fetchStorefrontInventoryBatch, fetchStorefrontProduct, fetchStorefrontProductInventory, fetchStorefrontProducts, findGeneratedStorefrontProduct, getCachedStorefrontProduct, getProductGallery, getProductImage, hasPublishedProducts, isProductOrderable, searchStorefrontProducts, setCachedStorefrontProduct } from "./storefront-products.ts";
 
 test("matches product names without case sensitivity", () => {
   const products = [
@@ -163,4 +163,36 @@ test("does not accept a 200 response for a different product slug", async () => 
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("public catalog reads send no custom headers, so the browser skips the CORS preflight", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls: Array<RequestInit | undefined> = [];
+  try {
+    globalThis.fetch = async (_input: RequestInfo | URL, init?: RequestInit) => {
+      calls.push(init);
+      return new Response(JSON.stringify({
+        products: [],
+        product: { name: "Active mango", slug: "active-mango" },
+        inventory: {},
+        as_of: "now",
+      }), { status: 200 });
+    };
+
+    await fetchStorefrontProducts();
+    await fetchStorefrontProduct("active-mango");
+    await fetchStorefrontInventoryBatch(["a"]);
+    await fetchStorefrontProductInventory("active-mango");
+
+    assert.equal(calls.length, 4);
+    for (const init of calls) {
+      assert.equal(init?.headers, undefined);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("open pages poll the Suite once a minute", () => {
+  assert.equal(STOREFRONT_POLL_INTERVAL_MS, 60000);
 });
