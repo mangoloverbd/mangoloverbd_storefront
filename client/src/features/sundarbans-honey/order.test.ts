@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { buildHoneyOrderPayload } from "./order.ts";
+
+test("Sundarbans checkout refuses an arbitrary 11-digit phone", () => {
+  assert.throws(() => buildHoneyOrderPayload({ productName: "Honey", pack: { variantId: "v", label: "1 kg", unitPrice: 900 },
+    quantity: 1, customerName: "Test Customer", phone: "12345678901", address: "House 1 Road 2 Dhaka" }));
+});
 import {
   HONEY_CONFIRMATION_KEY,
   buildHoneyAddress,
@@ -137,7 +143,6 @@ test("rejects unbounded or malformed customer fields before building a payload",
     { customerName: "A" },
     { customerName: "N".repeat(121) },
     { phone: "0171234567" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
     { address: "Only two" },
     { address: "A B " + "C".repeat(497) },
   ]) {

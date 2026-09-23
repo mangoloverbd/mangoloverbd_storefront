@@ -9,8 +9,12 @@ async function throwIfResNotOk(res: Response) {
       if (body.decision === "block") {
         throw new OrderProtectionError("block", body.retryable === true, res.status);
       }
+      if (res.status === 429) {
+        throw new Error("অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।");
+      }
     } catch (error) {
-      if (error instanceof OrderProtectionError) throw error;
+      if (error instanceof OrderProtectionError || (res.status === 429 && error instanceof Error
+        && error.message === "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।")) throw error;
     }
     throw new Error(`${res.status}: ${text || res.statusText}`);
   }

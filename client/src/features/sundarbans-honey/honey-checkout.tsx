@@ -9,6 +9,8 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
@@ -75,11 +77,11 @@ function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): Honey
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120) {
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   }
-  if (!/^\d{11}$/.test(fields.phone.trim())) {
-    errors.phone = "ফোন নম্বরটি ঠিক ১১টি ইংরেজি সংখ্যায় লিখুন।";
+  if (!normalizeBdMobile(fields.phone)) {
+    errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
   }
-  if (fields.address.trim().split(/\s+/).filter(Boolean).length < 3 || fields.address.trim().length > 300) {
-    errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
+  if (fields.address.trim().length < 5 || fields.address.trim().length > 300) {
+    errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
   }
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId)) {
     errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
@@ -146,7 +148,9 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const [requestError, setRequestError] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
-  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
+  const [protectionRetryable, setProtectionRetryable] = useState(true);
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -276,7 +280,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     setIsPending(true);
     setProtectionDecision(null);
     const protectionFormData = new FormData(event.currentTarget);
-    const website = String(protectionFormData.get("website") || "");
+    const website = String(protectionFormData.get("hp_x7") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -326,10 +330,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         deliveryCharge: HONEY_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
-        website,
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(website),
         ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
@@ -352,6 +353,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");
+        setProtectionRetryable(error.retryable);
         setRequestError(false);
         setAnnouncement(error.message);
         return;
@@ -361,6 +363,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     } finally {
       submittingRef.current = false;
       setIsPending(false);
+      resetTurnstile();
     }
   };
 
@@ -373,6 +376,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       </section>
     );
   }
+
+  if (protectionDecision === "review") return <OrderHoldConfirmation />;
 
   const showAvailabilityRecovery = status !== "ready" || errors.pack === AVAILABILITY_ERROR;
   const packError = showAvailabilityRecovery ? AVAILABILITY_ERROR : errors.pack;
@@ -389,13 +394,14 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       <form
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
-        onFocusCapture={beginCheckout}
+        onFocusCapture={(event) => { beginCheckout(); formHandlers.onFocusCapture(event); }}
+        onPasteCapture={formHandlers.onPasteCapture}
         onInput={updateCapture}
         onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
-          <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+          <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#19382d]">প্যাক সাইজ বেছে নিন</legend>
             <div id="honey-pack" tabIndex={-1} className="grid gap-3 sm:grid-cols-2" {...fieldErrorProps("honey-pack", errors.pack)}>
@@ -516,11 +522,10 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
               type="tel"
               inputMode="numeric"
               autoComplete="tel-national"
-              maxLength={11}
-              pattern="[0-9]{11}"
+              maxLength={20}
               placeholder="01XXXXXXXXX"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
+               onChange={(event) => { setPhone(event.target.value); trackPhoneCandidate(event.target.value); }}
               className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("honey-phone", errors.phone)}
             />
@@ -545,7 +550,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           <p className="text-sm leading-6 text-[#654b2f]">
             অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
           </p>
-          <TurnstileChallenge onToken={setTurnstileToken} />
+           <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">
@@ -563,7 +568,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
             {announcement}
           </div>
 
-          {protectionDecision ? <div className="mt-4"><OrderProtectionMessage decision={protectionDecision} /></div> : null}
+          {protectionDecision === "block" ? <div className="mt-4"><OrderProtectionMessage decision="block" retryable={protectionRetryable} /></div> : null}
 
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">

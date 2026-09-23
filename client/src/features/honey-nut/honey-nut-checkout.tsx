@@ -8,6 +8,8 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
@@ -105,13 +107,10 @@ function getFieldErrors(
   const errors: HoneyNutFieldErrors = {};
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120)
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
-  if (!/^\d{11}$/.test(fields.phone.trim()))
-    errors.phone = "ফোন নম্বরটি ঠিক ১১টি ইংরেজি সংখ্যায় লিখুন।";
-  if (
-    fields.address.trim().split(/\s+/).filter(Boolean).length < 3 ||
-    fields.address.trim().length > 300
-  )
-    errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
+  if (!normalizeBdMobile(fields.phone))
+    errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
+  if (fields.address.trim().length < 5 || fields.address.trim().length > 300)
+    errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId))
     errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
   if (
@@ -153,12 +152,9 @@ export function HoneyNutCheckout({
   const [protectionDecision, setProtectionDecision] = useState<
     "review" | "block" | null
   >(null);
-  const {
-    clientSessionId,
-    checkoutStartedAt,
-    turnstileToken,
-    setTurnstileToken,
-  } = useCheckoutProtectionSignals();
+  const [protectionRetryable, setProtectionRetryable] = useState(true);
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -296,7 +292,7 @@ export function HoneyNutCheckout({
     setIsPending(true);
     setProtectionDecision(null);
     const protectionFormData = new FormData(event.currentTarget);
-    const website = String(protectionFormData.get("website") || "");
+    const website = String(protectionFormData.get("hp_x7") || "");
     setErrors({});
     setRequestError(false);
     setAnnouncement("প্যাকের সর্বশেষ মূল্য ও স্টক যাচাই করা হচ্ছে।");
@@ -355,10 +351,7 @@ export function HoneyNutCheckout({
             quantity,
           },
         ],
-        website,
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(website),
         ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
@@ -388,6 +381,7 @@ export function HoneyNutCheckout({
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");
+        setProtectionRetryable(error.retryable);
         setRequestError(false);
         setAnnouncement(error.message);
         return;
@@ -399,6 +393,7 @@ export function HoneyNutCheckout({
     } finally {
       submittingRef.current = false;
       setIsPending(false);
+      resetTurnstile();
     }
   };
 
@@ -413,6 +408,8 @@ export function HoneyNutCheckout({
         <span className="sr-only">অর্ডারের তথ্য লোড হচ্ছে…</span>
       </section>
     );
+  if (protectionDecision === "review") return <OrderHoldConfirmation />;
+
   const showAvailabilityRecovery =
     status !== "ready" || errors.pack === AVAILABILITY_ERROR;
   const packError = showAvailabilityRecovery ? AVAILABILITY_ERROR : errors.pack;
@@ -436,13 +433,14 @@ export function HoneyNutCheckout({
       <form
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
-        onFocusCapture={beginCheckout}
+        onFocusCapture={(event) => { beginCheckout(); formHandlers.onFocusCapture(event); }}
+        onPasteCapture={formHandlers.onPasteCapture}
         onInput={updateCapture}
         onBlurCapture={flushCapture}
         noValidate
       >
         <div className="space-y-5">
-          <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+          <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
           <fieldset className="space-y-3">
             <legend className="font-semibold text-[#3d211a]">
               প্যাক সাইজ বেছে নিন
@@ -589,10 +587,10 @@ export function HoneyNutCheckout({
               type="tel"
               inputMode="numeric"
               autoComplete="tel-national"
-              maxLength={11}
+              maxLength={20}
               placeholder="01XXXXXXXXX"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
+               onChange={(event) => { setPhone(event.target.value); trackPhoneCandidate(event.target.value); }}
               className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#3d211a] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#5b793e]"
               {...fieldErrorProps("honey-nut-phone", errors.phone)}
             />
@@ -623,7 +621,7 @@ export function HoneyNutCheckout({
             প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা
             পাঠানো হয় না।
           </p>
-          <TurnstileChallenge onToken={setTurnstileToken} />
+           <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
         </div>
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#3d211a] lg:sticky lg:top-6 sm:p-5">
           <h3 className="text-xl font-extrabold">অর্ডার সারাংশ</h3>
@@ -663,7 +661,7 @@ export function HoneyNutCheckout({
           >
             {announcement}
           </div>
-          {protectionDecision ? <div className="mt-4"><OrderProtectionMessage decision={protectionDecision} /></div> : null}
+          {protectionDecision === "block" ? <div className="mt-4"><OrderProtectionMessage decision="block" retryable={protectionRetryable} /></div> : null}
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">

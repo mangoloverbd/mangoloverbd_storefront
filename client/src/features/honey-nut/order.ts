@@ -1,5 +1,6 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
+import { normalizeBdMobile } from "../../../../shared/bd-phone";
 
 export const HONEY_NUT_DELIVERY_CHARGE = 100 as const;
 export const HONEY_NUT_CONFIRMATION_KEY = "honey-nut-order-confirmation-v1";
@@ -104,9 +105,9 @@ export function buildHoneyNutOrderPayload(input: {
 }): HoneyNutOrderPayload {
   const totals = calculateHoneyNutOrder(input.pack.unitPrice, input.quantity);
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
-  const phone = requiredTrimmedString(input.phone, 11, "Phone");
+  const phone = normalizeBdMobile(input.phone);
   const address = requiredTrimmedString(input.address, 500, "Address");
-  if (customerName.length < 2 || !/^\d{11}$/.test(phone) || address.length < 5 || address.split(/\s+/).filter(Boolean).length < 3) throw new Error("Customer details are invalid");
+  if (customerName.length < 2 || !phone || address.length < 5 || address.split(/\s+/).filter(Boolean).length < 3) throw new Error("Customer details are invalid");
   return {
     bundleTitle: requiredTrimmedString(input.productName, 200, "Product name"),
     bundleDetails: requiredTrimmedString(input.pack.label, 300, "Pack label"),

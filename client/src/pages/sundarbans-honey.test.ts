@@ -56,10 +56,10 @@ test("embedded checkout has pack, quantity, and accessible Bangla validation con
   assert.match(checkoutSource, /name="quantity"/);
   assert.doesNotMatch(checkoutSource, /<LocationCombobox/);
   assert.doesNotMatch(checkoutSource, /getUpazilas|DISTRICTS|districtId|upazilaId/);
-  assert.match(checkoutSource, /\^\\d\{11\}\$/);
+  assert.match(checkoutSource, /normalizeBdMobile\(fields\.phone\)/);
   assert.match(checkoutSource, /aria-describedby/);
   assert.match(checkoutSource, /aria-live="polite"/);
-  assert.match(checkoutSource, /ফোন নম্বর/);
+  assert.match(checkoutSource, /মোবাইল নম্বর/);
   assert.match(checkoutSource, /ডেলিভারি ঠিকানা/);
   assert.match(checkoutSource, /ক্যাশ অন ডেলিভারি/);
   assert.doesNotMatch(checkoutSource, /Dialog/);

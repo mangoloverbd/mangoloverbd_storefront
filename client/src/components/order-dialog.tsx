@@ -7,6 +7,8 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { normalizeBdMobile } from "../../../shared/bd-phone";
+import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
@@ -26,7 +28,6 @@ const deliveryOptions = [
 
 const freeDeliveryThreshold = 2600;
 
-const addressWordCount = (value: string) => value.trim().split(/\s+/).filter(Boolean).length;
 
 export type OrderDialogBundle = {
   title: string;
@@ -75,7 +76,9 @@ export default function OrderDialog({
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
   const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
-  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
+  const [protectionRetryable, setProtectionRetryable] = useState(true);
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const formRef = useRef<HTMLFormElement>(null);
@@ -178,27 +181,28 @@ export default function OrderDialog({
 
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
+    const enteredPhone = String(formData.get("phone") || "").trim();
+    const phone = normalizeBdMobile(enteredPhone);
     const address = String(formData.get("address") || "").trim();
 
     if (!name) {
       setOrderError("Please enter your full name.");
       return;
     }
-    if (!phone) {
+    if (!enteredPhone) {
       setOrderError("Please enter your phone number.");
       return;
     }
-    if (!/^\d{11}$/.test(phone)) {
-      setOrderError("ফোন নম্বরটি ইংরেজিতে লিখুন।");
+    if (!phone) {
+      setOrderError("১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।");
       return;
     }
     if (!address) {
       setOrderError("Please enter your delivery address.");
       return;
     }
-    if (addressWordCount(address) < 3) {
-      setOrderError("ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।");
+    if (address.trim().length < 5) {
+      setOrderError("সঠিক ডেলিভারি ঠিকানা লিখুন।");
       return;
     }
 
@@ -231,10 +235,7 @@ export default function OrderDialog({
          address,
         paymentMethod: selectedPaymentMethod,
         items: bundle.items,
-        website: String(formData.get("website") || ""),
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(String(formData.get("hp_x7") || "")),
         ...(draftKey ? { draftKey } : {}),
       });
       const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
@@ -242,6 +243,7 @@ export default function OrderDialog({
         setProtectionDecision("review");
         setOrderError("");
         capture.clear();
+        onSuccess?.();
         return;
       }
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
@@ -266,6 +268,7 @@ export default function OrderDialog({
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");
+        setProtectionRetryable(error.retryable);
         setOrderError("");
         return;
       }
@@ -276,6 +279,7 @@ export default function OrderDialog({
       );
     } finally {
       setOrderSubmitting(false);
+      resetTurnstile();
     }
   };
 
@@ -335,7 +339,6 @@ export default function OrderDialog({
                   }}
                   className="flex w-full flex-1 flex-col items-center justify-center px-2 py-12 text-center font-sans md:py-16"
                 >
-                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <motion.span
                     variants={{
                       hidden: { opacity: 0, scaleX: 0 },
@@ -404,15 +407,28 @@ export default function OrderDialog({
                     </Button>
                   </motion.div>
                 </motion.div>
-              ) : (
+               ) : protectionDecision === "review" ? (
+                 <div className="flex flex-1 flex-col items-center justify-center">
+                   <OrderHoldConfirmation />
+                   <Button type="button" onClick={() => resetDialog(false)} className="mt-6 rounded-[8px] bg-black px-7 py-3 text-white">
+                     Close - বন্ধ
+                   </Button>
+                 </div>
+               ) : (
                 <form
                   ref={formRef}
                   onSubmit={placeOrder}
-                  onInput={() => { updateCapture(); }}
+                  onFocusCapture={formHandlers.onFocusCapture}
+                  onPasteCapture={formHandlers.onPasteCapture}
+                  onInput={(event) => {
+                    if ((event.target as HTMLInputElement).name === "phone") trackPhoneCandidate((event.target as HTMLInputElement).value);
+                    updateCapture();
+                  }}
                   onBlurCapture={() => { flushCapture(); }}
                   className="mt-6 space-y-6"
                   noValidate
                 >
+                  <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
                     <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
                       <img
@@ -460,8 +476,7 @@ export default function OrderDialog({
                         name="phone"
                         type="tel"
                         inputMode="numeric"
-                        pattern="[0-9]{11}"
-                        maxLength={11}
+                        maxLength={20}
                         className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
                         placeholder="01XXXXXXXXX"
                       />
@@ -562,8 +577,8 @@ export default function OrderDialog({
                     </div>
                   )}
 
-                  {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
-                  <TurnstileChallenge onToken={setTurnstileToken} />
+                   {protectionDecision === "block" ? <OrderProtectionMessage decision="block" retryable={protectionRetryable} /> : null}
+                   <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
 
                   <div className="bg-black/5 rounded-[12px] p-5">
                     <div className="flex justify-between text-[11px] text-black/60 font-medium">

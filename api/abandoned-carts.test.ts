@@ -36,14 +36,17 @@ function createRequest(body?: unknown, rawBody?: string, method = "POST") {
 
 function createResponse() {
   let rawBody = "";
+  const headers = new Map<string, string | string[]>();
   const response = {
     statusCode: 0,
-    setHeader() {},
+    setHeader(name: string, value: string | string[]) { headers.set(name, value); },
+    getHeader(name: string) { return headers.get(name); },
     end(chunk?: string) { rawBody = chunk ?? ""; },
   } as unknown as ServerResponse;
   return {
     response,
     read: () => ({ status: response.statusCode, body: JSON.parse(rawBody) }),
+    header: (name: string) => headers.get(name),
   };
 }
 
@@ -118,7 +121,29 @@ test("Vercel handler does not expose an upstream failure or accept another metho
 test("Vercel capture handler has no runtime dependency on the local Express server", () => {
   const source = readFileSync(new URL("./abandoned-carts.ts", import.meta.url), "utf8");
 
-  assert.doesNotMatch(source, /from ["']\.\.\/server\//);
+  assert.doesNotMatch(source, /from ["']\.\.\/server\/(?:routes|index|abandoned-cart-service)/);
+});
+
+test("Vercel capture signs client context with a first-party device cookie", async () => {
+  const { createAbandonedCartHandler } = await import("./abandoned-carts.ts");
+  const previous = process.env.STOREFRONT_CONTEXT_SECRET;
+  process.env.STOREFRONT_CONTEXT_SECRET = "test-context-secret-0123456789abcdef";
+  try {
+    let options: { clientContextHeader?: string } | undefined;
+    const handler = createAbandonedCartHandler({ processCapture: async (_capture, context) => { options = context; } });
+    const req = createRequest(validCapture);
+    req.headers["x-vercel-forwarded-for"] = "103.12.44.7";
+    const { response, header } = createResponse();
+    await handler(req, response);
+    assert.match(options?.clientContextHeader ?? "", /^[\w-]+\.[0-9a-f]{64}$/);
+    const context = JSON.parse(Buffer.from(options!.clientContextHeader!.split(".")[0], "base64url").toString());
+    assert.equal(context.ip, "103.12.44.7");
+    assert.match(context.deviceId, /^[0-9a-f-]{36}$/);
+    assert.match(String(header("Set-Cookie")), /mlbd_did=.*HttpOnly/);
+  } finally {
+    if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
+    else process.env.STOREFRONT_CONTEXT_SECRET = previous;
+  }
 });
 
 test("Vercel parsing matches the local strict capture contract", async () => {
@@ -156,6 +181,7 @@ test("Vercel forwards only the validated capture using its server-only API key",
     merchantSuiteUrl: "https://suite.invalid",
     apiKey: testHeaderValue,
     forwardedClientIp: "203.0.113.42",
+    clientContextHeader: "signed.capture",
     timeoutSignal: () => new AbortController().signal,
     fetchImpl: async (input, init) => {
       requestUrl = String(input);
@@ -169,6 +195,7 @@ test("Vercel forwards only the validated capture using its server-only API key",
     "Content-Type": "application/json",
     "x-api-key": testHeaderValue,
     "x-storefront-client-ip": "203.0.113.42",
+    "x-mlbd-client-context": "signed.capture",
   });
   assert.deepEqual(JSON.parse(String(requestInit?.body)), { ...validCapture, campaign: {} });
 });

@@ -37,6 +37,45 @@ test("trims whitespace around an otherwise valid phone number", () => {
   assert.equal(validateOrder({ ...validOrder, phone: " 01712345678 " }).phone, "01712345678");
 });
 
+test("accepts concise but real delivery addresses for staff confirmation", () => {
+  assert.equal(validateOrder({ ...validOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
+});
+
+test("accepts Bangla and +880 mobile formats and ignores invalid optional telemetry", () => {
+  assert.equal(validateOrder({ ...validOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮" }).phone, "01712345678");
+  assert.equal(validateOrder({ ...validOrder, checkoutTelemetry: { phoneCandidates: ["bad"] } }).checkoutTelemetry, undefined);
+});
+
+test("rejects fake phone formats but drops malformed optional browser hints", () => {
+  assert.throws(() => validateOrder({ ...validOrder, phone: "12345678901" }));
+  assert.equal(validateOrder({ ...validOrder, deviceFingerprint: "A".repeat(64) }).deviceFingerprint, undefined);
+  assert.deepEqual(validateOrder({ ...validOrder, deviceFingerprint: "a".repeat(64),
+    checkoutTelemetry: { pastedFields: ["phone"] } }).checkoutTelemetry, { pastedFields: ["phone"] });
+});
+
+test("a signing failure does not prevent a valid order from reaching Merchant Suite", async () => {
+  const previous = process.env.STOREFRONT_CONTEXT_SECRET;
+  process.env.STOREFRONT_CONTEXT_SECRET = "test-context-secret-0123456789abcdef";
+  const calls: unknown[] = [];
+  let signCalls = 0;
+  try {
+    const handler = createOrderHandler({
+      processOrder: async order => { calls.push(order); return { decision: "allow", orderRef: "ML-1" }; },
+      signContext: () => { signCalls++; throw new Error("signing unavailable"); },
+    });
+    const req = createRequest(validOrder);
+    req.headers["x-vercel-forwarded-for"] = "103.12.44.7";
+    const { response, read } = createResponse();
+    await handler(req, response);
+    assert.equal(signCalls, 1);
+    assert.equal(calls.length, 1);
+    assert.equal(read().status, 201);
+  } finally {
+    if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
+    else process.env.STOREFRONT_CONTEXT_SECRET = previous;
+  }
+});
+
 test("validates and normalizes optional landing-page attribution", () => {
   assert.equal(
     validateOrder({ ...validOrder, landingPagePath: "/step/katimon-mango/?utm_campaign=summer" }).landingPagePath,
@@ -62,6 +101,29 @@ const dependencies = {
   storefrontHandle: "mangolover",
   timeoutSignal: () => new AbortController().signal,
 };
+
+test("forwards signed context but never forwards raw browser hints", async () => {
+  let headers: Record<string, string> | undefined;
+  let body: Record<string, unknown> | undefined;
+  await processOrder(validateOrder({ ...validOrder, deviceFingerprint: "a".repeat(64),
+    checkoutTelemetry: { phoneCandidates: ["01712345678"] } }), {
+    ...dependencies, clientContextHeader: "signed.payload",
+    fetchImpl: async (_url, init) => {
+      headers = init?.headers as Record<string, string>;
+      body = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ orderRef: "ML-1" }), { status: 201 });
+    },
+  });
+  assert.equal(headers?.["x-mlbd-client-context"], "signed.payload");
+  assert.equal("deviceFingerprint" in (body ?? {}), false);
+  assert.equal("checkoutTelemetry" in (body ?? {}), false);
+});
+
+test("preserves upstream rate limiting as a retryable checkout response", async () => {
+  await assert.rejects(() => processOrder(validateOrder(validOrder), { ...dependencies,
+    fetchImpl: async () => new Response(JSON.stringify({ message: "Slow down" }), { status: 429 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 429);
+});
 
 test("strips retired tracking fields from checkout input", () => {
   const order = validateOrder({ ...validOrder, trackingMode: "google_only", metaEventId: "meta-secret" });
@@ -118,8 +180,7 @@ test("matches the reviewed bounded validation contract without coercion", () => 
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
-    { address: "Only two" },
+    { address: "Ab" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },
@@ -145,6 +206,7 @@ test("forwards the exact allowlisted Merchant-Suite body and canonical ID", asyn
     customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
+    items: canonicalItems,
     notes: "Test product - 1 kg",
   });
 });
@@ -230,6 +292,7 @@ test("forwards a validated checkout draft key only through the secret-backed ord
     customerName: "Test Customer",
     phone: "01712345678",
     address: "House 1 Road 2 Dhaka",
+    items: canonicalItems,
     notes: "Test product - 1 kg",
     abandoned_checkout_draft_key: "7cb13b8e-b576-4faa-b238-cc8b73059772",
   });
@@ -284,14 +347,17 @@ function createRequest(body?: unknown, rawBody?: string) {
 
 function createResponse() {
   let rawBody = "";
+  const headers = new Map<string, string | string[]>();
   const response = {
     statusCode: 0,
-    setHeader() {},
+    setHeader(name: string, value: string | string[]) { headers.set(name, value); },
+    getHeader(name: string) { return headers.get(name); },
     end(chunk?: string) { rawBody = chunk ?? ""; },
   } as unknown as ServerResponse;
   return {
     response,
     read: () => ({ status: response.statusCode, body: JSON.parse(rawBody) }),
+    header: (name: string) => headers.get(name),
   };
 }
 
@@ -305,6 +371,30 @@ test("handler confirms an order and returns no PII", async () => {
   assert.deepEqual(read(), { status: 201, body: { orderRef: "ORD-123", decision: "allow" } });
   assert.equal(JSON.stringify(read()).includes("Test Customer"), false);
   assert.equal(JSON.stringify(read()).includes("01712345678"), false);
+});
+
+test("Vercel handler signs client context and issues a device cookie", async () => {
+  const previous = process.env.STOREFRONT_CONTEXT_SECRET;
+  process.env.STOREFRONT_CONTEXT_SECRET = "test-context-secret-0123456789abcdef";
+  try {
+    let signed = "";
+    const handler = createOrderHandler({ processOrder: async (_order, options) => {
+      signed = options?.clientContextHeader ?? "";
+      return { orderRef: "ML-3" };
+    } });
+    const req = createRequest(validOrder);
+    req.headers["x-vercel-forwarded-for"] = "103.12.44.7";
+    const { response, header } = createResponse();
+    await handler(req, response);
+    assert.match(signed, /^[\w-]+\.[0-9a-f]{64}$/);
+    const context = JSON.parse(Buffer.from(signed.split(".")[0], "base64url").toString());
+    assert.equal(context.ip, "103.12.44.7");
+    assert.match(context.deviceId, /^[0-9a-f-]{36}$/);
+    assert.match(String(header("Set-Cookie")), /mlbd_did=.*HttpOnly; Secure; SameSite=Lax/);
+  } finally {
+    if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
+    else process.env.STOREFRONT_CONTEXT_SECRET = previous;
+  }
 });
 
 test("handler returns stable client errors and has no side effects for invalid requests", async () => {
@@ -344,4 +434,17 @@ test("handler maps upstream failures to a stable 502", async () => {
     status: 502,
     body: { message: "Could not confirm order. Please try again." },
   });
+});
+
+test("Vercel handler preserves a retryable 429 and ignores malformed telemetry", async () => {
+  const { response, read } = createResponse();
+  let called = false;
+  const handler = createOrderHandler({ processOrder: async (order) => {
+    called = true;
+    assert.equal(order.checkoutTelemetry, undefined);
+    throw new OrderUpstreamError(429);
+  } });
+  await handler(createRequest({ ...validOrder, checkoutTelemetry: { pastedFields: ["other"] } }), response);
+  assert.equal(called, true);
+  assert.equal(read().status, 429);
 });

@@ -8,6 +8,8 @@ import {
   type OrderRequest,
 } from "./order-service.ts";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
+import { createSignedClientContext } from "./client-context.ts";
+import { readOrCreateDeviceId } from "./device-id.ts";
 import {
   AbandonedCartUpstreamError,
   AbandonedCartValidationError,
@@ -16,7 +18,7 @@ import {
 } from "./abandoned-cart-service.ts";
 
 type RouteDependencies = {
-  processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
   processAbandonedCartCapture?: typeof processAbandonedCartCapture;
 };
 
@@ -25,13 +27,15 @@ export async function registerRoutes(
   app: Express,
   dependencies: RouteDependencies = {},
 ): Promise<Server> {
-  const process = dependencies.processOrder ?? processOrder;
+  const submitOrder = dependencies.processOrder ?? processOrder;
   const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
 
   app.post("/api/abandoned-carts", async (req, res, next) => {
+    const { deviceId } = readOrCreateDeviceId(req, res);
     try {
       const capture = parseAbandonedCartCapture(req.body);
-      await processCapture(capture);
+      const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
+      await processCapture(capture, clientContextHeader ? { clientContextHeader } : {});
       res.status(202).json({ ok: true });
     } catch (error) {
       if (error instanceof AbandonedCartValidationError) {
@@ -47,9 +51,13 @@ export async function registerRoutes(
   });
 
   app.post("/api/orders", async (req, res, next) => {
+    const { deviceId } = readOrCreateDeviceId(req, res);
     try {
       const order = orderRequestSchema.parse(req.body);
-      const result = await process(order);
+      const clientContextHeader = createSignedClientContext(req, {
+        deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
+      }, process.env.STOREFRONT_CONTEXT_SECRET);
+      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 
@@ -67,7 +75,8 @@ export async function registerRoutes(
       }
 
       if (error instanceof OrderUpstreamError) {
-        res.status(502).json({ message: "Could not confirm order. Please try again." });
+        res.status(error.statusCode).json({ message: error.statusCode === 429
+          ? "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।" : "Could not confirm order. Please try again." });
         return;
       }
       if (error instanceof OrderProtectionError) {

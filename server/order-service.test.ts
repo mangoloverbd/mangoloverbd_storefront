@@ -42,17 +42,53 @@ test("accepts exactly 11 English phone digits", () => {
   assert.equal(order.phone, "01712345678");
 });
 
+test("local checkout accepts a concise valid address", () => {
+  assert.equal(orderRequestSchema.parse({ ...validEnglishOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
+});
+
+test("local schema rejects fake phone and preserves validated browser hints", () => {
+  assert.throws(() => orderRequestSchema.parse({ ...validEnglishOrder, phone: "12345678901" }));
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, deviceFingerprint: "a".repeat(64),
+    checkoutTelemetry: { pastedFields: ["address"] } });
+  assert.equal(order.deviceFingerprint, "a".repeat(64));
+  assert.deepEqual(order.checkoutTelemetry, { pastedFields: ["address"] });
+});
+
+test("local proxy forwards signed context without raw browser hints", async () => {
+  const order = orderRequestSchema.parse({ ...validEnglishOrder, deviceFingerprint: "a".repeat(64),
+    checkoutTelemetry: { pastedFields: ["phone"] } });
+  let headers: Record<string, string> | undefined;
+  let body: Record<string, unknown> | undefined;
+  await processOrder(order, { ...dependencies, clientContextHeader: "signed.payload",
+    fetchImpl: async (_url, init) => {
+      headers = init?.headers as Record<string, string>;
+      body = JSON.parse(String(init?.body));
+      return new Response(JSON.stringify({ orderRef: "ML-2" }), { status: 201 });
+    } });
+  assert.equal(headers?.["x-mlbd-client-context"], "signed.payload");
+  assert.equal("deviceFingerprint" in (body ?? {}), false);
+  assert.equal("checkoutTelemetry" in (body ?? {}), false);
+});
+
 test("trims whitespace around an otherwise valid phone number", () => {
   const order = orderRequestSchema.parse({ ...validEnglishOrder, phone: " 01712345678 " });
   assert.equal(order.phone, "01712345678");
 });
 
-test("rejects Bengali phone digits", () => {
-  assert.throws(() => orderRequestSchema.parse(validOrder));
+test("preserves upstream rate limiting as a retryable checkout response", async () => {
+  await assert.rejects(() => processOrder(orderRequestSchema.parse(validEnglishOrder), {
+    merchantSuiteUrl: "https://suite.invalid", storefrontHandle: "mangolover",
+    fetchImpl: async () => new Response(JSON.stringify({ message: "Slow down" }), { status: 429 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 429);
 });
 
-test("rejects an address with fewer than three words", () => {
-  assert.throws(() => orderRequestSchema.parse({ ...validOrder, address: "Dhaka" }));
+test("normalizes Bengali phone digits", () => {
+  assert.equal(orderRequestSchema.parse(validOrder).phone, "01712345678");
+});
+
+test("rejects a too-short address but accepts a concise real one", () => {
+  assert.throws(() => orderRequestSchema.parse({ ...validOrder, address: "Ab" }));
+  assert.equal(orderRequestSchema.parse({ ...validOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
 });
 
 test("requires a positive whole-number quantity", () => {
@@ -118,8 +154,7 @@ test("enforces the reviewed bounded order contract", () => {
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
-    { address: "Only two" },
+    { address: "Ab" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
     { bkashTrxId: "B".repeat(81) },
@@ -304,7 +339,7 @@ async function invokeLocalOrder(body: unknown, routeDependencies: Record<string,
   try {
     const response = await fetch(`http://127.0.0.1:${address.port}/api/orders`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-real-ip": "103.12.44.7" },
       body: JSON.stringify(body),
     });
     return { status: response.status, body: await response.json() };
@@ -323,6 +358,41 @@ test("local handler confirms an order and returns no PII", async () => {
   assert.deepEqual(response, { status: 201, body: { orderRef: "ORD-123", decision: "allow" } });
   assert.equal(JSON.stringify(response).includes("Test Customer"), false);
   assert.equal(JSON.stringify(response).includes("01712345678"), false);
+});
+
+test("local handler signs the same context without browser hints in the body", async () => {
+  const previous = process.env.STOREFRONT_CONTEXT_SECRET;
+  process.env.STOREFRONT_CONTEXT_SECRET = "test-context-secret-0123456789abcdef";
+  try {
+    let signed = "";
+    await invokeLocalOrder({ ...validEnglishOrder, deviceFingerprint: "a".repeat(64) }, {
+      processOrder: async (_order: unknown, options?: { clientContextHeader?: string }) => {
+        signed = options?.clientContextHeader ?? "";
+        return { orderRef: "ML-3" };
+      },
+    });
+    // The local test proxy supplies the same x-real-ip header as its deployed counterpart.
+    assert.match(signed, /^[\w-]+\.[0-9a-f]{64}$/);
+    const context = JSON.parse(Buffer.from(signed.split(".")[0], "base64url").toString());
+    assert.equal(context.fingerprint, "a".repeat(64));
+    assert.match(context.deviceId, /^[0-9a-f-]{36}$/);
+  } finally {
+    if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
+    else process.env.STOREFRONT_CONTEXT_SECRET = previous;
+  }
+});
+
+test("local handler accepts Bangla phone, ignores malformed telemetry and returns 429", async () => {
+  let called = false;
+  const response = await invokeLocalOrder({ ...validEnglishOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮",
+    checkoutTelemetry: { pastedFields: ["other"] } }, { processOrder: async (order: { phone: string; checkoutTelemetry?: unknown }) => {
+    called = true;
+    assert.equal(order.phone, "01712345678");
+    assert.equal(order.checkoutTelemetry, undefined);
+    throw new OrderUpstreamError(429);
+  } });
+  assert.equal(called, true);
+  assert.equal(response.status, 429);
 });
 
 test("local handler returns a hold response", async () => {

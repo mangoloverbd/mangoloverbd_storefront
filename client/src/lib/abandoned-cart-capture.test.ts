@@ -2,6 +2,16 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
+test("captures a Bangla-prefixed phone as canonical digits", async () => {
+  const { createAbandonedCartCapture } = await import("./abandoned-cart-capture.ts");
+  const sent: unknown[] = [];
+  const capture = createAbandonedCartCapture({ source: "storefront", createDraftKey: () => "7cb13b8e-b576-4faa-b238-cc8b73059772",
+    fetchImpl: async (_url, init) => { sent.push(JSON.parse(String(init?.body))); return new Response(null, { status: 202 }); } });
+  assert.ok(capture.capture({ phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮", items: [{ productName: "Honey", quantity: 1, unitPrice: 100 }], subtotal: 100, deliveryRate: 50, total: 150 }));
+  await capture.flush();
+  assert.equal((sent[0] as { phone: string }).phone, "01712345678");
+});
+
 const snapshot = {
   customerName: "Test Customer",
   phone: "01712345678",

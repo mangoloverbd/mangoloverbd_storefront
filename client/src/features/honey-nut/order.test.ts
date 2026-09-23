@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { buildHoneyNutOrderPayload } from "./order.ts";
+
+test("Honey Nut checkout refuses an arbitrary 11-digit phone", () => {
+  assert.throws(() => buildHoneyNutOrderPayload({ productName: "Honey Nut", pack: { variantId: "v", label: "1 kg", unitPrice: 900 },
+    quantity: 1, customerName: "Test Customer", phone: "12345678901", address: "House 1 Road 2 Dhaka" }));
+});
 
 function readOrderSource() {
   try {

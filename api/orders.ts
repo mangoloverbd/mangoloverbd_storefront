@@ -1,11 +1,14 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.js";
 import { normalizeLandingPagePath } from "../server/landing-page-attribution.js";
+import { CLIENT_CONTEXT_HEADER, createSignedClientContext, parseCheckoutTelemetry, type CheckoutTelemetryInput } from "../server/client-context.js";
+import { readOrCreateDeviceId } from "../server/device-id.js";
+import { normalizeBdMobile } from "../shared/bd-phone.js";
 
 export { OrderProtectionError } from "../server/order-protection-errors.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
-const WEBHOOK_TIMEOUT_MS = 10_000;
+const WEBHOOK_TIMEOUT_MS = 25_000;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type OrderRequest = {
@@ -24,6 +27,8 @@ export type OrderRequest = {
   turnstileToken?: string;
   clientSessionId?: string;
   checkoutStartedAt?: string;
+  deviceFingerprint?: string;
+  checkoutTelemetry?: CheckoutTelemetryInput;
   landingPagePath?: string;
   // Required: the Suite rejects an order with no line items, and a rejection
   // reaches the customer as a bare "could not confirm order". Refusing the
@@ -50,7 +55,7 @@ class RequestBodyError extends Error {
 }
 
 export class OrderUpstreamError extends Error {
-  constructor() {
+  constructor(readonly statusCode: 429 | 502 = 502) {
     super("Merchant-Suite did not confirm the order");
     this.name = "OrderUpstreamError";
   }
@@ -61,10 +66,12 @@ type OrderServiceDependencies = {
   merchantSuiteUrl?: string;
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
+  clientContextHeader?: string;
 };
 
 type OrderHandlerDependencies = {
-  processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
+  signContext?: typeof createSignedClientContext;
 };
 
 function byteLength(value: unknown) {
@@ -129,13 +136,12 @@ export function validateOrder(body: unknown): OrderRequest {
   const quantity = boundedInteger(value.quantity, 1, 100);
   const deliveryCharge = boundedInteger(value.deliveryCharge, 0, 100_000);
   const customerName = requiredString(value.customerName, 2, 120);
-  const phone = requiredString(value.phone, 11, 11);
+  const phone = typeof value.phone === "string" ? normalizeBdMobile(value.phone) : null;
   const address = requiredString(value.address, 5, 500);
   const paymentMethod = value.paymentMethod === undefined
     ? "cash_on_delivery"
     : value.paymentMethod;
-  if (!/^\d{11}$/.test(phone)
-    || address.split(/\s+/).filter(Boolean).length < 3
+  if (!phone
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
     || !Number.isSafeInteger(bundlePrice + deliveryCharge)) {
     throw new OrderValidationError();
@@ -166,6 +172,9 @@ export function validateOrder(body: unknown): OrderRequest {
   const checkoutStartedAt = optionalString("checkoutStartedAt", 64);
   if (checkoutStartedAt && !Number.isFinite(Date.parse(checkoutStartedAt))) throw new OrderValidationError();
   if (clientSessionId && !/^[a-zA-Z0-9._:-]+$/.test(clientSessionId)) throw new OrderValidationError();
+  const deviceFingerprint = typeof value.deviceFingerprint === "string" && /^[0-9a-f]{64}$/.test(value.deviceFingerprint)
+    ? value.deviceFingerprint : undefined;
+  const checkoutTelemetry = value.checkoutTelemetry === undefined ? undefined : parseCheckoutTelemetry(value.checkoutTelemetry);
 
   let landingPagePath: string | undefined;
   if (value.landingPagePath !== undefined) {
@@ -202,6 +211,8 @@ export function validateOrder(body: unknown): OrderRequest {
     ...(turnstileToken !== undefined ? { turnstileToken } : {}),
     ...(clientSessionId !== undefined ? { clientSessionId } : {}),
     ...(checkoutStartedAt !== undefined ? { checkoutStartedAt } : {}),
+    ...(deviceFingerprint !== undefined ? { deviceFingerprint } : {}),
+    ...(checkoutTelemetry ? { checkoutTelemetry } : {}),
     ...(landingPagePath ? { landingPagePath } : {}),
     items,
     ...(shippingZoneId !== undefined ? { shippingZoneId } : {}),
@@ -228,6 +239,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
       },
       body: JSON.stringify({
         customerName: order.customerName,
@@ -262,12 +274,13 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     if (response.status === 403 || data.decision === "block") {
       throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
     }
+    if (response.status === 429) throw new OrderUpstreamError(429);
     if (!response.ok) throw new Error("Merchant-Suite rejected order");
     const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");
     return { orderRef, decision: "allow" };
   } catch (error) {
-    if (error instanceof OrderProtectionError) throw error;
+    if (error instanceof OrderProtectionError || error instanceof OrderUpstreamError) throw error;
     throw new OrderUpstreamError();
   }
 }
@@ -279,7 +292,7 @@ function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
 }
 
 export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) {
-  const process = dependencies.processOrder ?? processOrder;
+  const submitOrder = dependencies.processOrder ?? processOrder;
 
   return async function handler(
     req: IncomingMessage & { body?: unknown },
@@ -290,9 +303,17 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
       return;
     }
 
+    const { deviceId } = readOrCreateDeviceId(req, res);
+
     try {
       const order = validateOrder(await readBody(req));
-      const result = await process(order);
+      let clientContextHeader: string | undefined;
+      try {
+        clientContextHeader = (dependencies.signContext ?? createSignedClientContext)(req, {
+          deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
+        }, process.env.STOREFRONT_CONTEXT_SECRET);
+      } catch { console.warn("[Order] client context signing unavailable"); }
+      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 
@@ -311,7 +332,8 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
         return;
       }
       if (error instanceof OrderUpstreamError) {
-        sendJson(res, 502, { message: "Could not confirm order. Please try again." });
+         sendJson(res, error.statusCode, { message: error.statusCode === 429
+           ? "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।" : "Could not confirm order. Please try again." });
         return;
       }
       if (error instanceof OrderProtectionError) {

@@ -92,6 +92,7 @@ test("forwards a trusted Vercel client IP only through the server-to-server head
   await processAbandonedCartCapture(validCapture, {
     ...dependencies,
     forwardedClientIp: "203.0.113.42",
+    clientContextHeader: "signed.capture",
     fetchImpl: async (_input, init) => {
       requestInit = init;
       return new Response(JSON.stringify({ ok: true }), { status: 200 });
@@ -102,6 +103,7 @@ test("forwards a trusted Vercel client IP only through the server-to-server head
     "Content-Type": "application/json",
     "x-api-key": testHeaderValue,
     "x-storefront-client-ip": "203.0.113.42",
+    "x-mlbd-client-context": "signed.capture",
   });
 });
 
