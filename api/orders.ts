@@ -1,6 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { OrderProtectionError, type OrderProcessResult } from "../server/order-protection-errors.js";
 import { normalizeLandingPagePath } from "../server/landing-page-attribution.js";
+import { CLIENT_CONTEXT_HEADER, createSignedClientContext, parseCheckoutTelemetry, type CheckoutTelemetryInput } from "../server/client-context.js";
+import { readOrCreateDeviceId } from "../server/device-id.js";
 
 export { OrderProtectionError } from "../server/order-protection-errors.js";
 
@@ -24,6 +26,8 @@ export type OrderRequest = {
   turnstileToken?: string;
   clientSessionId?: string;
   checkoutStartedAt?: string;
+  deviceFingerprint?: string;
+  checkoutTelemetry?: CheckoutTelemetryInput;
   landingPagePath?: string;
   // Required: the Suite rejects an order with no line items, and a rejection
   // reaches the customer as a bare "could not confirm order". Refusing the
@@ -61,10 +65,11 @@ type OrderServiceDependencies = {
   merchantSuiteUrl?: string;
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
+  clientContextHeader?: string;
 };
 
 type OrderHandlerDependencies = {
-  processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
 };
 
 function byteLength(value: unknown) {
@@ -134,7 +139,7 @@ export function validateOrder(body: unknown): OrderRequest {
   const paymentMethod = value.paymentMethod === undefined
     ? "cash_on_delivery"
     : value.paymentMethod;
-  if (!/^\d{11}$/.test(phone)
+  if (!/^01[3-9]\d{8}$/.test(phone)
     || address.split(/\s+/).filter(Boolean).length < 3
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
     || !Number.isSafeInteger(bundlePrice + deliveryCharge)) {
@@ -166,6 +171,12 @@ export function validateOrder(body: unknown): OrderRequest {
   const checkoutStartedAt = optionalString("checkoutStartedAt", 64);
   if (checkoutStartedAt && !Number.isFinite(Date.parse(checkoutStartedAt))) throw new OrderValidationError();
   if (clientSessionId && !/^[a-zA-Z0-9._:-]+$/.test(clientSessionId)) throw new OrderValidationError();
+  const deviceFingerprint = value.deviceFingerprint;
+  if (deviceFingerprint !== undefined && (typeof deviceFingerprint !== "string" || !/^[0-9a-f]{64}$/.test(deviceFingerprint))) {
+    throw new OrderValidationError();
+  }
+  const checkoutTelemetry = value.checkoutTelemetry === undefined ? undefined : parseCheckoutTelemetry(value.checkoutTelemetry);
+  if (value.checkoutTelemetry !== undefined && !checkoutTelemetry) throw new OrderValidationError();
 
   let landingPagePath: string | undefined;
   if (value.landingPagePath !== undefined) {
@@ -202,6 +213,8 @@ export function validateOrder(body: unknown): OrderRequest {
     ...(turnstileToken !== undefined ? { turnstileToken } : {}),
     ...(clientSessionId !== undefined ? { clientSessionId } : {}),
     ...(checkoutStartedAt !== undefined ? { checkoutStartedAt } : {}),
+    ...(deviceFingerprint !== undefined ? { deviceFingerprint } : {}),
+    ...(checkoutTelemetry ? { checkoutTelemetry } : {}),
     ...(landingPagePath ? { landingPagePath } : {}),
     items,
     ...(shippingZoneId !== undefined ? { shippingZoneId } : {}),
@@ -228,6 +241,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
       },
       body: JSON.stringify({
         customerName: order.customerName,
@@ -279,7 +293,7 @@ function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
 }
 
 export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) {
-  const process = dependencies.processOrder ?? processOrder;
+  const submitOrder = dependencies.processOrder ?? processOrder;
 
   return async function handler(
     req: IncomingMessage & { body?: unknown },
@@ -290,9 +304,14 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
       return;
     }
 
+    const { deviceId } = readOrCreateDeviceId(req, res);
+
     try {
       const order = validateOrder(await readBody(req));
-      const result = await process(order);
+      const clientContextHeader = createSignedClientContext(req, {
+        deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
+      }, process.env.STOREFRONT_CONTEXT_SECRET);
+      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 

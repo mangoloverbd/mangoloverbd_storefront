@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
 import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
+import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
 
@@ -14,7 +15,7 @@ export const orderRequestSchema = z.object({
   quantity: z.number().int().min(1).max(100).refine(Number.isSafeInteger),
   deliveryCharge: z.number().int().min(0).max(100_000).refine(Number.isSafeInteger),
   customerName: z.string().trim().min(2).max(120),
-  phone: z.string().trim().regex(/^\d{11}$/, "Phone number must contain exactly 11 English digits"),
+  phone: z.string().trim().regex(/^01[3-9]\d{8}$/, "Phone number must be a valid Bangladeshi mobile number"),
   address: z.string().trim().min(5).max(500),
   paymentMethod: z.enum(["cash_on_delivery", "bkash"]).default("cash_on_delivery"),
   bkashTrxId: z.string().trim().max(80).optional().default(""),
@@ -23,6 +24,12 @@ export const orderRequestSchema = z.object({
   turnstileToken: z.string().max(4096).optional(),
   clientSessionId: z.string().max(120).regex(/^[a-zA-Z0-9._:-]+$/).optional(),
   checkoutStartedAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value)), "Invalid checkout timestamp").optional(),
+  deviceFingerprint: z.string().regex(/^[0-9a-f]{64}$/).optional(),
+  checkoutTelemetry: z.object({
+    firstInteractionAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value))).optional(),
+    phoneCandidates: z.array(z.string().regex(/^\d{11}$/)).max(5).optional(),
+    pastedFields: z.array(z.enum(["name", "phone", "address"])).max(3).optional(),
+  }).strict().optional(),
   landingPagePath: z.string().trim().max(120).transform((value) => {
     const normalized = normalizeLandingPagePath(value);
     if (!normalized) throw new Error("Invalid landing page path");
@@ -68,6 +75,7 @@ type OrderServiceDependencies = {
   merchantSuiteUrl?: string;
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
+  clientContextHeader?: string;
 };
 
 function getCanonicalOrderRef(value: unknown) {
@@ -90,6 +98,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
       },
       body: JSON.stringify({
         customerName: order.customerName,

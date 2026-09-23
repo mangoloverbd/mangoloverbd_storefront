@@ -8,6 +8,8 @@ import {
   type OrderRequest,
 } from "./order-service.ts";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
+import { createSignedClientContext } from "./client-context.ts";
+import { readOrCreateDeviceId } from "./device-id.ts";
 import {
   AbandonedCartUpstreamError,
   AbandonedCartValidationError,
@@ -16,7 +18,7 @@ import {
 } from "./abandoned-cart-service.ts";
 
 type RouteDependencies = {
-  processOrder?: (order: OrderRequest) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
   processAbandonedCartCapture?: typeof processAbandonedCartCapture;
 };
 
@@ -25,7 +27,7 @@ export async function registerRoutes(
   app: Express,
   dependencies: RouteDependencies = {},
 ): Promise<Server> {
-  const process = dependencies.processOrder ?? processOrder;
+  const submitOrder = dependencies.processOrder ?? processOrder;
   const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
 
   app.post("/api/abandoned-carts", async (req, res, next) => {
@@ -47,9 +49,13 @@ export async function registerRoutes(
   });
 
   app.post("/api/orders", async (req, res, next) => {
+    const { deviceId } = readOrCreateDeviceId(req, res);
     try {
       const order = orderRequestSchema.parse(req.body);
-      const result = await process(order);
+      const clientContextHeader = createSignedClientContext(req, {
+        deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
+      }, process.env.STOREFRONT_CONTEXT_SECRET);
+      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 
