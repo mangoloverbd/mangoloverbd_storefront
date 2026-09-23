@@ -7,6 +7,7 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
@@ -75,6 +76,7 @@ export default function OrderDialog({
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
   const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
+  const [protectionRetryable, setProtectionRetryable] = useState(true);
   const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
     resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
@@ -240,6 +242,7 @@ export default function OrderDialog({
         setProtectionDecision("review");
         setOrderError("");
         capture.clear();
+        onSuccess?.();
         return;
       }
       if (typeof result.orderRef !== "string" || !result.orderRef.trim()) {
@@ -264,6 +267,7 @@ export default function OrderDialog({
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");
+        setProtectionRetryable(error.retryable);
         setOrderError("");
         return;
       }
@@ -402,7 +406,14 @@ export default function OrderDialog({
                     </Button>
                   </motion.div>
                 </motion.div>
-              ) : (
+               ) : protectionDecision === "review" ? (
+                 <div className="flex flex-1 flex-col items-center justify-center">
+                   <OrderHoldConfirmation />
+                   <Button type="button" onClick={() => resetDialog(false)} className="mt-6 rounded-[8px] bg-black px-7 py-3 text-white">
+                     Close - বন্ধ
+                   </Button>
+                 </div>
+               ) : (
                 <form
                   ref={formRef}
                   onSubmit={placeOrder}
@@ -566,7 +577,7 @@ export default function OrderDialog({
                     </div>
                   )}
 
-                  {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
+                   {protectionDecision === "block" ? <OrderProtectionMessage decision="block" retryable={protectionRetryable} /> : null}
                    <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
 
                   <div className="bg-black/5 rounded-[12px] p-5">

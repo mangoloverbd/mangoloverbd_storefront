@@ -8,6 +8,7 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
@@ -153,6 +154,7 @@ export function HoneyNutCheckout({
   const [protectionDecision, setProtectionDecision] = useState<
     "review" | "block" | null
   >(null);
+  const [protectionRetryable, setProtectionRetryable] = useState(true);
   const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
     resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
@@ -381,6 +383,7 @@ export function HoneyNutCheckout({
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");
+        setProtectionRetryable(error.retryable);
         setRequestError(false);
         setAnnouncement(error.message);
         return;
@@ -407,6 +410,8 @@ export function HoneyNutCheckout({
         <span className="sr-only">অর্ডারের তথ্য লোড হচ্ছে…</span>
       </section>
     );
+  if (protectionDecision === "review") return <OrderHoldConfirmation />;
+
   const showAvailabilityRecovery =
     status !== "ready" || errors.pack === AVAILABILITY_ERROR;
   const packError = showAvailabilityRecovery ? AVAILABILITY_ERROR : errors.pack;
@@ -659,7 +664,7 @@ export function HoneyNutCheckout({
           >
             {announcement}
           </div>
-          {protectionDecision ? <div className="mt-4"><OrderProtectionMessage decision={protectionDecision} /></div> : null}
+          {protectionDecision === "block" ? <div className="mt-4"><OrderProtectionMessage decision="block" retryable={protectionRetryable} /></div> : null}
           {requestError ? (
             <div className="mt-4 space-y-4 rounded-xl border border-[#b8872c]/50 bg-white/70 p-4">
               <p className="text-sm leading-6">
