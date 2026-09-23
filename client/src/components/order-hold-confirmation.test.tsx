@@ -9,4 +9,5 @@ test("held checkout confirms receipt without claiming a completed purchase", () 
   assert.match(markup, /role="status"/);
   assert.match(markup, /আমাদের টিম ফোন করে অর্ডারটি নিশ্চিত করবে।/);
   assert.doesNotMatch(markup, /Order Confirmed|অর্ডার কনফার্ম/);
+  assert.match(markup, /href="\/"/);
 });

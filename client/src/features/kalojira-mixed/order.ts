@@ -1,5 +1,6 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
+import { normalizeBdMobile } from "../../../../shared/bd-phone";
 
 export const KALOJIRA_DELIVERY_CHARGE = 0;
 export const KALOJIRA_CONFIRMATION_KEY = "kalojira-mixed-order-confirmation-v1";
@@ -141,10 +142,10 @@ export function buildKalojiraOrderPayload(input: {
 }): KalojiraOrderPayload {
   const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity, input.deliveryCharge);
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
-  const phone = requiredTrimmedString(input.phone, 11, "Phone");
+  const phone = normalizeBdMobile(input.phone);
   const address = requiredTrimmedString(input.address, 500, "Address");
   if (customerName.length < 2
-    || !/^01[3-9]\d{8}$/.test(phone)
+    || !phone
     || address.length < 5
     || address.split(/\s+/).filter(Boolean).length < 3) {
     throw new Error("Customer details are invalid");

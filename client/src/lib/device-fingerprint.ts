@@ -15,7 +15,7 @@ export function collectFingerprintTraits(): Record<string, unknown> {
     return canvas.toDataURL();
   });
   const webgl = safe(() => {
-    const gl = canvas?.getContext("webgl");
+    const gl = document.createElement("canvas").getContext("webgl");
     if (!gl) return null;
     const extension = gl.getExtension("WEBGL_debug_renderer_info");
     return extension ? {

@@ -41,3 +41,9 @@ test("rejects malformed telemetry and bounds valid candidates", () => {
     assert.equal(parseCheckoutTelemetry(invalid), null);
   }
 });
+
+test("uses the socket peer IP for local Express requests without proxy headers", () => {
+  const context = buildClientContext({ headers: {}, socket: { remoteAddress: "::ffff:127.0.0.1" } }, { deviceId, now });
+  assert.equal(context?.ip, "127.0.0.1");
+  assert.ok(createSignedClientContext({ headers: {}, socket: { remoteAddress: "127.0.0.1" } }, { deviceId }, secret));
+});

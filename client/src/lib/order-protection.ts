@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ClipboardEvent, type FocusEvent } from "react";
 import { computeDeviceFingerprint } from "./device-fingerprint";
+import { normalizeBdMobile } from "../../../shared/bd-phone";
 
 const SESSION_KEY = "mlbd_checkout_session_id";
 
@@ -25,8 +26,8 @@ type Field = "name" | "phone" | "address";
 export const firstFocusTimestamp = (current: string | null, incoming: string) => current ?? incoming;
 
 export function addPhoneCandidate(current: string[], value: string): string[] {
-  const phone = value.trim();
-  return /^\d{11}$/.test(phone) && !current.includes(phone) && current.length < 5 ? [...current, phone] : current;
+  const phone = normalizeBdMobile(value);
+  return phone ? [phone] : [];
 }
 
 export function addPastedField(current: Field[], value: string): Field[] {

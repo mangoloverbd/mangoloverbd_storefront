@@ -1,3 +1,5 @@
+import { normalizeBdMobile } from "../../../shared/bd-phone";
+
 export const ABANDONED_CART_SOURCE_PATHS = {
   storefront: "/checkout",
   sundarbans_honey: "/step/sundarbans-natural-honey",
@@ -87,7 +89,7 @@ function isBoundedMoney(value: number) {
 }
 
 function validBrowserPhone(phone: string) {
-  return /^01\d{9}$/.test(phone.trim());
+  return normalizeBdMobile(phone) !== null;
 }
 
 function validSnapshot(snapshot: AbandonedCartSnapshot) {
@@ -196,7 +198,7 @@ export class AbandonedCartCapture {
 
     this.latestPayload = {
       customerName: normalizedOptionalText(snapshot.customerName, 120),
-      phone: snapshot.phone.trim(),
+      phone: normalizeBdMobile(snapshot.phone)!,
       address: normalizedOptionalText(snapshot.address, 500),
       items: snapshot.items.map((item) => ({
         productName: item.productName.trim(),

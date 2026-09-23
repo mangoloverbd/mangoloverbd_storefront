@@ -143,7 +143,6 @@ test("rejects unbounded or malformed customer fields before building a payload",
     { customerName: "A" },
     { customerName: "N".repeat(121) },
     { phone: "0171234567" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
     { address: "Only two" },
     { address: "A B " + "C".repeat(497) },
   ]) {

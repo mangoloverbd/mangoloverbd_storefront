@@ -71,8 +71,15 @@ test("trims whitespace around an otherwise valid phone number", () => {
   assert.equal(order.phone, "01712345678");
 });
 
-test("rejects Bengali phone digits", () => {
-  assert.throws(() => orderRequestSchema.parse(validOrder));
+test("preserves upstream rate limiting as a retryable checkout response", async () => {
+  await assert.rejects(() => processOrder(orderRequestSchema.parse(validEnglishOrder), {
+    merchantSuiteUrl: "https://suite.invalid", storefrontHandle: "mangolover",
+    fetchImpl: async () => new Response(JSON.stringify({ message: "Slow down" }), { status: 429 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 429);
+});
+
+test("normalizes Bengali phone digits", () => {
+  assert.equal(orderRequestSchema.parse(validOrder).phone, "01712345678");
 });
 
 test("rejects an address with fewer than three words", () => {
@@ -142,7 +149,6 @@ test("enforces the reviewed bounded order contract", () => {
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
     { address: "Only two" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
@@ -369,6 +375,19 @@ test("local handler signs the same context without browser hints in the body", a
     if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET;
     else process.env.STOREFRONT_CONTEXT_SECRET = previous;
   }
+});
+
+test("local handler accepts Bangla phone, ignores malformed telemetry and returns 429", async () => {
+  let called = false;
+  const response = await invokeLocalOrder({ ...validEnglishOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮",
+    checkoutTelemetry: { pastedFields: ["other"] } }, { processOrder: async (order: { phone: string; checkoutTelemetry?: unknown }) => {
+    called = true;
+    assert.equal(order.phone, "01712345678");
+    assert.equal(order.checkoutTelemetry, undefined);
+    throw new OrderUpstreamError(429);
+  } });
+  assert.equal(called, true);
+  assert.equal(response.status, 429);
 });
 
 test("local handler returns a hold response", async () => {

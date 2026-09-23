@@ -7,6 +7,7 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { normalizeBdMobile } from "../../../shared/bd-phone";
 import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
@@ -181,18 +182,19 @@ export default function OrderDialog({
 
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") || "").trim();
-    const phone = String(formData.get("phone") || "").trim();
+    const enteredPhone = String(formData.get("phone") || "").trim();
+    const phone = normalizeBdMobile(enteredPhone);
     const address = String(formData.get("address") || "").trim();
 
     if (!name) {
       setOrderError("Please enter your full name.");
       return;
     }
-    if (!phone) {
+    if (!enteredPhone) {
       setOrderError("Please enter your phone number.");
       return;
     }
-    if (!/^01[3-9]\d{8}$/.test(phone)) {
+    if (!phone) {
       setOrderError("১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।");
       return;
     }
@@ -475,8 +477,7 @@ export default function OrderDialog({
                         name="phone"
                         type="tel"
                         inputMode="numeric"
-                         pattern="01[3-9][0-9]{8}"
-                        maxLength={11}
+                        maxLength={20}
                         className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
                         placeholder="01XXXXXXXXX"
                       />

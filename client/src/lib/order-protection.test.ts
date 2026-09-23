@@ -4,12 +4,18 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { addPastedField, addPhoneCandidate, firstFocusTimestamp, getOrCreateClientSessionId } from "./order-protection";
 
-test("keeps first form interaction and bounded distinct phone edits", () => {
+test("keeps first form interaction and only the latest complete phone", () => {
   assert.equal(firstFocusTimestamp("2026-09-23T10:00:00.000Z", "2026-09-23T10:01:00.000Z"), "2026-09-23T10:00:00.000Z");
   assert.deepEqual(["01712345678", "01712345678", "01812345678", "01912345678", "01312345678", "01412345678", "01512345678", "abc"]
-    .reduce(addPhoneCandidate, [] as string[]), ["01712345678", "01812345678", "01912345678", "01312345678", "01412345678"]);
+    .reduce(addPhoneCandidate, [] as string[]), []);
   assert.deepEqual(["phone", "address", "phone", "email", "name"]
     .reduce(addPastedField, [] as Array<"name" | "phone" | "address">), ["phone", "address", "name"]);
+});
+
+test("does not retain intermediate phone candidates while a customer edits", () => {
+  assert.deepEqual(addPhoneCandidate([], "01712345678"), ["01712345678"]);
+  assert.deepEqual(addPhoneCandidate(["01712345678"], "01812345678"), ["01812345678"]);
+  assert.deepEqual(addPhoneCandidate(["01712345678"], "0171234567"), []);
 });
 
 test("persists one opaque client session id per browser session", () => {

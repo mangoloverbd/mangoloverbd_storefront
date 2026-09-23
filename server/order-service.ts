@@ -2,6 +2,7 @@ import { z } from "zod";
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
 import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
+import { normalizeBdMobile } from "../shared/bd-phone.ts";
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
 
@@ -15,7 +16,7 @@ export const orderRequestSchema = z.object({
   quantity: z.number().int().min(1).max(100).refine(Number.isSafeInteger),
   deliveryCharge: z.number().int().min(0).max(100_000).refine(Number.isSafeInteger),
   customerName: z.string().trim().min(2).max(120),
-  phone: z.string().trim().regex(/^01[3-9]\d{8}$/, "Phone number must be a valid Bangladeshi mobile number"),
+  phone: z.string().transform(normalizeBdMobile).pipe(z.string()),
   address: z.string().trim().min(5).max(500),
   paymentMethod: z.enum(["cash_on_delivery", "bkash"]).default("cash_on_delivery"),
   bkashTrxId: z.string().trim().max(80).optional().default(""),
@@ -29,7 +30,7 @@ export const orderRequestSchema = z.object({
     firstInteractionAt: z.string().max(64).refine((value) => Number.isFinite(Date.parse(value))).optional(),
     phoneCandidates: z.array(z.string().regex(/^\d{11}$/)).max(5).optional(),
     pastedFields: z.array(z.enum(["name", "phone", "address"])).max(3).optional(),
-  }).strict().optional(),
+  }).strict().optional().catch(undefined),
   landingPagePath: z.string().trim().max(120).transform((value) => {
     const normalized = normalizeLandingPagePath(value);
     if (!normalized) throw new Error("Invalid landing page path");
@@ -64,7 +65,7 @@ export const orderRequestSchema = z.object({
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
 export class OrderUpstreamError extends Error {
-  constructor() {
+  constructor(readonly statusCode: 429 | 502 = 502) {
     super("Merchant-Suite did not confirm the order");
     this.name = "OrderUpstreamError";
   }
@@ -114,7 +115,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         ...(order.landingPagePath ? { landingPagePath: order.landingPagePath } : {}),
         ...(order.draftKey ? { abandoned_checkout_draft_key: order.draftKey } : {}),
       }),
-      signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(10_000)))(),
+      signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(25_000)))(),
     });
 
     const data = await response.json().catch(() => ({})) as {
@@ -134,12 +135,13 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     if (response.status === 403 || data.decision === "block") {
       throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
     }
+    if (response.status === 429) throw new OrderUpstreamError(429);
     if (!response.ok) throw new Error(`Dashboard returned status ${response.status}`);
     const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");
     return { orderRef, decision: "allow" };
   } catch (error) {
-    if (error instanceof OrderProtectionError) throw error;
+    if (error instanceof OrderProtectionError || error instanceof OrderUpstreamError) throw error;
     throw new OrderUpstreamError();
   }
 }

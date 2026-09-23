@@ -3,11 +3,12 @@ import { OrderProtectionError, type OrderProcessResult } from "../server/order-p
 import { normalizeLandingPagePath } from "../server/landing-page-attribution.js";
 import { CLIENT_CONTEXT_HEADER, createSignedClientContext, parseCheckoutTelemetry, type CheckoutTelemetryInput } from "../server/client-context.js";
 import { readOrCreateDeviceId } from "../server/device-id.js";
+import { normalizeBdMobile } from "../shared/bd-phone.js";
 
 export { OrderProtectionError } from "../server/order-protection-errors.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
-const WEBHOOK_TIMEOUT_MS = 10_000;
+const WEBHOOK_TIMEOUT_MS = 25_000;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type OrderRequest = {
@@ -54,7 +55,7 @@ class RequestBodyError extends Error {
 }
 
 export class OrderUpstreamError extends Error {
-  constructor() {
+  constructor(readonly statusCode: 429 | 502 = 502) {
     super("Merchant-Suite did not confirm the order");
     this.name = "OrderUpstreamError";
   }
@@ -134,12 +135,12 @@ export function validateOrder(body: unknown): OrderRequest {
   const quantity = boundedInteger(value.quantity, 1, 100);
   const deliveryCharge = boundedInteger(value.deliveryCharge, 0, 100_000);
   const customerName = requiredString(value.customerName, 2, 120);
-  const phone = requiredString(value.phone, 11, 11);
+  const phone = typeof value.phone === "string" ? normalizeBdMobile(value.phone) : null;
   const address = requiredString(value.address, 5, 500);
   const paymentMethod = value.paymentMethod === undefined
     ? "cash_on_delivery"
     : value.paymentMethod;
-  if (!/^01[3-9]\d{8}$/.test(phone)
+  if (!phone
     || address.split(/\s+/).filter(Boolean).length < 3
     || (paymentMethod !== "cash_on_delivery" && paymentMethod !== "bkash")
     || !Number.isSafeInteger(bundlePrice + deliveryCharge)) {
@@ -176,7 +177,6 @@ export function validateOrder(body: unknown): OrderRequest {
     throw new OrderValidationError();
   }
   const checkoutTelemetry = value.checkoutTelemetry === undefined ? undefined : parseCheckoutTelemetry(value.checkoutTelemetry);
-  if (value.checkoutTelemetry !== undefined && !checkoutTelemetry) throw new OrderValidationError();
 
   let landingPagePath: string | undefined;
   if (value.landingPagePath !== undefined) {
@@ -276,12 +276,13 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
     if (response.status === 403 || data.decision === "block") {
       throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
     }
+    if (response.status === 429) throw new OrderUpstreamError(429);
     if (!response.ok) throw new Error("Merchant-Suite rejected order");
     const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");
     return { orderRef, decision: "allow" };
   } catch (error) {
-    if (error instanceof OrderProtectionError) throw error;
+    if (error instanceof OrderProtectionError || error instanceof OrderUpstreamError) throw error;
     throw new OrderUpstreamError();
   }
 }
@@ -330,7 +331,8 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
         return;
       }
       if (error instanceof OrderUpstreamError) {
-        sendJson(res, 502, { message: "Could not confirm order. Please try again." });
+         sendJson(res, error.statusCode, { message: error.statusCode === 429
+           ? "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।" : "Could not confirm order. Please try again." });
         return;
       }
       if (error instanceof OrderProtectionError) {

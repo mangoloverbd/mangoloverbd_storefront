@@ -37,10 +37,14 @@ test("trims whitespace around an otherwise valid phone number", () => {
   assert.equal(validateOrder({ ...validOrder, phone: " 01712345678 " }).phone, "01712345678");
 });
 
+test("accepts Bangla and +880 mobile formats and ignores invalid optional telemetry", () => {
+  assert.equal(validateOrder({ ...validOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮" }).phone, "01712345678");
+  assert.equal(validateOrder({ ...validOrder, checkoutTelemetry: { phoneCandidates: ["bad"] } }).checkoutTelemetry, undefined);
+});
+
 test("rejects fake phone formats and malformed browser hints", () => {
   assert.throws(() => validateOrder({ ...validOrder, phone: "12345678901" }));
   assert.throws(() => validateOrder({ ...validOrder, deviceFingerprint: "A".repeat(64) }));
-  assert.throws(() => validateOrder({ ...validOrder, checkoutTelemetry: { phoneCandidates: ["123"] } }));
   assert.deepEqual(validateOrder({ ...validOrder, deviceFingerprint: "a".repeat(64),
     checkoutTelemetry: { pastedFields: ["phone"] } }).checkoutTelemetry, { pastedFields: ["phone"] });
 });
@@ -86,6 +90,12 @@ test("forwards signed context but never forwards raw browser hints", async () =>
   assert.equal(headers?.["x-mlbd-client-context"], "signed.payload");
   assert.equal("deviceFingerprint" in (body ?? {}), false);
   assert.equal("checkoutTelemetry" in (body ?? {}), false);
+});
+
+test("preserves upstream rate limiting as a retryable checkout response", async () => {
+  await assert.rejects(() => processOrder(validateOrder(validOrder), { ...dependencies,
+    fetchImpl: async () => new Response(JSON.stringify({ message: "Slow down" }), { status: 429 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 429);
 });
 
 test("strips retired tracking fields from checkout input", () => {
@@ -143,7 +153,6 @@ test("matches the reviewed bounded validation contract without coercion", () => 
     { deliveryCharge: 100_001 },
     { customerName: "N".repeat(121) },
     { phone: "1234567890" },
-    { phone: "০১৭১২৩৪৫৬৭৮" },
     { address: "Only two" },
     { address: "A B " + "C".repeat(497) },
     { paymentMethod: "card" },
@@ -398,4 +407,17 @@ test("handler maps upstream failures to a stable 502", async () => {
     status: 502,
     body: { message: "Could not confirm order. Please try again." },
   });
+});
+
+test("Vercel handler preserves a retryable 429 and ignores malformed telemetry", async () => {
+  const { response, read } = createResponse();
+  let called = false;
+  const handler = createOrderHandler({ processOrder: async (order) => {
+    called = true;
+    assert.equal(order.checkoutTelemetry, undefined);
+    throw new OrderUpstreamError(429);
+  } });
+  await handler(createRequest({ ...validOrder, checkoutTelemetry: { pastedFields: ["other"] } }), response);
+  assert.equal(called, true);
+  assert.equal(read().status, 429);
 });

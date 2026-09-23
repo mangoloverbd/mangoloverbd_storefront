@@ -8,6 +8,7 @@ import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
+import { normalizeBdMobile } from "../../../../shared/bd-phone";
 import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
@@ -106,7 +107,7 @@ function getFieldErrors(
   const errors: HoneyNutFieldErrors = {};
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120)
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
-  if (!/^01[3-9]\d{8}$/.test(fields.phone.trim()))
+  if (!normalizeBdMobile(fields.phone))
     errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
   if (
     fields.address.trim().split(/\s+/).filter(Boolean).length < 3 ||
@@ -588,9 +589,8 @@ export function HoneyNutCheckout({
               name="phone"
               type="tel"
               inputMode="numeric"
-              pattern="01[3-9][0-9]{8}"
               autoComplete="tel-national"
-              maxLength={11}
+              maxLength={20}
               placeholder="01XXXXXXXXX"
               value={phone}
                onChange={(event) => { setPhone(event.target.value); trackPhoneCandidate(event.target.value); }}

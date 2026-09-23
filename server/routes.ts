@@ -75,7 +75,8 @@ export async function registerRoutes(
       }
 
       if (error instanceof OrderUpstreamError) {
-        res.status(502).json({ message: "Could not confirm order. Please try again." });
+        res.status(error.statusCode).json({ message: error.statusCode === 429
+          ? "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।" : "Could not confirm order. Please try again." });
         return;
       }
       if (error instanceof OrderProtectionError) {

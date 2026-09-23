@@ -20,7 +20,7 @@ export type ClientContextV1 = {
   telemetry: { firstInteractionAt: string | null; phoneCandidates: string[]; pastedFields: PastedField[] };
 };
 
-type Request = { headers: IncomingHttpHeaders };
+type Request = { headers: IncomingHttpHeaders; socket?: { remoteAddress?: string } };
 type Input = { deviceId: string | null; fingerprint?: string | null; telemetry?: CheckoutTelemetryInput | null; now?: number };
 
 function header(req: Request, name: string): string | undefined {
@@ -64,6 +64,10 @@ export function buildClientContext(req: Request, input: Input): ClientContextV1 
   for (const name of ["x-vercel-forwarded-for", "x-real-ip", "x-forwarded-for"]) {
     const candidate = header(req, name)?.split(",")[0]?.trim();
     if (candidate && isIP(candidate)) { ip = candidate; break; }
+  }
+  if (!ip && req.socket?.remoteAddress) {
+    const peer = req.socket.remoteAddress.replace(/^::ffff:/, "");
+    if (isIP(peer)) ip = peer;
   }
   if (!ip) return null;
   const telemetry = input.telemetry ?? {};
