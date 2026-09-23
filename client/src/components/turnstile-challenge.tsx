@@ -11,9 +11,18 @@ declare global {
 
 const SCRIPT_ID = "cloudflare-turnstile-script";
 
-export function TurnstileChallenge({ onToken }: { onToken: (token: string) => void }) {
+export function TurnstileChallenge({ onToken, resetSignal = 0 }: { onToken: (token: string) => void; resetSignal?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | undefined>(undefined);
+  const onTokenRef = useRef(onToken);
+  useEffect(() => { onTokenRef.current = onToken; }, [onToken]);
+  const previousReset = useRef(resetSignal);
+  useEffect(() => {
+    if (previousReset.current === resetSignal) return;
+    previousReset.current = resetSignal;
+    onTokenRef.current("");
+    if (widgetIdRef.current && window.turnstile) window.turnstile.reset(widgetIdRef.current);
+  }, [resetSignal]);
   const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
@@ -22,9 +31,9 @@ export function TurnstileChallenge({ onToken }: { onToken: (token: string) => vo
       if (!window.turnstile || !containerRef.current || widgetIdRef.current) return;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
-        callback: onToken,
-        "expired-callback": () => onToken(""),
-        "error-callback": () => onToken(""),
+        callback: (token) => onTokenRef.current(token),
+        "expired-callback": () => onTokenRef.current(""),
+        "error-callback": () => onTokenRef.current(""),
       });
     };
     const existing = document.getElementById(SCRIPT_ID);
@@ -41,7 +50,7 @@ export function TurnstileChallenge({ onToken }: { onToken: (token: string) => vo
     script.addEventListener("load", render, { once: true });
     document.head.appendChild(script);
     return () => script.removeEventListener("load", render);
-  }, [onToken, siteKey]);
+  }, [siteKey]);
 
   if (!siteKey) return null;
   return <div ref={containerRef} aria-label="নিরাপত্তা যাচাই" className="min-h-[65px]" />;

@@ -2,7 +2,15 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getOrCreateClientSessionId } from "./order-protection";
+import { addPastedField, addPhoneCandidate, firstFocusTimestamp, getOrCreateClientSessionId } from "./order-protection";
+
+test("keeps first form interaction and bounded distinct phone edits", () => {
+  assert.equal(firstFocusTimestamp("2026-09-23T10:00:00.000Z", "2026-09-23T10:01:00.000Z"), "2026-09-23T10:00:00.000Z");
+  assert.deepEqual(["01712345678", "01712345678", "01812345678", "01912345678", "01312345678", "01412345678", "01512345678", "abc"]
+    .reduce(addPhoneCandidate, [] as string[]), ["01712345678", "01812345678", "01912345678", "01312345678", "01412345678"]);
+  assert.deepEqual(["phone", "address", "phone", "email", "name"]
+    .reduce(addPastedField, [] as Array<"name" | "phone" | "address">), ["phone", "address", "name"]);
+});
 
 test("persists one opaque client session id per browser session", () => {
     const values = new Map<string, string>();

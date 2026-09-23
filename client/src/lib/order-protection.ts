@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type ClipboardEvent, type FocusEvent } from "react";
+import { computeDeviceFingerprint } from "./device-fingerprint";
 
 const SESSION_KEY = "mlbd_checkout_session_id";
 
@@ -20,9 +21,50 @@ export function getOrCreateClientSessionId(storage: Pick<Storage, "getItem" | "s
   }
 }
 
+type Field = "name" | "phone" | "address";
+export const firstFocusTimestamp = (current: string | null, incoming: string) => current ?? incoming;
+
+export function addPhoneCandidate(current: string[], value: string): string[] {
+  const phone = value.trim();
+  return /^\d{11}$/.test(phone) && !current.includes(phone) && current.length < 5 ? [...current, phone] : current;
+}
+
+export function addPastedField(current: Field[], value: string): Field[] {
+  return (value === "name" || value === "phone" || value === "address") && !current.includes(value)
+    ? [...current, value] : current;
+}
+
 export function useCheckoutProtectionSignals() {
   const [clientSessionId] = useState(() => getOrCreateClientSessionId());
-  const [checkoutStartedAt] = useState(() => new Date().toISOString());
+  const [mountedAt] = useState(() => new Date().toISOString());
+  const firstInteractionAt = useRef<string | null>(null);
+  const phoneCandidates = useRef<string[]>([]);
+  const pastedFields = useRef<Field[]>([]);
+  const [fingerprint, setFingerprint] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
-  return { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken };
+  const [resetTurnstileSignal, setResetTurnstileSignal] = useState(0);
+
+  useEffect(() => { void computeDeviceFingerprint().then(setFingerprint); }, []);
+  const formHandlers = {
+    onFocusCapture: (_event: FocusEvent<HTMLFormElement>) => {
+      firstInteractionAt.current = firstFocusTimestamp(firstInteractionAt.current, new Date().toISOString());
+    },
+    onPasteCapture: (event: ClipboardEvent<HTMLFormElement>) => {
+      const field = (event.target as HTMLInputElement | HTMLTextAreaElement).name;
+      pastedFields.current = addPastedField(pastedFields.current, field);
+    },
+  };
+  const trackPhoneCandidate = (value: string) => { phoneCandidates.current = addPhoneCandidate(phoneCandidates.current, value); };
+  const resetTurnstile = () => { setTurnstileToken(""); setResetTurnstileSignal((value) => value + 1); };
+  const buildProtectionPayload = (website: string) => ({
+    website, turnstileToken, clientSessionId,
+    checkoutStartedAt: firstInteractionAt.current ?? mountedAt,
+    ...(fingerprint ? { deviceFingerprint: fingerprint } : {}),
+    checkoutTelemetry: {
+      ...(firstInteractionAt.current ? { firstInteractionAt: firstInteractionAt.current } : {}),
+      phoneCandidates: [...phoneCandidates.current], pastedFields: [...pastedFields.current],
+    },
+  });
+  return { clientSessionId, checkoutStartedAt: mountedAt, turnstileToken, setTurnstileToken,
+    formHandlers, trackPhoneCandidate, fingerprint, resetTurnstileSignal, resetTurnstile, buildProtectionPayload };
 }
