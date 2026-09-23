@@ -106,7 +106,7 @@ export function buildHoneyNutOrderPayload(input: {
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
   const phone = requiredTrimmedString(input.phone, 11, "Phone");
   const address = requiredTrimmedString(input.address, 500, "Address");
-  if (customerName.length < 2 || !/^\d{11}$/.test(phone) || address.length < 5 || address.split(/\s+/).filter(Boolean).length < 3) throw new Error("Customer details are invalid");
+  if (customerName.length < 2 || !/^01[3-9]\d{8}$/.test(phone) || address.length < 5 || address.split(/\s+/).filter(Boolean).length < 3) throw new Error("Customer details are invalid");
   return {
     bundleTitle: requiredTrimmedString(input.productName, 200, "Product name"),
     bundleDetails: requiredTrimmedString(input.pack.label, 300, "Pack label"),

@@ -75,8 +75,8 @@ function getFieldErrors(fields: CheckoutFields, packs: HoneyPackOption[]): Honey
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120) {
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   }
-  if (!/^\d{11}$/.test(fields.phone.trim())) {
-    errors.phone = "ফোন নম্বরটি ঠিক ১১টি ইংরেজি সংখ্যায় লিখুন।";
+  if (!/^01[3-9]\d{8}$/.test(fields.phone.trim())) {
+    errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
   }
   if (fields.address.trim().split(/\s+/).filter(Boolean).length < 3 || fields.address.trim().length > 300) {
     errors.address = "ডেলিভারি ঠিকানা কমপক্ষে ৩ শব্দে লিখুন।";
@@ -146,7 +146,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const [requestError, setRequestError] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
-  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -326,10 +327,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
         deliveryCharge: HONEY_DELIVERY_CHARGE,
         paymentMethod: "cash_on_delivery" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
-        website,
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(website),
         ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
@@ -361,6 +359,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
     } finally {
       submittingRef.current = false;
       setIsPending(false);
+      resetTurnstile();
     }
   };
 
@@ -389,7 +388,8 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       <form
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
-        onFocusCapture={beginCheckout}
+        onFocusCapture={(event) => { beginCheckout(); formHandlers.onFocusCapture(event); }}
+        onPasteCapture={formHandlers.onPasteCapture}
         onInput={updateCapture}
         onBlurCapture={flushCapture}
         noValidate
@@ -517,10 +517,10 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
               inputMode="numeric"
               autoComplete="tel-national"
               maxLength={11}
-              pattern="[0-9]{11}"
+               pattern="01[3-9][0-9]{8}"
               placeholder="01XXXXXXXXX"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
+               onChange={(event) => { setPhone(event.target.value); trackPhoneCandidate(event.target.value); }}
               className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#19382d] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#285240]"
               {...fieldErrorProps("honey-phone", errors.phone)}
             />
@@ -545,7 +545,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
           <p className="text-sm leading-6 text-[#654b2f]">
             অসম্পূর্ণ চেকআউটের তথ্য সর্বোচ্চ ৩০ দিন রাখা হতে পারে, যাতে প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা পাঠানো হয় না।
           </p>
-          <TurnstileChallenge onToken={setTurnstileToken} />
+           <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
         </div>
 
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#19382d] lg:sticky lg:top-6 sm:p-5">

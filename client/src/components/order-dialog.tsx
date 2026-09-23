@@ -75,7 +75,8 @@ export default function OrderDialog({
   const [orderRef, setOrderRef] = useState("");
   const [orderClosing, setOrderClosing] = useState(false);
   const [protectionDecision, setProtectionDecision] = useState<"review" | "block" | null>(null);
-  const { clientSessionId, checkoutStartedAt, turnstileToken, setTurnstileToken } = useCheckoutProtectionSignals();
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const formRef = useRef<HTMLFormElement>(null);
@@ -189,8 +190,8 @@ export default function OrderDialog({
       setOrderError("Please enter your phone number.");
       return;
     }
-    if (!/^\d{11}$/.test(phone)) {
-      setOrderError("ফোন নম্বরটি ইংরেজিতে লিখুন।");
+    if (!/^01[3-9]\d{8}$/.test(phone)) {
+      setOrderError("১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।");
       return;
     }
     if (!address) {
@@ -231,10 +232,7 @@ export default function OrderDialog({
          address,
         paymentMethod: selectedPaymentMethod,
         items: bundle.items,
-        website: String(formData.get("website") || ""),
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(String(formData.get("website") || "")),
         ...(draftKey ? { draftKey } : {}),
       });
       const result = await response.json() as { orderRef?: unknown; decision?: unknown; reviewId?: unknown };
@@ -276,6 +274,7 @@ export default function OrderDialog({
       );
     } finally {
       setOrderSubmitting(false);
+      resetTurnstile();
     }
   };
 
@@ -335,7 +334,6 @@ export default function OrderDialog({
                   }}
                   className="flex w-full flex-1 flex-col items-center justify-center px-2 py-12 text-center font-sans md:py-16"
                 >
-                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <motion.span
                     variants={{
                       hidden: { opacity: 0, scaleX: 0 },
@@ -408,11 +406,17 @@ export default function OrderDialog({
                 <form
                   ref={formRef}
                   onSubmit={placeOrder}
-                  onInput={() => { updateCapture(); }}
+                  onFocusCapture={formHandlers.onFocusCapture}
+                  onPasteCapture={formHandlers.onPasteCapture}
+                  onInput={(event) => {
+                    if ((event.target as HTMLInputElement).name === "phone") trackPhoneCandidate((event.target as HTMLInputElement).value);
+                    updateCapture();
+                  }}
                   onBlurCapture={() => { flushCapture(); }}
                   className="mt-6 space-y-6"
                   noValidate
                 >
+                  <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
                   <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
                     <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
                       <img
@@ -460,7 +464,7 @@ export default function OrderDialog({
                         name="phone"
                         type="tel"
                         inputMode="numeric"
-                        pattern="[0-9]{11}"
+                         pattern="01[3-9][0-9]{8}"
                         maxLength={11}
                         className="h-12 w-full rounded-[8px] border border-black/15 bg-white/70 px-4 text-[16px] font-normal outline-none transition-colors focus:border-black max-md:rounded-[8px]"
                         placeholder="01XXXXXXXXX"
@@ -563,7 +567,7 @@ export default function OrderDialog({
                   )}
 
                   {protectionDecision ? <OrderProtectionMessage decision={protectionDecision} /> : null}
-                  <TurnstileChallenge onToken={setTurnstileToken} />
+                   <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
 
                   <div className="bg-black/5 rounded-[12px] p-5">
                     <div className="flex justify-between text-[11px] text-black/60 font-medium">

@@ -144,7 +144,7 @@ export function buildKalojiraOrderPayload(input: {
   const phone = requiredTrimmedString(input.phone, 11, "Phone");
   const address = requiredTrimmedString(input.address, 500, "Address");
   if (customerName.length < 2
-    || !/^\d{11}$/.test(phone)
+    || !/^01[3-9]\d{8}$/.test(phone)
     || address.length < 5
     || address.split(/\s+/).filter(Boolean).length < 3) {
     throw new Error("Customer details are invalid");

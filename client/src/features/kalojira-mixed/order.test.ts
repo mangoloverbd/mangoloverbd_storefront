@@ -1,5 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { buildKalojiraOrderPayload } from "./order.ts";
+
+test("Kalojira checkout refuses an arbitrary 11-digit phone", () => {
+  assert.throws(() => buildKalojiraOrderPayload({ productName: "Honey", pack: { variantId: "v", label: "1 kg", unitPrice: 900 },
+    quantity: 1, customerName: "Test Customer", phone: "12345678901", address: "House 1 Road 2 Dhaka" }));
+});
 import {
   KALOJIRA_CONFIRMATION_KEY,
   buildKalojiraOrderPayload,

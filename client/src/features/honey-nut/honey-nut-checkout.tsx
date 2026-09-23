@@ -105,8 +105,8 @@ function getFieldErrors(
   const errors: HoneyNutFieldErrors = {};
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120)
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
-  if (!/^\d{11}$/.test(fields.phone.trim()))
-    errors.phone = "ফোন নম্বরটি ঠিক ১১টি ইংরেজি সংখ্যায় লিখুন।";
+  if (!/^01[3-9]\d{8}$/.test(fields.phone.trim()))
+    errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
   if (
     fields.address.trim().split(/\s+/).filter(Boolean).length < 3 ||
     fields.address.trim().length > 300
@@ -153,12 +153,8 @@ export function HoneyNutCheckout({
   const [protectionDecision, setProtectionDecision] = useState<
     "review" | "block" | null
   >(null);
-  const {
-    clientSessionId,
-    checkoutStartedAt,
-    turnstileToken,
-    setTurnstileToken,
-  } = useCheckoutProtectionSignals();
+  const { formHandlers, trackPhoneCandidate, buildProtectionPayload,
+    resetTurnstileSignal, resetTurnstile, setTurnstileToken } = useCheckoutProtectionSignals();
   const submittingRef = useRef(false);
   const viewedItemRef = useRef(false);
   const beganCheckoutRef = useRef(false);
@@ -355,10 +351,7 @@ export function HoneyNutCheckout({
             quantity,
           },
         ],
-        website,
-        turnstileToken,
-        clientSessionId,
-        checkoutStartedAt,
+        ...buildProtectionPayload(website),
         ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
       };
@@ -399,6 +392,7 @@ export function HoneyNutCheckout({
     } finally {
       submittingRef.current = false;
       setIsPending(false);
+      resetTurnstile();
     }
   };
 
@@ -436,7 +430,8 @@ export function HoneyNutCheckout({
       <form
         className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)]"
         onSubmit={handleSubmit}
-        onFocusCapture={beginCheckout}
+        onFocusCapture={(event) => { beginCheckout(); formHandlers.onFocusCapture(event); }}
+        onPasteCapture={formHandlers.onPasteCapture}
         onInput={updateCapture}
         onBlurCapture={flushCapture}
         noValidate
@@ -588,11 +583,12 @@ export function HoneyNutCheckout({
               name="phone"
               type="tel"
               inputMode="numeric"
+              pattern="01[3-9][0-9]{8}"
               autoComplete="tel-national"
               maxLength={11}
               placeholder="01XXXXXXXXX"
               value={phone}
-              onChange={(event) => setPhone(event.target.value)}
+               onChange={(event) => { setPhone(event.target.value); trackPhoneCandidate(event.target.value); }}
               className="min-h-11 w-full rounded-xl border border-[#c8b98f] bg-white px-4 text-base text-[#3d211a] outline-none placeholder:text-[#897963] focus-visible:ring-2 focus-visible:ring-[#5b793e]"
               {...fieldErrorProps("honey-nut-phone", errors.phone)}
             />
@@ -623,7 +619,7 @@ export function HoneyNutCheckout({
             প্রয়োজনে আমাদের টিম সাহায্য করতে পারে। কোনো স্বয়ংক্রিয় বার্তা
             পাঠানো হয় না।
           </p>
-          <TurnstileChallenge onToken={setTurnstileToken} />
+           <TurnstileChallenge onToken={setTurnstileToken} resetSignal={resetTurnstileSignal} />
         </div>
         <aside className="h-fit rounded-[1.25rem] border border-[#cbdccf] bg-[#e8f5ed] p-4 text-[#3d211a] lg:sticky lg:top-6 sm:p-5">
           <h3 className="text-xl font-extrabold">অর্ডার সারাংশ</h3>
