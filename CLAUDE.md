@@ -31,7 +31,7 @@ Consequences:
 
 - A design change here needs a commit and a Vercel deploy.
 - A product/price/stock/image change does **not** touch this repo and does **not** need a redeploy —
-  the storefront polls the Suite every 8 seconds and picks it up live.
+  the storefront polls the Suite every 60 seconds and picks it up live.
 - If a task is "add a product", "change a price", "fix the stock count", or "upload a product photo",
   it belongs in the dashboard. Say so; do not add hardcoded product data here.
 
@@ -40,7 +40,7 @@ Consequences:
 `client/src/lib/generated-storefront-products.ts` is a build-generated first-paint snapshot. The
 homepage, products page, search suggestions, and shared product grid render it immediately, then
 revalidate against the live Merchant Suite API. Supabase remains authoritative; the snapshot is only
-a fast fallback. A product published in the dashboard appears through live polling within about 8
+a fast fallback. A product published in the dashboard appears through live polling within about 60
 seconds without a storefront deploy. If an agent intentionally refreshes the snapshot, run
 `NODE_ENV=production npm run build`, confirm the generated diff contains the expected published
 catalog, and deploy the storefront commit to `main`.
@@ -88,12 +88,12 @@ verify checkout specifically. See README "Verifying the connection" for the two 
 - `fetchStorefrontProducts()` → `GET .../products`
 - `fetchStorefrontProduct(slug)` → `GET .../products/:slug`
 - `fetchStorefrontProductInventory(slug)` → `GET .../products/:slug/inventory`
-- `STOREFRONT_POLL_INTERVAL_MS = 8000` — the live-sync interval
+- `STOREFRONT_POLL_INTERVAL_MS = 60000` — the live-sync interval
 - `mergeInventory()` — overlays authoritative stock onto a cached product
 - `isProductOrderable()` — the single sold-out check; use it, don't reimplement it
 
 Add new Suite calls to this module. Do not scatter `fetch` calls to the Suite through components.
-Requests send `ngrok-skip-browser-warning: true` so tunnels return JSON, not HTML.
+Public catalog/inventory reads are plain CORS-simple GETs with no custom headers, so no preflight.
 
 **Checkout — storefront server → Suite, authenticated.**
 `api/orders.ts` (Vercel) and `server/order-service.ts` (local Express) both POST to
@@ -121,7 +121,7 @@ server, which holds `SUPABASE_SERVICE_ROLE_KEY`, can write them, and that key mu
 this repo.
 
 So: **to add a product, use the dashboard's Products page** (`/products` in the Suite). It writes to
-Supabase, and this storefront picks it up through live polling within ~8 seconds with no commit and
+Supabase, and this storefront picks it up through live polling within ~60 seconds with no commit and
 no deploy. The next storefront production build also includes the product in the first-paint
 snapshot. There is no storefront-side path that creates a product, and adding one would mean shipping
 a service-role key to the browser — a full database compromise.
@@ -178,7 +178,7 @@ drive every section.
 2. Upload images there (they go to Supabase Storage, not `client/public/`).
 3. Add variants if the product has size/weight options.
 4. **Publish it** — unpublished products stay invisible to the storefront.
-5. Storefront picks it up through live polling within ~8s. The next production storefront build also
+5. Storefront picks it up through live polling within ~60s. The next production storefront build also
    refreshes the first-paint snapshot. Verify with the curl in the README.
 
 Product photos belong in Supabase Storage. `client/public/` is for fixed brand assets — logo, hero

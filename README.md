@@ -109,8 +109,8 @@ Two directions, two different mechanisms:
 a product or editing stock in the dashboard shows up on the storefront within seconds and does not
 require a redeploy.**
 
-Requests carry an `ngrok-skip-browser-warning: true` header so free-tier tunnels return JSON
-instead of their HTML interstitial. Harmless once the Suite is on a real domain.
+Public catalog and inventory reads are plain CORS-simple GETs with no custom request headers, so
+the browser sends no preflight `OPTIONS` request.
 
 **Checkout — storefront server → Suite, authenticated webhook.**
 `api/orders.ts` (Vercel serverless) and `server/order-service.ts` (local Express) both POST to
@@ -147,7 +147,7 @@ the Suite's public HTTP API and writes nothing.
 
 **You cannot add a product from this repo.** Products are created on the **dashboard's Products page**
 (`/products` in the Merchant Suite). The dashboard's server writes to Supabase using the service-role
-key; this storefront then reads the result — within about 8 seconds, with no commit and no deploy.
+key; this storefront then reads the result — within about 60 seconds, with no commit and no deploy.
 
 That restriction is enforced by the database, not just by convention: `products`, `product_images`,
 and `product_variants` have RLS enabled with **only a `service_role` policy**. A browser holding a
@@ -161,7 +161,7 @@ End to end:
    `client/public/`.
 3. Add variants if the product has size/weight options.
 4. **Publish it.** This is the step people miss.
-5. Refresh the storefront. It appears within ~8s, and the same product shows on the dashboard's
+5. Refresh the storefront. It appears within ~60s, and the same product shows on the dashboard's
    Products page because both sides are reading one Supabase row.
 
 ### Catalog snapshot and live refresh
@@ -172,7 +172,7 @@ prices, and images immediately instead of waiting for the first Merchant Suite r
 storefront still requests the live catalog in the background and replaces the snapshot when the
 response arrives. Supabase remains the source of truth.
 
-A newly published product can appear from the live API within about 8 seconds without a storefront
+A newly published product can appear from the live API within about 60 seconds without a storefront
 deploy. It becomes part of the built-in first-paint snapshot on the next successful production
 build. To refresh that snapshot deliberately, run `NODE_ENV=production npm run build` from this repo
 and deploy the resulting commit to `main`. Do not edit the generated file by hand.
