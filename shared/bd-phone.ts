@@ -1,9 +1,10 @@
-/** Return the canonical local mobile number, or null for an invalid input. */
+/**
+ * Return the canonical local mobile number, or null for an invalid input.
+ * Accepts English digits only, as 01[3-9]XXXXXXXX or +8801[3-9]XXXXXXXX;
+ * spaces and dashes are ignored.
+ */
 export function normalizeBdMobile(value: string): string | null {
-  const ascii = value.trim().replace(/[০-৯]/g, (digit) => String(digit.charCodeAt(0) - 0x09e6))
-    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660));
-  if (!/^\+?[\d\s()-]+$/.test(ascii)) return null;
-  const digits = ascii.replace(/\D/g, "");
-  const local = digits.startsWith("880") ? `0${digits.slice(3)}` : digits;
-  return /^01[3-9]\d{8}$/.test(local) ? local : null;
+  const compact = value.replace(/[\s-]/g, "");
+  const match = /^(?:0|\+880)(1[3-9]\d{8})$/.exec(compact);
+  return match ? `0${match[1]}` : null;
 }

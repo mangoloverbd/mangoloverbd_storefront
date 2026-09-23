@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { isIP } from "node:net";
 import { CLIENT_CONTEXT_HEADER, createSignedClientContext } from "../server/client-context.js";
 import { readOrCreateDeviceId } from "../server/device-id.js";
+import { normalizeBdMobile } from "../shared/bd-phone.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const MAX_MONEY = 10_000_000;
@@ -181,7 +182,7 @@ export function parseAbandonedCartCapture(body: unknown): AbandonedCartCapture {
   const source = requiredValue(body, "source");
   const sourcePath = requiredText(requiredValue(body, "sourcePath"), 120);
   const phone = requiredText(requiredValue(body, "phone"));
-  if (!UUID_RE.test(draftKey) || typeof source !== "string" || !Object.hasOwn(sourcePaths, source) || !/^01\d{9}$/.test(phone)) {
+  if (!UUID_RE.test(draftKey) || typeof source !== "string" || !Object.hasOwn(sourcePaths, source) || normalizeBdMobile(phone) !== phone) {
     throw new AbandonedCartValidationError();
   }
   const normalizedSource = source as AbandonedCartSource;

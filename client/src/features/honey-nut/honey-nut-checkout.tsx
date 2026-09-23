@@ -108,7 +108,7 @@ function getFieldErrors(
   if (fields.name.trim().length < 2 || fields.name.trim().length > 120)
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   if (!normalizeBdMobile(fields.phone))
-    errors.phone = "১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।";
+    errors.phone = "ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।";
   if (fields.address.trim().length < 5 || fields.address.trim().length > 300)
     errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId))

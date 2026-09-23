@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { isIP } from "node:net";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
+import { normalizeBdMobile } from "../shared/bd-phone.ts";
 
 const MAX_MONEY = 10_000_000;
 const CAPTURE_TIMEOUT_MS = 5_000;
@@ -34,7 +35,7 @@ const captureSchema = z.object({
   source: sourceSchema,
   sourcePath: z.string().trim().min(1).max(120),
   customerName: optionalText(120),
-  phone: z.string().trim().regex(/^01\d{9}$/, "Phone must be a valid Bangladeshi number"),
+  phone: z.string().trim().refine((phone) => normalizeBdMobile(phone) === phone, "Phone must be a valid Bangladeshi number"),
   address: optionalText(500),
   items: z.array(z.object({
     productName: z.string().trim().min(1).max(200),
