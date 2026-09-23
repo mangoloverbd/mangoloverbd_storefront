@@ -31,9 +31,11 @@ export async function registerRoutes(
   const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
 
   app.post("/api/abandoned-carts", async (req, res, next) => {
+    const { deviceId } = readOrCreateDeviceId(req, res);
     try {
       const capture = parseAbandonedCartCapture(req.body);
-      await processCapture(capture);
+      const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
+      await processCapture(capture, clientContextHeader ? { clientContextHeader } : {});
       res.status(202).json({ ok: true });
     } catch (error) {
       if (error instanceof AbandonedCartValidationError) {

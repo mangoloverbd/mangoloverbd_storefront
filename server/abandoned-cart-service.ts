@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isIP } from "node:net";
+import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 
 const MAX_MONEY = 10_000_000;
 const CAPTURE_TIMEOUT_MS = 5_000;
@@ -126,6 +127,7 @@ type AbandonedCartServiceDependencies = {
   apiKey?: string;
   timeoutSignal?: () => AbortSignal;
   forwardedClientIp?: string;
+  clientContextHeader?: string;
 };
 
 export async function processAbandonedCartCapture(
@@ -153,6 +155,7 @@ export async function processAbandonedCartCapture(
         "Content-Type": "application/json",
         "x-api-key": apiKey,
         ...(forwardedClientIp ? { "x-storefront-client-ip": forwardedClientIp } : {}),
+        ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),

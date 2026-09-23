@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { isIP } from "node:net";
+import { CLIENT_CONTEXT_HEADER, createSignedClientContext } from "../server/client-context.js";
+import { readOrCreateDeviceId } from "../server/device-id.js";
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const MAX_MONEY = 10_000_000;
@@ -62,7 +64,7 @@ class RequestBodyError extends Error {
 type CaptureHandlerDependencies = {
   processCapture?: (
     capture: AbandonedCartCapture,
-    context?: { forwardedClientIp?: string },
+    context?: { forwardedClientIp?: string; clientContextHeader?: string },
   ) => Promise<void>;
 };
 
@@ -72,6 +74,7 @@ type AbandonedCartServiceDependencies = {
   apiKey?: string;
   timeoutSignal?: () => AbortSignal;
   forwardedClientIp?: string;
+  clientContextHeader?: string;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -229,6 +232,7 @@ export async function processAbandonedCartCapture(
         "Content-Type": "application/json",
         "x-api-key": apiKey,
         ...(forwardedClientIp ? { "x-storefront-client-ip": forwardedClientIp } : {}),
+        ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),
@@ -290,8 +294,9 @@ function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
 
 export function createAbandonedCartHandler(dependencies: CaptureHandlerDependencies = {}) {
   const processCapture = dependencies.processCapture
-    ?? ((capture: AbandonedCartCapture, context?: { forwardedClientIp?: string }) => processAbandonedCartCapture(capture, {
+    ?? ((capture: AbandonedCartCapture, context?: { forwardedClientIp?: string; clientContextHeader?: string }) => processAbandonedCartCapture(capture, {
       forwardedClientIp: context?.forwardedClientIp,
+      clientContextHeader: context?.clientContextHeader,
     }));
 
   return async function handler(
@@ -303,9 +308,15 @@ export function createAbandonedCartHandler(dependencies: CaptureHandlerDependenc
       return;
     }
 
+    const { deviceId } = readOrCreateDeviceId(req, res);
+
     try {
       const capture = parseAbandonedCartCapture(await readBody(req));
-      await processCapture(capture, { forwardedClientIp: getVercelClientIp(req) });
+      const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
+      await processCapture(capture, {
+        forwardedClientIp: getVercelClientIp(req),
+        ...(clientContextHeader ? { clientContextHeader } : {}),
+      });
       sendJson(res, 202, { ok: true });
     } catch (error) {
       if (error instanceof RequestBodyError) {
