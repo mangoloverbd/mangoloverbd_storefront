@@ -194,7 +194,7 @@ export default function OrderDialog({
       return;
     }
     if (!phone) {
-      setOrderError("১৩–১৯ সিরিজের ১১ সংখ্যার বাংলাদেশি মোবাইল নম্বর লিখুন।");
+      setOrderError("ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।");
       return;
     }
     if (!address) {

@@ -41,8 +41,9 @@ test("accepts concise but real delivery addresses for staff confirmation", () =>
   assert.equal(validateOrder({ ...validOrder, address: "Dhanmondi, Dhaka" }).address, "Dhanmondi, Dhaka");
 });
 
-test("accepts Bangla and +880 mobile formats and ignores invalid optional telemetry", () => {
-  assert.equal(validateOrder({ ...validOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮" }).phone, "01712345678");
+test("accepts +880 mobile format, rejects Bangla digits and ignores invalid optional telemetry", () => {
+  assert.equal(validateOrder({ ...validOrder, phone: "+880 1712-345678" }).phone, "01712345678");
+  assert.throws(() => validateOrder({ ...validOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮" }));
   assert.equal(validateOrder({ ...validOrder, checkoutTelemetry: { phoneCandidates: ["bad"] } }).checkoutTelemetry, undefined);
 });
 

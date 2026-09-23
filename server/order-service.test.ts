@@ -23,7 +23,7 @@ const validOrder = {
   quantity: 2,
   deliveryCharge: 100,
   customerName: "Test Customer",
-  phone: "০১৭১২৩৪৫৬৭৮",
+  phone: "01712-345678",
   address: "House 1 Road 2 Dhaka",
   paymentMethod: "cash_on_delivery" as const,
   items: canonicalItems,
@@ -82,8 +82,10 @@ test("preserves upstream rate limiting as a retryable checkout response", async 
   }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 429);
 });
 
-test("normalizes Bengali phone digits", () => {
+test("normalizes spaced or dashed phone numbers and rejects Bengali digits", () => {
   assert.equal(orderRequestSchema.parse(validOrder).phone, "01712345678");
+  assert.throws(() => orderRequestSchema.parse({ ...validOrder, phone: "০১৭১২৩৪৫৬৭৮" }));
+  assert.throws(() => orderRequestSchema.parse({ ...validOrder, phone: "01212345678" }));
 });
 
 test("rejects a too-short address but accepts a concise real one", () => {
@@ -382,9 +384,9 @@ test("local handler signs the same context without browser hints in the body", a
   }
 });
 
-test("local handler accepts Bangla phone, ignores malformed telemetry and returns 429", async () => {
+test("local handler accepts +880 phone, ignores malformed telemetry and returns 429", async () => {
   let called = false;
-  const response = await invokeLocalOrder({ ...validEnglishOrder, phone: "+৮৮০ ১৭১২-৩৪৫৬৭৮",
+  const response = await invokeLocalOrder({ ...validEnglishOrder, phone: "+880 1712-345678",
     checkoutTelemetry: { pastedFields: ["other"] } }, { processOrder: async (order: { phone: string; checkoutTelemetry?: unknown }) => {
     called = true;
     assert.equal(order.phone, "01712345678");

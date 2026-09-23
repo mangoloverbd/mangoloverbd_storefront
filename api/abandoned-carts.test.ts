@@ -153,6 +153,8 @@ test("Vercel parsing matches the local strict capture contract", async () => {
     { ...validCapture, unexpected: true },
     { ...validCapture, sourcePath: "/step/honey-nut" },
     { ...validCapture, phone: "0181234567" },
+    { ...validCapture, phone: "01212345678" },
+    { ...validCapture, phone: "০১৭১২৩৪৫৬৭৮" },
     { ...validCapture, total: 851 },
     { ...validCapture, items: [{ ...validCapture.items[0], quantity: 101 }] },
     { ...validCapture, campaign: { notAllowed: "value" } },
