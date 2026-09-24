@@ -160,6 +160,10 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /"--media-accent-color": "#FBBB14"/);
   // No backdrop blur on the reel player: it re-blurs the video every frame of a swipe.
   assert.match(productSource, /"--media-backdrop-filter-surface": "none"/);
+  // Swiping only moves posters: the player mounts on a play tap, inside that tap for iOS.
+  assert.match(productSource, /i === playerReel \? \(\s*<VideoPlayer/);
+  assert.match(productSource, /flushSync\(\(\) => setPlayerReel\(i\)\)/);
+  assert.match(productSource, /setPlayerReel\(\(reel\) => \(reel === selected \? reel : null\)\)/);
   assert.match(productSource, /"--media-backdrop-filter-indicator": "none"/);
   assert.doesNotMatch(productSource, /h-16 w-16[^"]*backdrop-blur/);
   // Phones get tap-to-pause/play, and a big play icon shows whenever the reel is paused.

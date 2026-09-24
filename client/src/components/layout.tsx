@@ -548,7 +548,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <motion.div
             key={location}
             initial={{ opacity: 0, y: 14, filter: "blur(3px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            // Clear the filter once the page is in: a lingering blur(0px) still wraps the
+            // whole page in a filter layer, so every carousel frame repaints the page on phones.
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)", transitionEnd: { filter: "none" } }}
             exit={{ opacity: 0, y: -14, filter: "blur(3px)" }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
           >
