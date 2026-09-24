@@ -141,31 +141,38 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.match(productSource, /max-w-none md:max-w-\[480px\]/);
   assert.match(productSource, /basis-\[60vw\][^"`]*md:basis-\[240px\]/);
   assert.match(productSource, /REEL_MEDIA = \[/);
-  assert.match(productSource, /res\.cloudinary\.com\/n0d6bs08\/video\/upload/);
-  assert.match(productSource, /<video/);
-  assert.match(productSource, /controls=\{activeReelVideo === i\}/);
+  assert.match(productSource, /src: `https:\/\/media\.mangolover\.com\.bd\/\$\{id\}\.mp4`/);
+  assert.match(productSource, /from "@videojs\/react\/video"/);
+  assert.match(productSource, /import "@videojs\/react\/video\/skin\.css"/);
+  assert.match(productSource, /<VideoPlayer poster=\{poster\}>[\s\S]*?<VideoSkin[\s\S]*?<Video\b/);
   // Only the active slide mounts a <video>, so a mobile drag moves one cheap layer
   // instead of three decoding video layers.
   assert.match(productSource, /i === currentReel/);
   assert.match(productSource, /preload="metadata"/);
   assert.doesNotMatch(productSource, /autoPlay=/);
-  assert.match(productSource, /so_1,w_480,f_auto,q_auto/);
+  assert.match(productSource, /poster: `\/reels\/\$\{id\}\.jpg`/);
   assert.match(productSource, /Play className/);
   assert.match(productSource, /activeReelVideoRef/);
   assert.match(productSource, /src=\{poster\}[\s\S]*?pointer-events-none/);
   assert.match(productSource, /loading="lazy"/);
   assert.doesNotMatch(productSource, /video\.load\(\)/);
   assert.match(productSource, /will-change-transform/);
-  assert.match(productSource, /video\.muted = false/);
+  assert.match(productSource, /"--media-accent-color": "#FBBB14"/);
+  // Phones get tap-to-pause/play, and a big play icon shows whenever the reel is paused.
+  assert.match(productSource, /<Gesture type="tap" action="togglePaused" pointer="touch" \/>/);
+  assert.match(productSource, /<PlayButton[\s\S]*?hidden=\{!state\.paused\}/);
   assert.doesNotMatch(productSource, /pointer-events-none md:pointer-events-auto/);
-  assert.match(productSource, /snapsave-app_1C33w5xnV7_hd/);
-  assert.match(productSource, /snapsave-app_1700766014578997_hd/);
+  assert.match(productSource, /c9d544706ce4d4449fec7c318815b622/);
+  assert.match(productSource, /043f4f5e2fd61a6b670a2cd8021637db/);
+  assert.match(productSource, /536f20e620b43f4948a5c31cc51ff198/);
   assert.doesNotMatch(productSource, /snap-center/);
   assert.match(productSource, /\[touch-action:pan-y_pinch-zoom\]/);
   assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
   assert.match(productSource, /reelApi\.scrollPrev\(\)/);
   assert.match(productSource, /reelApi\.scrollNext\(\)/);
-  assert.match(productSource, /reelApi\.on\("pointerDown", pauseReelsDuringDrag\)/);
+  assert.match(productSource, /root\.addEventListener\("pointermove", pauseReelsDuringDrag\)/);
+  assert.doesNotMatch(productSource, /reelApi\.on\("scroll", pauseReelsDuringDrag\)/);
+  assert.doesNotMatch(productSource, /reelApi\.on\("pointerDown"/);
   assert.doesNotMatch(productSource, /wistia-player/);
 });
 
