@@ -1,6 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import useEmblaCarousel from "embla-carousel-react";
+import "@videojs/react/video/skin.css";
+import { Gesture, PlayButton } from "@videojs/react";
+import { Video, VideoPlayer, VideoSkin } from "@videojs/react/video";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
@@ -111,16 +114,24 @@ function ProductSkeleton() {
   );
 }
 
-// Poster stills are derived once at module load, and requested at a small width so
-// phones download a thumbnail rather than a full-size frame extraction.
+// Reels are served from the Cloudflare R2 media bucket; poster stills are small
+// frames bundled with the storefront so phones never download video for a preview.
 const REEL_MEDIA = [
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/AQP0F3rOkxkmZAypesPlDQOTocYaBtrkDIqDQ12tOOwJ7ktCVtdtP-R7iFbrgWWcfl8yM5zWtDLpiUVM-bfCBhyKDbRxOu6YwGzciKxZiepGdw.mp4",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1C33w5xnV7_hd.mp4",
-  "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1700766014578997_hd.mp4",
-].map((src) => ({
-  src,
-  poster: src.replace("/f_auto,q_auto/", "/so_1,w_480,f_auto,q_auto/").replace(".mp4", ".jpg"),
+  "c9d544706ce4d4449fec7c318815b622",
+  "043f4f5e2fd61a6b670a2cd8021637db",
+  "536f20e620b43f4948a5c31cc51ff198",
+].map((id) => ({
+  src: `https://media.mangolover.com.bd/${id}.mp4`,
+  poster: `/reels/${id}.jpg`,
 }));
+
+// Public Video.js skin settings: match the reel card corners and the brand yellow.
+const REEL_SKIN_STYLE = {
+  "--media-accent-color": "#FBBB14",
+  "--media-border-color": "transparent",
+  "--media-border-radius": "6px",
+  "--media-object-fit": "contain",
+} as CSSProperties;
 
 const HONEY_NUT_REEL_MEDIA = [
   {
@@ -155,7 +166,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
   // decoders to layers that Embla re-transforms every frame, which is what makes the
   // horizontal drag stutter on real phones but not on a desktop localhost.
-  const [activeReelVideo, setActiveReelVideo] = useState<number | null>(null);
   const activeReelVideoRef = useRef<HTMLVideoElement | null>(null);
   const viewedGoogleItemRef = useRef("");
   const [cachedProduct, setCachedProduct] = useState<StorefrontProduct | null>(null);
@@ -216,12 +226,33 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [reelApi]);
   useEffect(() => {
     if (!reelApi) return;
-    const pauseReelsDuringDrag = () => {
+    // Pause only when a pointer really drags the track sideways. Embla's pointerDown
+    // fired on every tap (fighting the player's tap-to-toggle), and its scroll event
+    // keeps firing for seconds while an arrow-driven slide settles, pausing a reel
+    // the shopper had just started.
+    const root = reelApi.rootNode();
+    let dragStartX: number | null = null;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      dragStartX = target?.closest("button, [role='slider'], input") ? null : event.clientX;
+    };
+    const pauseReelsDuringDrag = (event: PointerEvent) => {
+      if (dragStartX === null || Math.abs(event.clientX - dragStartX) < 10) return;
+      dragStartX = null;
       activeReelVideoRef.current?.pause();
     };
-    reelApi.on("pointerDown", pauseReelsDuringDrag);
+    const endDrag = () => {
+      dragStartX = null;
+    };
+    root.addEventListener("pointerdown", onPointerDown);
+    root.addEventListener("pointermove", pauseReelsDuringDrag);
+    window.addEventListener("pointerup", endDrag);
+    window.addEventListener("pointercancel", endDrag);
     return () => {
-      reelApi.off("pointerDown", pauseReelsDuringDrag);
+      root.removeEventListener("pointerdown", onPointerDown);
+      root.removeEventListener("pointermove", pauseReelsDuringDrag);
+      window.removeEventListener("pointerup", endDrag);
+      window.removeEventListener("pointercancel", endDrag);
     };
   }, [reelApi]);
   useEffect(() => {
@@ -235,11 +266,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       reelApi.off("reInit", syncActiveReel);
     };
   }, [reelApi]);
-  useEffect(() => {
-    // Leaving a slide tears its <video> down so no decoder stays attached to an
-    // off-screen slide while the track is being dragged.
-    setActiveReelVideo((active) => (active === null || active === currentReel ? active : null));
-  }, [currentReel]);
   const { data: merchantProduct, isFetchedAfterMount, isSuccess, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -1008,22 +1034,36 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               {i === currentReel ? (
-                                <video
-                                  src={src}
-                                  title={`Mango Lover BD reel ${i + 1}`}
-                                  poster={poster}
-                                  controls={activeReelVideo === i}
-                                  playsInline
-                                  preload="metadata"
-                                  onPlay={() => setActiveReelVideo(i)}
-                                  onPause={() => setActiveReelVideo((active) => (active === i ? null : active))}
-                                  ref={(video) => {
-                                    activeReelVideoRef.current = video;
-                                  }}
-                                  className="h-full w-full object-contain bg-black"
-                                />
+                                <VideoPlayer poster={poster}>
+                                  <VideoSkin className="absolute inset-0 h-full w-full" style={REEL_SKIN_STYLE}>
+                                    <Video
+                                      src={src}
+                                      title={`Mango Lover BD reel ${i + 1}`}
+                                      playsInline
+                                      preload="metadata"
+                                      ref={(video) => {
+                                        activeReelVideoRef.current = video;
+                                      }}
+                                    />
+                                    {/* The packaged skin maps a touch tap to showing controls; reels want
+                                        tap-to-pause/play on phones too. Registered before the skin's own
+                                        gestures, so this one wins. */}
+                                    <Gesture type="tap" action="togglePaused" pointer="touch" />
+                                    <PlayButton
+                                      render={(props, state) => (
+                                        <button
+                                          {...props}
+                                          hidden={!state.paused}
+                                          className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                        >
+                                          <Play className="ml-1 h-7 w-7 fill-current" />
+                                        </button>
+                                      )}
+                                    />
+                                  </VideoSkin>
+                                </VideoPlayer>
                               ) : null}
-                              {activeReelVideo !== i ? (
+                              {i !== currentReel ? (
                                 <img
                                   src={poster}
                                   alt=""
@@ -1033,21 +1073,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                   className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
                                 />
                               ) : null}
-                              {activeReelVideo !== i ? (
+                              {i !== currentReel ? (
                                 <button
                                   type="button"
-                                  aria-label={`Play reel ${i + 1}`}
-                                  onClick={() => {
-                                    if (i !== currentReel) {
-                                      reelApi?.scrollTo(i);
-                                      return;
-                                    }
-                                    const video = activeReelVideoRef.current;
-                                    if (!video) return;
-                                    video.muted = false;
-                                    setActiveReelVideo(i);
-                                    void video.play().catch(() => setActiveReelVideo(null));
-                                  }}
+                                  aria-label={`Show reel ${i + 1}`}
+                                  onClick={() => reelApi?.scrollTo(i)}
                                   className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                                 >
                                   <Play className="ml-1 h-6 w-6 fill-current" />
