@@ -126,11 +126,18 @@ const REEL_MEDIA = [
 }));
 
 // Public Video.js skin settings: match the reel card corners and the brand yellow.
+// The skin's frosted-glass blur is switched off: re-blurring the video under the
+// control bars on every frame of a swipe made the carousel stutter on phones, so the
+// surfaces use a solid translucent dark instead.
 const REEL_SKIN_STYLE = {
   "--media-accent-color": "#FBBB14",
   "--media-border-color": "transparent",
   "--media-border-radius": "6px",
   "--media-object-fit": "contain",
+  "--media-backdrop-filter-surface": "none",
+  "--media-backdrop-filter-indicator": "none",
+  "--media-backdrop-filter-dialog": "none",
+  "--media-popover": "oklch(0% 0 0 / 0.55)",
 } as CSSProperties;
 
 const HONEY_NUT_REEL_MEDIA = [
@@ -1054,7 +1061,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                         <button
                                           {...props}
                                           hidden={!state.paused}
-                                          className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                          className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                                         >
                                           <Play className="ml-1 h-7 w-7 fill-current" />
                                         </button>

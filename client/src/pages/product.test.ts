@@ -158,6 +158,10 @@ test("renders product reels as a smooth horizontal snap carousel", () => {
   assert.doesNotMatch(productSource, /video\.load\(\)/);
   assert.match(productSource, /will-change-transform/);
   assert.match(productSource, /"--media-accent-color": "#FBBB14"/);
+  // No backdrop blur on the reel player: it re-blurs the video every frame of a swipe.
+  assert.match(productSource, /"--media-backdrop-filter-surface": "none"/);
+  assert.match(productSource, /"--media-backdrop-filter-indicator": "none"/);
+  assert.doesNotMatch(productSource, /h-16 w-16[^"]*backdrop-blur/);
   // Phones get tap-to-pause/play, and a big play icon shows whenever the reel is paused.
   assert.match(productSource, /<Gesture type="tap" action="togglePaused" pointer="touch" \/>/);
   assert.match(productSource, /<PlayButton[\s\S]*?hidden=\{!state\.paused\}/);
