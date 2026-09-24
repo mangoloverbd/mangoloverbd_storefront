@@ -5,34 +5,22 @@ import { test } from "node:test";
 const dialogSource = readFileSync(new URL("./order-dialog.tsx", import.meta.url), "utf8");
 const cssSource = readFileSync(new URL("../index.css", import.meta.url), "utf8");
 
-test("a floating Place Order button submits the same checkout form", () => {
+test("the Place Order button shows a centred one-line label and no arrow", () => {
   assert.match(dialogSource, /<form\s+id="order-dialog-form"/);
-  assert.match(dialogSource, /type="submit"\s+form="order-dialog-form"/);
-  // DialogContent hides direct child buttons ([&>button]:hidden), so the
-  // button must sit inside a wrapper element, never be a bare child button.
-  assert.match(dialogSource, /<motion\.div\n\s+key="order-floating-cta"/);
-  assert.match(dialogSource, /className="order-floating-cta /);
-  // The button carries the live total so customers see the final price.
-  assert.match(dialogSource, /tabular-nums">\n\s+৳\{\(bundle\.price \+ deliveryCharge\)\.toLocaleString\(\)\}/);
-  // A rounded rectangle, not a pill.
-  assert.doesNotMatch(dialogSource, /order-floating-cta[\s\S]{0,1200}rounded-full/);
+  assert.match(dialogSource, /<button\n\s+type="submit"\n\s+disabled=\{orderSubmitting\}/);
+  assert.match(dialogSource, /rounded-\[6px\] bg-\[#FBBB14\]/);
+  assert.match(dialogSource, /flex h-14 w-full items-center justify-center rounded-\[6px\]/);
+  assert.match(dialogSource, /truncate text-center[^"]*">\n\s+\{orderSubmitting \? "Placing Order\.\.\. - অর্ডার হচ্ছে\.\.\." : "Place Order - অর্ডার করুন"\}/);
+  // The total is shown once, in the summary above; the button repeats no price.
+  assert.doesNotMatch(dialogSource, /tabular-nums">\n\s+৳\{\(bundle\.price \+ deliveryCharge\)\.toLocaleString\(\)\}/);
+  assert.doesNotMatch(dialogSource, /ArrowRight/);
 });
 
-test("the floating button hides while the real button is visible or the keyboard is open", () => {
-  assert.match(dialogSource, /new IntersectionObserver/);
-  assert.match(dialogSource, /const showFloatingCta = !submitButtonVisible && !fieldFocused/);
-  assert.match(dialogSource, /onFocusCapture=\{handleFormFocus\}/);
-});
-
-test("the floating button lifts above Meta's in-app contact bar", () => {
-  assert.match(dialogSource, /isMetaInAppBrowser\(navigator\.userAgent\)/);
-  assert.match(dialogSource, /data-meta-in-app=/);
-  assert.match(cssSource, /\.order-floating-cta \{\n\s+bottom: calc\(env\(safe-area-inset-bottom\) \+ 36px\);/);
-  assert.match(cssSource, /\[data-meta-in-app="true"\] \.order-floating-cta \{\n\s+bottom: calc\(env\(safe-area-inset-bottom\) \+ 104px\);/);
-  // On mobile the form leaves room to scroll its last buttons above
-  // browser toolbars; Meta's in-app browser needs a little more.
-  assert.match(cssSource, /@media \(max-width: 767px\) \{\n\s+\.order-dialog-form \{\n\s+padding-bottom: calc\(env\(safe-area-inset-bottom\) \+ 96px\);/);
-  assert.match(cssSource, /\[data-meta-in-app="true"\] \.order-dialog-form \{\n\s+padding-bottom: 120px;/);
+test("there is no separate floating Place Order button", () => {
+  assert.doesNotMatch(dialogSource, /order-floating-cta/);
+  assert.doesNotMatch(dialogSource, /IntersectionObserver/);
+  assert.doesNotMatch(dialogSource, /isMetaInAppBrowser/);
+  assert.doesNotMatch(cssSource, /order-floating-cta|order-dialog-form/);
 });
 
 test("validation errors move the customer to the field that needs fixing", () => {
@@ -61,7 +49,7 @@ test("cart checkout passes each cart item as its own line", () => {
 });
 
 test("phone and WhatsApp order options sit below the Place Order button", () => {
-  const submitIndex = dialogSource.indexOf('"Place Order - অর্ডার করুন"');
+  const submitIndex = dialogSource.indexOf('type="submit"');
   const helpIndex = dialogSource.indexOf("আমরা সবসময় আপনাকে সাহায্য করতে প্রস্তুত");
   const phoneIndex = dialogSource.indexOf('href="tel:+8801301636461"');
   const whatsappIndex = dialogSource.indexOf("https://wa.me/8801301636461");
@@ -73,4 +61,18 @@ test("phone and WhatsApp order options sit below the Place Order button", () => 
   // WhatsApp opens with the customer's items already filled in.
   assert.match(dialogSource, /const whatsappOrderText = /);
   assert.match(dialogSource, /encodeURIComponent\(whatsappOrderText\)/);
+});
+
+test("checkout ends with a short summary of the store policies and links to them", () => {
+  const whatsappIndex = dialogSource.indexOf("https://wa.me/8801301636461");
+  const termsIndex = dialogSource.indexOf("অর্ডার করার আগে জেনে নিন");
+  assert.ok(termsIndex > whatsappIndex, "policy summary follows the phone/WhatsApp buttons");
+  // Every point restates the published policy pages in site-pages.ts.
+  assert.match(dialogSource, /পেমেন্ট শুধু ক্যাশ অন ডেলিভারি/);
+  assert.match(dialogSource, /ঢাকায় ১–২ দিন, ঢাকার বাইরে ২–৩ দিনে ডেলিভারি/);
+  assert.match(dialogSource, /ডেলিভারির ২৪ ঘণ্টার মধ্যে জানান/);
+  // Links open in a new tab so the half-filled form is not lost.
+  for (const slug of ["terms-and-conditions", "refund-return-exchange"]) {
+    assert.match(dialogSource, new RegExp(`href="/${slug}"\\s+target="_blank"`));
+  }
 });

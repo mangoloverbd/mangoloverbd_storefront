@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Phone, X } from "lucide-react";
+import { Check, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
@@ -13,7 +13,6 @@ import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandon
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { bundleHasFreeDeliveryProduct, bundleHasLitchiFlowerHoney } from "@/lib/free-delivery";
-import { isMetaInAppBrowser } from "@/lib/in-app-browser";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
   Dialog,
@@ -28,6 +27,13 @@ const deliveryOptions = [
 ];
 
 const freeDeliveryThreshold = 2600;
+
+// Short restatement of the published policy pages (client/src/lib/site-pages.ts).
+const checkoutPolicyPoints = [
+  "পেমেন্ট শুধু ক্যাশ অন ডেলিভারি।",
+  "ঢাকায় ১–২ দিন, ঢাকার বাইরে ২–৩ দিনে ডেলিভারি।",
+  "পণ্যে সমস্যা হলে ডেলিভারির ২৪ ঘণ্টার মধ্যে জানান।",
+];
 
 
 export type OrderDialogLineItem = {
@@ -92,13 +98,6 @@ export default function OrderDialog({
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const formRef = useRef<HTMLFormElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
-  const [submitButtonVisible, setSubmitButtonVisible] = useState(false);
-  const [fieldFocused, setFieldFocused] = useState(false);
-  // Meta's in-app browser can pin a contact bar over the bottom ~90px.
-  const metaInApp = typeof navigator !== "undefined" && isMetaInAppBrowser(navigator.userAgent);
-  const showFloatingCta = !submitButtonVisible && !fieldFocused;
   const capture = useAbandonedCartCapture("storefront");
   const bundleQuantity = bundle?.quantity ?? 1;
   const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
@@ -178,32 +177,6 @@ export default function OrderDialog({
   useEffect(() => {
     if (open) updateCapture();
   }, [open, bundle, bundleQuantity, bundleUnitPrice, deliveryCharge]);
-
-  useEffect(() => {
-    const root = scrollRef.current;
-    const target = submitButtonRef.current;
-    if (!root || !target || typeof IntersectionObserver === "undefined") return;
-    // Only count the real button as visible once it clears Meta's bar.
-    const observer = new IntersectionObserver(([entry]) => {
-      setSubmitButtonVisible(entry.isIntersecting);
-    }, { root, rootMargin: metaInApp ? "0px 0px -104px 0px" : "0px", threshold: 0.9 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [open, openInstance, orderSubmitted, protectionDecision, metaInApp]);
-
-  const isTextField = (element: EventTarget | null) =>
-    element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement;
-
-  // Hide the floating button while the keyboard is open so it never covers the inputs.
-  const handleFormFocus = (event: React.FocusEvent<HTMLFormElement>) => {
-    formHandlers.onFocusCapture(event);
-    if (isTextField(event.target)) setFieldFocused(true);
-  };
-
-  const handleFormBlur = (event: React.FocusEvent<HTMLFormElement>) => {
-    if (!isTextField(event.relatedTarget)) setFieldFocused(false);
-    flushCapture();
-  };
 
   const failField = (field: "name" | "phone" | "address", message: string) => {
     setOrderError(message);
@@ -356,7 +329,6 @@ export default function OrderDialog({
         <DialogContent
           forceMount
           onOpenAutoFocus={(event) => event.preventDefault()}
-          data-meta-in-app={metaInApp ? "true" : undefined}
           className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-3 sm:p-4 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-[#f6f6f6] md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden md:[&>button]:flex md:[&>button]:rounded-[8px] flex flex-col z-[100]"
         >
           <AnimatePresence
@@ -365,7 +337,6 @@ export default function OrderDialog({
           >
             {open && (
               <motion.div
-                ref={scrollRef}
                 key={openInstance}
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{
@@ -488,14 +459,14 @@ export default function OrderDialog({
                   id="order-dialog-form"
                   ref={formRef}
                   onSubmit={placeOrder}
-                  onFocusCapture={handleFormFocus}
+                  onFocusCapture={formHandlers.onFocusCapture}
                   onPasteCapture={formHandlers.onPasteCapture}
                   onInput={(event) => {
                     if ((event.target as HTMLInputElement).name === "phone") trackPhoneCandidate((event.target as HTMLInputElement).value);
                     updateCapture();
                   }}
-                  onBlurCapture={handleFormBlur}
-                  className="order-dialog-form mt-6 space-y-6"
+                  onBlurCapture={() => { flushCapture(); }}
+                  className="mt-6 space-y-6"
                   noValidate
                 >
                   <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
@@ -697,13 +668,15 @@ export default function OrderDialog({
                     </div>
                   </div>
 
-                  <Button
-                    ref={submitButtonRef}
+                  <button
+                    type="submit"
                     disabled={orderSubmitting}
-                    className="h-14 w-full rounded-[8px] bg-[#FBBB14] text-black text-[13px] font-bold hover:bg-[#e5a80f] transition-all disabled:cursor-not-allowed disabled:opacity-60"
+                    className="flex h-14 w-full items-center justify-center rounded-[6px] bg-[#FBBB14] px-4 text-black shadow-[0_2px_6px_rgba(0,0,0,0.06)] ring-1 ring-black/5 transition-[background-color,transform] duration-150 hover:bg-[#f5b000] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
-                  </Button>
+                    <span className="truncate text-center text-[15px] font-bold tracking-[-0.01em]">
+                      {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
+                    </span>
+                  </button>
 
                   <div className="space-y-3">
                     <p className="text-center leading-5">
@@ -739,46 +712,28 @@ export default function OrderDialog({
                       </a>
                     </div>
                   </div>
+
+                  <div className="space-y-2.5 border-t border-black/10 pt-4">
+                    <p className="text-[12px] font-semibold text-black">
+                      অর্ডার করার আগে জেনে নিন
+                    </p>
+                    <ul className="space-y-1.5">
+                      {checkoutPolicyPoints.map((point) => (
+                        <li key={point} className="flex gap-2 text-[11px] leading-5 text-black/60">
+                          <Check className="mt-[3px] h-3.5 w-3.5 shrink-0 text-brand-gold" aria-hidden="true" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-[11px] leading-5 text-black/45">
+                      অর্ডার করে আপনি আমাদের{" "}
+                      <a href="/terms-and-conditions" target="_blank" rel="noopener" className="font-medium text-black/70 underline underline-offset-2">শর্তাবলি</a> ও{" "}
+                      <a href="/refund-return-exchange" target="_blank" rel="noopener" className="font-medium text-black/70 underline underline-offset-2">রিটার্ন নীতিমালা</a>{" "}
+                      মেনে নিচ্ছেন।
+                    </p>
+                  </div>
                 </form>
               )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {open && !orderSubmitted && protectionDecision !== "review" && showFloatingCta && (
-              // Wrapped in a div: DialogContent hides direct child buttons ([&>button]:hidden).
-              <motion.div
-                key="order-floating-cta"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
-                exit={{ opacity: 0, y: 16, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
-                className="order-floating-cta absolute inset-x-9 z-[20] md:hidden"
-              >
-                <button
-                  type="submit"
-                  form="order-dialog-form"
-                  disabled={orderSubmitting}
-                  className="group flex h-16 w-full items-center justify-between gap-3 rounded-[14px] bg-[#FBBB14] py-2 pl-5 pr-2 text-left text-black shadow-[0_12px_32px_-8px_rgba(0,0,0,0.35)] ring-1 ring-black/10 transition-[background-color,transform] duration-150 hover:bg-[#f5b000] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <span className="flex flex-col leading-tight">
-                    <span className="text-[15px] font-bold tracking-[-0.01em]">
-                      {orderSubmitting ? "Placing Order..." : "Place Order"}
-                    </span>
-                    <span className="text-[11px] font-medium text-black/60">
-                      {orderSubmitting ? "অর্ডার হচ্ছে..." : "অর্ডার করুন"}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-3">
-                    {deliveryCharge !== null && (
-                      <span className="text-[18px] font-semibold tracking-tight tabular-nums">
-                        ৳{(bundle.price + deliveryCharge).toLocaleString()}
-                      </span>
-                    )}
-                    <span className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-black text-[#FBBB14] transition-transform duration-150 group-hover:translate-x-0.5">
-                      <ArrowRight className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  </span>
-                </button>
               </motion.div>
             )}
           </AnimatePresence>
