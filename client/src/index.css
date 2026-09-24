@@ -94,6 +94,26 @@
     bottom: 1.5rem;
   }
 }
+/* Checkout floating Place Order button (order-dialog.tsx). Plain CSS so it
+   cannot be purged. Meta's in-app browser can pin a ~84px contact bar over
+   the bottom of the page, so the button lifts above it there and the form gets
+   room to scroll the real button clear of the bar. */
+.order-floating-cta {
+  bottom: calc(env(safe-area-inset-bottom) + 36px);
+}
+[data-meta-in-app="true"] .order-floating-cta {
+  bottom: calc(env(safe-area-inset-bottom) + 104px);
+}
+/* Mobile browsers (e.g. iOS Safari's floating toolbar) can overlay the bottom
+   of the page, so leave room to scroll the last buttons above them. */
+@media (max-width: 767px) {
+  .order-dialog-form {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 96px);
+  }
+}
+[data-meta-in-app="true"] .order-dialog-form {
+  padding-bottom: 120px;
+}
 /* Add-to-cart toast progress: shrinks over NOTICE_DURATION_MS (3.5s) in
    cart-added-toast.tsx. Paused via inline animationPlayState on hover/focus. */
 @keyframes cart-toast-progress {
