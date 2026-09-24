@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { ArrowRight, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
@@ -13,6 +13,7 @@ import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandon
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { bundleHasFreeDeliveryProduct, bundleHasLitchiFlowerHoney } from "@/lib/free-delivery";
+import { isMetaInAppBrowser } from "@/lib/in-app-browser";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent, type GoogleAnalyticsItem } from "@/lib/google-analytics";
 import {
   Dialog,
@@ -29,6 +30,14 @@ const deliveryOptions = [
 const freeDeliveryThreshold = 2600;
 
 
+export type OrderDialogLineItem = {
+  name: string;
+  details: string;
+  quantity: number;
+  unitPrice: number;
+  image: string;
+};
+
 export type OrderDialogBundle = {
   title: string;
   details: string;
@@ -41,6 +50,7 @@ export type OrderDialogBundle = {
   analyticsItems?: GoogleAnalyticsItem[];
   captureItems?: AbandonedCartItem[];
   items?: Array<{ productId: string; variantId: string; quantity: number }>;
+  lineItems?: OrderDialogLineItem[];
 };
 
 function getBundleAnalyticsItems(bundle: OrderDialogBundle) {
@@ -82,12 +92,34 @@ export default function OrderDialog({
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | null>("cash_on_delivery");
   const previousOpen = useRef(open);
   const formRef = useRef<HTMLFormElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const [submitButtonVisible, setSubmitButtonVisible] = useState(false);
+  const [fieldFocused, setFieldFocused] = useState(false);
+  // Meta's in-app browser can pin a contact bar over the bottom ~90px.
+  const metaInApp = typeof navigator !== "undefined" && isMetaInAppBrowser(navigator.userAgent);
+  const showFloatingCta = !submitButtonVisible && !fieldFocused;
   const capture = useAbandonedCartCapture("storefront");
   const bundleQuantity = bundle?.quantity ?? 1;
   const bundleUnitPrice = bundle?.unitPrice ?? ((bundle?.price ?? 0) / bundleQuantity);
   const hasFreeDeliveryProduct = bundleHasFreeDeliveryProduct(bundle);
   const isLitchiFlowerHoney = bundleHasLitchiFlowerHoney(bundle);
   const qualifiesForFreeDelivery = (bundle?.price ?? 0) >= freeDeliveryThreshold || hasFreeDeliveryProduct;
+  const lineItems: OrderDialogLineItem[] = bundle?.lineItems?.length
+    ? bundle.lineItems
+    : bundle
+      ? [{
+        name: bundle.title,
+        details: bundle.details,
+        quantity: bundleQuantity,
+        unitPrice: bundleUnitPrice,
+        image: bundle.images[0]?.src ?? "",
+      }]
+      : [];
+  const lineItemCount = lineItems.reduce((total, item) => total + item.quantity, 0);
+  const whatsappOrderText = `Hello, I'd like to order: ${lineItems
+    .map((item) => `${item.name}${item.details ? ` (${item.details})` : ""} x${item.quantity}`)
+    .join(", ")}`;
 
   const getCaptureSnapshot = (form: HTMLFormElement | null = formRef.current) => {
     if (!bundle || deliveryCharge === null) return null;
@@ -148,6 +180,41 @@ export default function OrderDialog({
   }, [open, bundle, bundleQuantity, bundleUnitPrice, deliveryCharge]);
 
   useEffect(() => {
+    const root = scrollRef.current;
+    const target = submitButtonRef.current;
+    if (!root || !target || typeof IntersectionObserver === "undefined") return;
+    // Only count the real button as visible once it clears Meta's bar.
+    const observer = new IntersectionObserver(([entry]) => {
+      setSubmitButtonVisible(entry.isIntersecting);
+    }, { root, rootMargin: metaInApp ? "0px 0px -104px 0px" : "0px", threshold: 0.9 });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [open, openInstance, orderSubmitted, protectionDecision, metaInApp]);
+
+  const isTextField = (element: EventTarget | null) =>
+    element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement;
+
+  // Hide the floating button while the keyboard is open so it never covers the inputs.
+  const handleFormFocus = (event: React.FocusEvent<HTMLFormElement>) => {
+    formHandlers.onFocusCapture(event);
+    if (isTextField(event.target)) setFieldFocused(true);
+  };
+
+  const handleFormBlur = (event: React.FocusEvent<HTMLFormElement>) => {
+    if (!isTextField(event.relatedTarget)) setFieldFocused(false);
+    flushCapture();
+  };
+
+  const failField = (field: "name" | "phone" | "address", message: string) => {
+    setOrderError(message);
+    const element = formRef.current?.elements.namedItem(field);
+    if (element instanceof HTMLElement) {
+      element.scrollIntoView({ block: "center", behavior: "smooth" });
+      element.focus({ preventScroll: true });
+    }
+  };
+
+  useEffect(() => {
     if (orderSubmitted) {
       trackMerchantSuiteEvent("purchased");
     }
@@ -186,23 +253,23 @@ export default function OrderDialog({
     const address = String(formData.get("address") || "").trim();
 
     if (!name) {
-      setOrderError("Please enter your full name.");
+      failField("name", "Please enter your full name.");
       return;
     }
     if (!enteredPhone) {
-      setOrderError("Please enter your phone number.");
+      failField("phone", "Please enter your phone number.");
       return;
     }
     if (!phone) {
-      setOrderError("ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।");
+      failField("phone", "ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।");
       return;
     }
     if (!address) {
-      setOrderError("Please enter your delivery address.");
+      failField("address", "Please enter your delivery address.");
       return;
     }
     if (address.trim().length < 5) {
-      setOrderError("সঠিক ডেলিভারি ঠিকানা লিখুন।");
+      failField("address", "সঠিক ডেলিভারি ঠিকানা লিখুন।");
       return;
     }
 
@@ -289,6 +356,7 @@ export default function OrderDialog({
         <DialogContent
           forceMount
           onOpenAutoFocus={(event) => event.preventDefault()}
+          data-meta-in-app={metaInApp ? "true" : undefined}
           className="max-md:fixed max-md:inset-0 max-md:!left-0 max-md:!top-0 max-md:!translate-x-0 max-md:!translate-y-0 max-md:w-full max-md:h-auto max-md:max-h-none overflow-hidden rounded-none border-none !bg-transparent p-3 sm:p-4 shadow-none data-[state=open]:animate-none data-[state=closed]:animate-none md:bottom-auto md:top-[50%] md:h-auto md:max-h-[92dvh] md:translate-y-[-50%] md:max-w-[760px] md:p-0 md:bg-[#f6f6f6] md:shadow-[0_80px_180px_rgba(0,0,0,0.28)] [&>button]:hidden md:[&>button]:flex md:[&>button]:rounded-[8px] flex flex-col z-[100]"
         >
           <AnimatePresence
@@ -297,6 +365,7 @@ export default function OrderDialog({
           >
             {open && (
               <motion.div
+                ref={scrollRef}
                 key={openInstance}
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{
@@ -416,44 +485,65 @@ export default function OrderDialog({
                  </div>
                ) : (
                 <form
+                  id="order-dialog-form"
                   ref={formRef}
                   onSubmit={placeOrder}
-                  onFocusCapture={formHandlers.onFocusCapture}
+                  onFocusCapture={handleFormFocus}
                   onPasteCapture={formHandlers.onPasteCapture}
                   onInput={(event) => {
                     if ((event.target as HTMLInputElement).name === "phone") trackPhoneCandidate((event.target as HTMLInputElement).value);
                     updateCapture();
                   }}
-                  onBlurCapture={() => { flushCapture(); }}
-                  className="mt-6 space-y-6"
+                  onBlurCapture={handleFormBlur}
+                  className="order-dialog-form mt-6 space-y-6"
                   noValidate
                 >
                   <input name="hp_x7" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other" className="absolute -left-[9999px] h-px w-px opacity-0" />
-                  <div className="bg-black/5 rounded-[12px] p-4 flex items-center gap-4">
-                    <div className="relative shrink-0 w-16 h-16 md:w-20 md:h-20 bg-[#ebe8e4] rounded-[8px] p-2 flex items-center justify-center">
-                      <img
-                        src={bundle.images[0].src}
-                        alt={bundle.images[0].alt}
-                        className="h-full w-full object-contain mix-blend-multiply"
-                      />
-                      <div className="absolute -top-2 -right-2 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm">
-                        {bundleQuantity}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-[14px] md:text-[15px] font-semibold text-black leading-tight">
-                        {bundle.title}
-                      </h3>
-                      <p className="mt-1 text-[11px] md:text-[12px] text-black/60">
-                        {bundle.details}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-[14px] md:text-[15px] font-bold text-black block">
-                        ৳{bundle.price.toLocaleString()}
+                  <section aria-label="Your order - আপনার অর্ডার" className="rounded-[12px] bg-black/[0.035] p-2">
+                    <div className="flex items-baseline justify-between px-2 pb-2 pt-1">
+                      <span className="text-[13px] font-semibold text-black">
+                        Your Order - আপনার অর্ডার
+                      </span>
+                      <span className="text-[11px] font-medium text-black/50">
+                        {lineItemCount} {lineItemCount === 1 ? "item" : "items"}
                       </span>
                     </div>
-                  </div>
+                    <ul className="space-y-1.5">
+                      {lineItems.map((item, index) => (
+                        <li
+                          key={`${item.name}-${item.details}-${index}`}
+                          className="flex items-center gap-3 rounded-[10px] bg-white p-2.5 pr-3.5"
+                        >
+                          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-[#f3f1ee] p-1.5">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="h-full w-full object-contain mix-blend-multiply"
+                              />
+                            ) : null}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="line-clamp-3 text-[14px] font-semibold leading-snug text-black">
+                              {item.name}
+                            </h3>
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-black/60">
+                              {item.details ? (
+                                <span className="rounded-[6px] bg-black/[0.05] px-1.5 py-0.5">{item.details}</span>
+                              ) : null}
+                              <span className="rounded-[6px] bg-black/[0.05] px-1.5 py-0.5">Qty {item.quantity}</span>
+                              {item.quantity > 1 ? (
+                                <span className="tabular-nums">৳{item.unitPrice.toLocaleString()} each</span>
+                              ) : null}
+                            </div>
+                          </div>
+                          <span className="shrink-0 text-[15px] font-semibold tabular-nums text-black">
+                            ৳{(item.unitPrice * item.quantity).toLocaleString()}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <label className="space-y-2">
@@ -608,13 +698,87 @@ export default function OrderDialog({
                   </div>
 
                   <Button
+                    ref={submitButtonRef}
                     disabled={orderSubmitting}
                     className="h-14 w-full rounded-[8px] bg-[#FBBB14] text-black text-[13px] font-bold hover:bg-[#e5a80f] transition-all disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {orderSubmitting ? "Placing Order... - অর্ডার হচ্ছে..." : "Place Order - অর্ডার করুন"}
                   </Button>
+
+                  <div className="space-y-3">
+                    <p className="text-center leading-5">
+                      <span className="block text-[13px] font-semibold text-black">
+                        অর্ডার করতে সমস্যা হচ্ছে?
+                      </span>
+                      <span className="block text-[12px] font-medium text-black/55">
+                        আমরা সবসময় আপনাকে সাহায্য করতে প্রস্তুত
+                      </span>
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <a
+                        href="tel:+8801301636461"
+                        className="flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#f26b4f] px-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#d9573d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f26b4f]/40"
+                      >
+                        <Phone className="h-4 w-4 stroke-[1.75px]" aria-hidden="true" />
+                        ফোনে অর্ডার
+                      </a>
+                      <a
+                        href={`https://wa.me/8801301636461?text=${encodeURIComponent(whatsappOrderText)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#25d366] px-2 text-[12px] font-semibold text-white transition-colors hover:bg-[#1da851] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25d366]/40"
+                      >
+                        <img
+                          src="https://cdn.reicon.dev/logos/whatsapp/original.svg"
+                          alt=""
+                          width={16}
+                          height={16}
+                          className="h-4 w-4 brightness-0 invert"
+                        />
+                        হোয়াটসএপ-এ অর্ডার
+                      </a>
+                    </div>
+                  </div>
                 </form>
               )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {open && !orderSubmitted && protectionDecision !== "review" && showFloatingCta && (
+              // Wrapped in a div: DialogContent hides direct child buttons ([&>button]:hidden).
+              <motion.div
+                key="order-floating-cta"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                exit={{ opacity: 0, y: 16, transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] } }}
+                className="order-floating-cta absolute inset-x-9 z-[20] md:hidden"
+              >
+                <button
+                  type="submit"
+                  form="order-dialog-form"
+                  disabled={orderSubmitting}
+                  className="group flex h-16 w-full items-center justify-between gap-3 rounded-[14px] bg-[#FBBB14] py-2 pl-5 pr-2 text-left text-black shadow-[0_12px_32px_-8px_rgba(0,0,0,0.35)] ring-1 ring-black/10 transition-[background-color,transform] duration-150 hover:bg-[#f5b000] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <span className="flex flex-col leading-tight">
+                    <span className="text-[15px] font-bold tracking-[-0.01em]">
+                      {orderSubmitting ? "Placing Order..." : "Place Order"}
+                    </span>
+                    <span className="text-[11px] font-medium text-black/60">
+                      {orderSubmitting ? "অর্ডার হচ্ছে..." : "অর্ডার করুন"}
+                    </span>
+                  </span>
+                  <span className="flex items-center gap-3">
+                    {deliveryCharge !== null && (
+                      <span className="text-[18px] font-semibold tracking-tight tabular-nums">
+                        ৳{(bundle.price + deliveryCharge).toLocaleString()}
+                      </span>
+                    )}
+                    <span className="flex h-12 w-12 items-center justify-center rounded-[10px] bg-black text-[#FBBB14] transition-transform duration-150 group-hover:translate-x-0.5">
+                      <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                  </span>
+                </button>
               </motion.div>
             )}
           </AnimatePresence>

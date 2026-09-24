@@ -265,6 +265,14 @@ export default function CartDrawer() {
             // Every cart item carries its canonical ids, so checkout always has
             // line items. Sending none makes the Suite reject the order.
             items: items.map((item) => ({ productId: item.productUuid, variantId: item.variantId, quantity: item.quantity })),
+            lineItems: items.map((item) => ({
+                // Cart titles end with " (size)"; the size shows as its own tag.
+                name: item.title.replace(` (${item.size})`, ""),
+                details: item.size,
+                quantity: item.quantity,
+                unitPrice: parseCurrencyAmount(item.price),
+                image: item.image,
+            })),
         };
     }, [items]);
 
