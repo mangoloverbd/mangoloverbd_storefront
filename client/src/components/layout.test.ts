@@ -134,3 +134,7 @@ test("pulses the dock cart once per toast handoff, then clears the signal", () =
   assert.match(layoutSource, /cartPulseKey > 0 \? "cart-dock-pulse" : ""/);
   assert.match(layoutSource, /if \(cartPulseKey > 0\) consumeCartPulse\(\);/);
 });
+
+test("clears the page-transition filter so carousels do not repaint the whole page", () => {
+  assert.match(layoutSource, /animate=\{\{ opacity: 1, y: 0, filter: "blur\(0px\)", transitionEnd: \{ filter: "none" \} \}\}/);
+});

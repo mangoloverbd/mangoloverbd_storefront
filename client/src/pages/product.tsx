@@ -1,5 +1,6 @@
 import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
+import { flushSync } from "react-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import "@videojs/react/video/skin.css";
 import { Gesture, PlayButton } from "@videojs/react";
@@ -126,11 +127,18 @@ const REEL_MEDIA = [
 }));
 
 // Public Video.js skin settings: match the reel card corners and the brand yellow.
+// The skin's frosted-glass blur is switched off: re-blurring the video under the
+// control bars on every frame of a swipe made the carousel stutter on phones, so the
+// surfaces use a solid translucent dark instead.
 const REEL_SKIN_STYLE = {
   "--media-accent-color": "#FBBB14",
   "--media-border-color": "transparent",
   "--media-border-radius": "6px",
   "--media-object-fit": "contain",
+  "--media-backdrop-filter-surface": "none",
+  "--media-backdrop-filter-indicator": "none",
+  "--media-backdrop-filter-dialog": "none",
+  "--media-popover": "oklch(0% 0 0 / 0.55)",
 } as CSSProperties;
 
 const HONEY_NUT_REEL_MEDIA = [
@@ -161,6 +169,9 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [currentReel, setCurrentReel] = useState(0);
+  // The Video.js player mounts only after a tap on play. Until then every slide is a
+  // poster image, so swiping never builds a player or a video decoder mid-animation.
+  const [playerReel, setPlayerReel] = useState<number | null>(null);
   const quantityControlRef = useRef<HTMLDivElement>(null);
   const [quantityControlWidth, setQuantityControlWidth] = useState<number | null>(null);
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
@@ -193,6 +204,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     resizeObserver.observe(quantityControl);
     return () => resizeObserver.disconnect();
   }, []);
+  const startReel = (i: number) => {
+    // Mount synchronously so play() still runs inside the tap: iOS only allows
+    // unmuted playback that starts within the user's gesture.
+    flushSync(() => setPlayerReel(i));
+    void activeReelVideoRef.current?.play().catch(() => undefined);
+  };
   const goReel = (dir: number) => {
     if (reelApi) {
       if (dir < 0) reelApi.scrollPrev();
@@ -257,7 +274,12 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
   }, [reelApi]);
   useEffect(() => {
     if (!reelApi) return;
-    const syncActiveReel = () => setCurrentReel(reelApi.selectedScrollSnap());
+    const syncActiveReel = () => {
+      const selected = reelApi.selectedScrollSnap();
+      setCurrentReel(selected);
+      // Leaving a slide tears its player down; the next one stays a plain poster.
+      setPlayerReel((reel) => (reel === selected ? reel : null));
+    };
     syncActiveReel();
     reelApi.on("select", syncActiveReel);
     reelApi.on("reInit", syncActiveReel);
@@ -1033,7 +1055,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         {reelMedia.map(({ src, poster }, i) => (
                           <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
-                              {i === currentReel ? (
+                              {i === playerReel ? (
                                 <VideoPlayer poster={poster}>
                                   <VideoSkin className="absolute inset-0 h-full w-full" style={REEL_SKIN_STYLE}>
                                     <Video
@@ -1054,7 +1076,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                         <button
                                           {...props}
                                           hidden={!state.paused}
-                                          className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg backdrop-blur-sm transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                          className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                                         >
                                           <Play className="ml-1 h-7 w-7 fill-current" />
                                         </button>
@@ -1062,27 +1084,26 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                     />
                                   </VideoSkin>
                                 </VideoPlayer>
-                              ) : null}
-                              {i !== currentReel ? (
-                                <img
-                                  src={poster}
-                                  alt=""
-                                  aria-hidden="true"
-                                  loading="lazy"
-                                  decoding="async"
-                                  className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
-                                />
-                              ) : null}
-                              {i !== currentReel ? (
-                                <button
-                                  type="button"
-                                  aria-label={`Show reel ${i + 1}`}
-                                  onClick={() => reelApi?.scrollTo(i)}
-                                  className="absolute left-1/2 top-1/2 z-20 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                >
-                                  <Play className="ml-1 h-6 w-6 fill-current" />
-                                </button>
-                              ) : null}
+                              ) : (
+                                <>
+                                  <img
+                                    src={poster}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                  />
+                                  <button
+                                    type="button"
+                                    aria-label={i === currentReel ? `Play reel ${i + 1}` : `Show reel ${i + 1}`}
+                                    onClick={() => (i === currentReel ? startReel(i) : reelApi?.scrollTo(i))}
+                                    className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                  >
+                                    <Play className="ml-1 h-7 w-7 fill-current" />
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </div>
                         ))}
