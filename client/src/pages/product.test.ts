@@ -129,17 +129,19 @@ test("left-aligns and offsets the active product detail tab content", () => {
   assert.doesNotMatch(productSource, /space-y-1\.5 text-center/);
 });
 
-test("renders product reels as a smooth horizontal snap carousel", () => {
+test("renders product reels as a left-aligned horizontal snap carousel", () => {
   assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel/);
-  assert.match(productSource, /ref=\{reelRef\}/);
-  assert.match(productSource, /align: "center"/);
+  // Embla measures slides from their offset parent, so the viewport must be positioned.
+  assert.match(productSource, /ref=\{reelRef\} className="relative overflow-hidden/);
+  assert.match(productSource, /const \[reelRef, reelApi\] = useEmblaCarousel\(\{\s*align: "start"/);
   assert.match(productSource, /loop: true/);
   assert.match(productSource, /duration: 35/);
   assert.match(productSource, /-mx-4[^"`]*md:mx-0/);
-  assert.match(productSource, /gap-0 px-0 md:px-6/);
-  assert.match(productSource, /mr-3[^"`]*md:mr-6/);
-  assert.match(productSource, /max-w-none md:max-w-\[480px\]/);
-  assert.match(productSource, /basis-\[60vw\][^"`]*md:basis-\[240px\]/);
+  assert.match(productSource, /max-w-none px-4 md:max-w-\[480px\] md:px-0/);
+  assert.match(productSource, /mr-5 min-w-0/);
+  assert.match(productSource, /basis-\[64vw\][^"`]*md:basis-\[220px\]/);
+  // The active reel is outlined in brand yellow; the rest keep a transparent border so nothing shifts.
+  assert.match(productSource, /border-2 p-\[3px\][^`]*\$\{i === currentReel \? "border-\[#FBBB14\]" : "border-transparent"\}/);
   assert.match(productSource, /REEL_MEDIA = \[/);
   assert.match(productSource, /src: `https:\/\/media\.mangolover\.com\.bd\/\$\{id\}\.mp4`/);
   assert.match(productSource, /from "@videojs\/react\/video"/);
@@ -205,11 +207,13 @@ test("navigates reels with arrow keys without hijacking editable controls", () =
   assert.match(productSource, /e\.preventDefault\(\);\s*goReel\(1\)/);
 });
 
-test("keeps previous and next reel buttons visible on mobile", () => {
-  assert.match(productSource, /className="absolute left-2 top-1\/2 flex -translate-y-1\/2/);
-  assert.match(productSource, /className="absolute right-2 top-1\/2 flex -translate-y-1\/2/);
-  assert.doesNotMatch(productSource, /left-2 top-1\/2 hidden -translate-y-1\/2/);
-  assert.doesNotMatch(productSource, /right-2 top-1\/2 hidden -translate-y-1\/2/);
+test("puts the reel title and round prev/next buttons in one header row", () => {
+  assert.match(productSource, /flex items-center justify-between gap-4">\s*<h2\s*className="min-w-0 text-left/);
+  assert.match(productSource, /aria-label="Previous reel"[\s\S]*?className="h-10 w-10 rounded-full bg-\[#f7f8f6\][^"]*md:h-12 md:w-12"/);
+  assert.match(productSource, /aria-label="Next reel"[\s\S]*?className="h-10 w-10 rounded-full bg-\[#f7f8f6\][^"]*md:h-12 md:w-12"/);
+  // Arrows no longer float over the videos, and the dot pager is gone.
+  assert.doesNotMatch(productSource, /absolute (left|right)-2 top-1\/2 flex -translate-y-1\/2 rounded-full/);
+  assert.doesNotMatch(productSource, /aria-label=\{`Go to reel/);
 });
 
 test("uses the poster while the active native video is loading", () => {
