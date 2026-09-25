@@ -188,7 +188,7 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     skipSnaps: false,
   });
   const [reelRef, reelApi] = useEmblaCarousel({
-    align: "center",
+    align: "start",
     containScroll: false,
     duration: 35,
     loop: true,
@@ -1020,40 +1020,65 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                   </div>
                 </div>
 
-                {/* Reels Section — smooth horizontal carousel */}
-                <div className="-mx-4 pt-4 mt-4 overflow-hidden bg-brand-ivory md:mx-0 md:mt-0 md:pt-0">
-                  <h2
-                    className="mb-3 text-center text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
-                     style={{ fontFamily: "'KaiumSimanto', serif" }}
-                  >
-                    আমরা ও আমাদের{" "}
-                    <span
-                      className="relative inline-block"
-                      style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
-                    >
-                      সত্যতা
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 120 60"
-                        preserveAspectRatio="none"
-                        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
-                        style={{ overflow: "visible" }}
+                {/* Reels Section — left-aligned card row, arrows in the header */}
+                <div className="-mx-4 pt-4 mt-4 pb-5 overflow-hidden bg-brand-ivory md:mx-0 md:mt-0 md:pt-0">
+                  <div className="mx-auto w-full max-w-none px-4 md:max-w-[480px] md:px-0">
+                    <div className="mb-4 flex items-center justify-between gap-4">
+                      <h2
+                        className="min-w-0 text-left text-[1.6rem] font-normal tracking-[-0.01em] text-black md:text-[1.8rem]"
+                        style={{ fontFamily: "'KaiumSimanto', serif" }}
                       >
-                        <path
-                          d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
-                          fill="none"
-                          stroke="#FBBB14"
-                          strokeWidth="4.5"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                  </h2>
-                  <div className="relative mx-auto w-full max-w-none md:max-w-[480px]">
-                    <div ref={reelRef} className="overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
-                      <div className="flex will-change-transform gap-0 px-0 md:px-6">
+                        আমরা ও আমাদের{" "}
+                        <span
+                          className="relative inline-block"
+                          style={{ fontFamily: "'IhtishamDeshlipi', serif" }}
+                        >
+                          সত্যতা
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 120 60"
+                            preserveAspectRatio="none"
+                            className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[140%] -translate-x-1/2 -translate-y-1/2"
+                            style={{ overflow: "visible" }}
+                          >
+                            <path
+                              d="M14,32 C9,15 48,6 72,8 C108,11 116,22 112,34 C108,49 56,56 32,52 C13,49 9,42 15,30"
+                              fill="none"
+                              stroke="#FBBB14"
+                              strokeWidth="4.5"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </span>
+                      </h2>
+                      <div className="flex shrink-0 items-center gap-2 md:gap-3">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Previous reel"
+                          onClick={() => goReel(-1)}
+                          className="h-10 w-10 rounded-full bg-[#f7f8f6] text-black hover:bg-[#e0e0e0] md:h-12 md:w-12"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Next reel"
+                          onClick={() => goReel(1)}
+                          className="h-10 w-10 rounded-full bg-[#f7f8f6] text-black hover:bg-[#e0e0e0] md:h-12 md:w-12"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div ref={reelRef} className="relative overflow-hidden [touch-action:pan-y_pinch-zoom] overscroll-x-contain">
+                      <div className="flex will-change-transform">
                         {reelMedia.map(({ src, poster }, i) => (
-                          <div key={src} className="mr-3 min-w-0 shrink-0 basis-[60vw] md:mr-6 md:basis-[240px]">
+                          <div
+                            key={src}
+                            className={`mr-5 min-w-0 shrink-0 basis-[64vw] rounded-[10px] border-2 p-[3px] transition-colors duration-200 md:basis-[220px] ${i === currentReel ? "border-[#FBBB14]" : "border-transparent"}`}
+                          >
                             <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[6px] bg-black">
                               {i === playerReel ? (
                                 <VideoPlayer poster={poster}>
@@ -1109,43 +1134,6 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                         ))}
                       </div>
                     </div>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Previous reel"
-                      onClick={() => goReel(-1)}
-                      className="absolute left-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Next reel"
-                      onClick={() => goReel(1)}
-                      className="absolute right-2 top-1/2 flex -translate-y-1/2 rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-sm hover:bg-black/60"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-1.5 pb-5 pt-2">
-                    {Array.from({ length: reelCount }, (_, i) => (
-                      <button
-                        key={i}
-                        aria-label={`Go to reel ${i + 1}`}
-                        onClick={() => {
-                          if (reelApi) {
-                            reelApi.scrollTo(i);
-                          } else {
-                            setCurrentReel(i);
-                          }
-                        }}
-                        className={`h-1.5 rounded-full transition-all ${i === currentReel ? "w-5 bg-black" : "w-1.5 bg-black/25"}`}
-                      />
-                    ))}
                   </div>
                 </div>
               </div>
