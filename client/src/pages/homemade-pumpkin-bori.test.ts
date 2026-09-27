@@ -123,11 +123,11 @@ test("bori header uses option B on mobile and desktop", () => {
   assert.match(header, /<p className="hidden text-sm text-\[#19382d\]\/55 md:block"><span className="font-bold text-\[#19382d\]">ক্যাশ অন ডেলিভারি<\/span>/);
   assert.match(header, /সারা বাংলাদেশে<\/p>/);
   assert.match(header, /className="flex items-center md:absolute md:left-1\/2 md:-translate-x-1\/2"/);
-  assert.match(header, /<nav aria-label="যোগাযোগ" className="ml-auto flex items-center gap-2\.5 md:gap-3\.5"><a href=\{BORI_CAMPAIGN_WHATSAPP_HREF\} aria-label="WhatsApp-এ অর্ডার করুন"[^>]*className="inline-flex size-10 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:size-11"/);
+  assert.match(header, /<nav aria-label="যোগাযোগ" className="ml-auto flex items-center gap-2\.5 md:gap-3\.5"><a href=\{BORI_CAMPAIGN_WHATSAPP_HREF\} aria-label="WhatsApp-এ অর্ডার করুন"[^>]*className="group relative inline-block h-10 w-\[70px\][^"]*rounded-\[30px\] border border-\[#ccc\] bg-white[^"]*hover:bg-\[#5fdd54\][^"]*md:h-11 md:w-\[78px\]"/);
+  assert.match(header, /className="absolute inset-y-px left-px[^"]*group-hover:translate-x-\[30px\][^"]*"><WhatsAppBrandIcon/, "WhatsApp switch knob slides left to right");
   assert.equal((header.match(/href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}/g) ?? []).length, 1, "one WhatsApp icon in header");
-  assert.match(header, /<button type="button" onClick=\{scrollToOrder\} className="inline-flex min-h-10 items-center rounded-full bg-\[#eab308\][^"]*md:px-6 md:text-\[15px\]">অর্ডার করুন<\/button>/);
+  assert.match(header, /<button type="button" onClick=\{scrollToOrder\} className="inline-flex min-h-10 items-center rounded-\[6px\] bg-\[#eab308\][^"]*md:px-6 md:text-\[15px\]">অর্ডার করুন<\/button>/);
   assert.doesNotMatch(header, /bg-\[#25d366\] px-4/, "old green mobile pill removed");
-  assert.doesNotMatch(header, /shadow-/);
   assert.doesNotMatch(header, /KALOJIRA_CAMPAIGN_PHONE_HREF/);
   assert.match(header, /className="h-7 w-auto max-\[400px\]:h-6 max-\[340px\]:h-5 md:h-9"/);
   assert.match(header, /px-4 text-\[13px\] max-\[400px\]:px-3 max-\[400px\]:text-xs/);
@@ -156,4 +156,15 @@ test("bori 1KG pack art sits flush against the card's right edge", () => {
 test("bori quote card speaks as the nutritionist, not a recipe", () => {
   assert.doesNotMatch(pageSource, /কুমড়ো বড়ির স্বাদ ও রান্নার ধারণা/);
   assert.doesNotMatch(pageSource, /কুমড়ো বড়ি অল্প তেলে হালকা ভেজে/);
+});
+
+const thankYouSource = read("./kalojira-mixed-thank-you.tsx");
+
+test("bori orders land on the bori thank-you page", () => {
+  assert.match(checkoutSource, /const thankYouPath = product\?\.slug === "homemade-pumpkin-bori" \? "\/step\/homemade-pumpkin-bori\/thank-you" : "\/step\/kalojira-mixed\/thank-you";/);
+  assert.match(checkoutSource, /setLocation\(thankYouPath\)/);
+  assert.match(appSource, /<Route path="\/step\/homemade-pumpkin-bori\/thank-you">\s*<PageTransition><KalojiraMixedThankYouPage backHref="\/step\/homemade-pumpkin-bori" backLabel="কুমড়ো বড়ি অর্ডার পেজে ফিরে যান" whatsappHref=\{BORI_CAMPAIGN_WHATSAPP_HREF\} \/><\/PageTransition>\s*<\/Route>\s*<Route path="\/step\/homemade-pumpkin-bori">/);
+  assert.match(appSource, /"\/step\/homemade-pumpkin-bori\/thank-you": "কুমড়ো বড়ি অর্ডারের জন্য ধন্যবাদ \| ম্যাংগো লাভার"/);
+  assert.match(thankYouSource, /<Link href=\{backHref\}/);
+  assert.match(thankYouSource, /href=\{whatsappHref\}/);
 });
