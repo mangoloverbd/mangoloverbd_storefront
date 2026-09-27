@@ -117,15 +117,18 @@ test("mobile cooking path runs straight into checkout", () => {
   assert.match(pageSource, /aria-labelledby="bori-cooking-heading" className="mx-auto max-w-5xl px-5 pb-0 pt-4 md:pt-8 lg:pb-20"/);
 });
 
-test("bori mobile header is minimal: logo left, WhatsApp order pill right", () => {
+test("bori header uses option B on mobile and desktop", () => {
   const header = pageSource.slice(pageSource.indexOf("<header"), pageSource.indexOf("</header>"));
-  assert.match(header, /<header className="sticky top-0 z-40 bg-white\/90 backdrop-blur md:border-b md:border-black\/10 md:bg-white\/95">/);
-  assert.match(header, /className="flex items-center md:absolute md:left-1\/2 md:-translate-x-1\/2"/);
-  assert.match(header, /aria-label="ফোনে অর্ডার করুন" className="hidden min-h-11/);
-  assert.match(header, /href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}[^>]*className="inline-flex min-h-10 items-center gap-1\.5 rounded-full bg-\[#25d366\][^"]*md:hidden"/);
-  assert.match(header, /<WhatsAppBrandIcon className="size-4" \/>অর্ডার করুন<\/a>/);
+  assert.match(header, /<header className="sticky top-0 z-40 border-b border-black\/\[0\.06\] bg-white\/95 backdrop-blur">/);
+  assert.match(header, /<p className="hidden text-sm text-\[#19382d\]\/55 md:block"><span className="font-bold text-\[#19382d\]">ক্যাশ অন ডেলিভারি<\/span>/);
+  assert.match(header, /সারা বাংলাদেশে<\/p>/);
+  assert.match(header, /className="absolute left-1\/2 flex -translate-x-1\/2 items-center"/);
+  assert.match(header, /className="inline-flex size-10 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:hidden"/);
+  assert.match(header, /className="hidden size-11 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:inline-flex"/);
+  assert.match(header, /<button type="button" onClick=\{scrollToOrder\} className="inline-flex min-h-10 items-center rounded-full bg-\[#eab308\][^"]*md:px-6 md:text-\[15px\]">অর্ডার করুন<\/button>/);
+  assert.doesNotMatch(header, /bg-\[#25d366\] px-4/, "old green mobile pill removed");
   assert.doesNotMatch(header, /shadow-/);
-  assert.match(header, /href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}[^>]*className="hidden min-h-11 min-w-11 items-center justify-center gap-2 rounded-\[4px\] border border-\[#25d366\]\/50[^"]*md:inline-flex"/);
+  assert.doesNotMatch(header, /KALOJIRA_CAMPAIGN_PHONE_HREF/);
 });
 
 test("bori 1KG pack card uses the transparent pack image", () => {
