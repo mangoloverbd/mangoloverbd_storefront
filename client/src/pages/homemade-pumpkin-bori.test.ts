@@ -132,3 +132,8 @@ test("bori 1KG pack card uses the transparent pack image", () => {
   assert.match(contentSource, /export const BORI_PACK_1KG_IMAGE = "\/bori-pack-1kg\.webp";/);
   assert.ok(existsSync(new URL("../../public/bori-pack-1kg.webp", import.meta.url)), "missing 1KG pack asset");
 });
+
+test("bori pack cards show the pack image full-width on top on mobile", () => {
+  assert.match(pageSource, /<div className="min-w-0 md:pr-\[44%\]"><div className="-mx-6 -mt-6 mb-5 flex h-60 items-center justify-center bg-gradient-to-b from-\[#fff6d6\][^"]*md:absolute md:right-6 md:top-8 md:m-0 md:h-64 md:w-\[50%\] md:bg-none md:p-0"><img src=\{pack\.image\}/);
+  assert.doesNotMatch(pageSource, /absolute right-1 top-16 h-48 w-\[40%\]/);
+});
