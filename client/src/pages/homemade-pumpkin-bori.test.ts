@@ -95,8 +95,8 @@ test("cooking timeline is a winding path on mobile and desktop", () => {
   assert.match(pageSource, /import \{ BoriCookingPath \} from "@\/features\/kalojira-mixed\/bori-cooking-path";/);
   assert.match(pageSource, /<BoriCookingPath steps=\{COOKING_STEPS\} \/>/);
   assert.doesNotMatch(pageSource, /<ol className="relative/, "old desktop list removed");
-  assert.match(cookingPathSource, /className="md:hidden"/);
-  assert.match(cookingPathSource, /className="hidden md:block"/);
+  assert.match(cookingPathSource, /className="mx-auto max-w-\[480px\] lg:hidden"/);
+  assert.match(cookingPathSource, /className="hidden lg:block"/);
   assert.match(cookingPathSource, /const MOBILE_LAYOUT: PathLayout/);
   assert.match(cookingPathSource, /const DESKTOP_LAYOUT: PathLayout/);
   for (const label of ["ভাজুন", "মেশান", "পরিবেশন"]) assert.ok(cookingPathSource.includes(label), `missing label: ${label}`);

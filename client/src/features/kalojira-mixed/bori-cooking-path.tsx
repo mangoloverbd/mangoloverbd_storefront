@@ -93,7 +93,7 @@ function CookingPath({ layout, steps, idPrefix, large, className }: { layout: Pa
 
 export function BoriCookingPath({ steps }: { steps: BoriCookingStep[] }) {
   return <>
-    <CookingPath layout={MOBILE_LAYOUT} steps={steps} idPrefix="bori-cook-m" large={false} className="md:hidden" />
-    <CookingPath layout={DESKTOP_LAYOUT} steps={steps} idPrefix="bori-cook-d" large className="hidden md:block" />
+    <CookingPath layout={MOBILE_LAYOUT} steps={steps} idPrefix="bori-cook-m" large={false} className="mx-auto max-w-[480px] lg:hidden" />
+    <CookingPath layout={DESKTOP_LAYOUT} steps={steps} idPrefix="bori-cook-d" large className="hidden lg:block" />
   </>;
 }
