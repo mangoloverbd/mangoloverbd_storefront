@@ -54,7 +54,7 @@ test("bori hero and pack copy match the spec", () => {
 });
 
 test("bori story, quote, and image slots are present", () => {
-  for (const text of ["ঘরোয়া পদ্ধতিতে তৈরি", "বাছাই করা মাষকলাইয়ের ডাল", "টাটকা চালকুমড়ো", "রোদে শুকানো", "ঐতিহ্যবাহী বাঙালি স্বাদ", "কুমড়ো বড়ির স্বাদ ও রান্নার ধারণা", "— পুষ্টিবিদ মুরাদ পারভেজ"]) {
+  for (const text of ["ঘরোয়া পদ্ধতিতে তৈরি", "বাছাই করা মাষকলাইয়ের ডাল", "টাটকা চালকুমড়ো", "রোদে শুকানো", "ঐতিহ্যবাহী বাঙালি স্বাদ", "কুমড়ো বড়ি নিয়ে পুষ্টিবিদের কথা", "একজন পুষ্টিবিদ হিসেবে আমি সবসময় বলি", "— পুষ্টিবিদ মুরাদ পারভেজ"]) {
     assert.ok(pageSource.includes(text), `missing: ${text}`);
   }
   for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
@@ -86,7 +86,7 @@ test("bori cooking timeline replaces the bottom banner", () => {
 
 test("bori cooking time is 5–7 minutes everywhere on the page", () => {
   assert.doesNotMatch(pageSource, /১৫–২০/);
-  assert.ok((pageSource.match(/৫–৭ মিনিট/g) ?? []).length >= 2, "timeline step and quote card");
+  assert.ok((pageSource.match(/৫–৭ মিনিট/g) ?? []).length >= 1, "timeline step");
 });
 
 const cookingPathSource = read("../features/kalojira-mixed/bori-cooking-path.tsx");
@@ -146,4 +146,9 @@ test("bori 1KG pack art sits flush against the card's right edge", () => {
   assert.match(pageSource, /pack\.bleedRight \? "justify-end pl-4 pr-0" : "justify-center px-4"/);
   assert.match(pageSource, /pack\.bleedRight \? "md:right-0" : "md:right-6"/);
   assert.match(pageSource, /pack\.bleedRight \? " object-right" : ""/);
+});
+
+test("bori quote card speaks as the nutritionist, not a recipe", () => {
+  assert.doesNotMatch(pageSource, /কুমড়ো বড়ির স্বাদ ও রান্নার ধারণা/);
+  assert.doesNotMatch(pageSource, /কুমড়ো বড়ি অল্প তেলে হালকা ভেজে/);
 });
