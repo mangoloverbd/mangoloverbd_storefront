@@ -80,4 +80,4 @@ The Katimon page shows horizontal clipping at 430 px width (hero WhatsApp button
 2. No horizontal scroll at 430 px. Verify: `document.documentElement.scrollWidth <= 430` in a headless browser.
 3. Both pack variants are selectable in checkout, and the total includes ৳100 delivery. Verify: in-browser check of the checkout summary.
 4. All WhatsApp links on the page (header, hero, footer, mobile bar, checkout) carry the bori message. Verify: new tests.
-5. `npm test`, `npm run check` (or the repo's type-check script) and `npm run build` pass.
+5. The new test file and `katimon-mango.test.ts` pass under `npx tsx --test` (the repo has no `npm test` script; tests use `node:test`). `npm run check` (tsc) and `npm run build` pass.
