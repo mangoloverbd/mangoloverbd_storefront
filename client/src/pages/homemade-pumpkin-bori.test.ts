@@ -110,3 +110,9 @@ test("bori quote card uses the nutritionist cutout", () => {
   assert.ok(existsSync(new URL("../../public/bori-nutritionist.webp", import.meta.url)), "missing nutritionist asset");
   assert.match(pageSource, /aspect-square min-h-0 bg-contain bg-bottom bg-no-repeat md:aspect-auto md:min-h-full/);
 });
+
+test("mobile cooking path runs straight into checkout", () => {
+  assert.match(cookingPathSource, /viewH: 1040,/);
+  assert.match(cookingPathSource, /C 210 930 240 990 225 1040"/);
+  assert.match(pageSource, /aria-labelledby="bori-cooking-heading" className="mx-auto max-w-5xl px-5 pb-0 pt-4 md:pt-8 lg:pb-20"/);
+});

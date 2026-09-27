@@ -28,16 +28,16 @@ const SPARKLE_D = "M0 -16 C2 -4 4 -2 16 0 C4 2 2 4 0 16 C-2 4 -4 2 -16 0 C-4 -2 
 // Geometry is in viewBox units, tuned from approved mockups. Photo and text positions are percentages of the box so the layout scales with width.
 const MOBILE_LAYOUT: PathLayout = {
   viewW: 400,
-  viewH: 1120,
+  viewH: 1040,
   photoSize: "46%",
-  pathD: "M 230 0 C 230 70 150 40 120 170 C 95 290 150 360 250 360 C 360 360 350 285 300 320 C 250 360 250 430 280 540 C 310 660 170 640 110 700 C 50 760 60 820 120 900 C 210 930 240 1010 225 1120",
+  pathD: "M 230 0 C 230 70 150 40 120 170 C 95 290 150 360 250 360 C 360 360 350 285 300 320 C 250 360 250 430 280 540 C 310 660 170 640 110 700 C 50 760 60 820 120 900 C 210 930 240 990 225 1040",
   strokeWidth: 9,
   ray: { inner: 106, outer: 134, width: 7 },
   labelSize: 15,
   spots: [
-    { center: [110, 175], rays: { color: "#eab308", from: 165, to: 295 }, label: "ভাজুন •", labelArc: "M 7.8 234 A 118 118 0 0 0 212.2 234", sparkle: { at: [190, 70], scale: 1.1, color: "#19382d" }, numeral: "০১", text: { left: "57%", top: "7%", width: "40%", align: "left" } },
-    { center: [288, 525], rays: { color: "#f28c28", from: -75, to: 15 }, label: "মেশান •", labelArc: "M 185.8 584 A 118 118 0 0 0 390.2 584", sparkle: { at: [385, 405], scale: 1.3, color: "#2f9e5b" }, numeral: "০২", text: { left: "3%", top: "39%", width: "44%", align: "right" } },
-    { center: [112, 874], rays: { color: "#2f9e5b", from: 165, to: 295 }, label: "পরিবেশন •", labelArc: "M 9.8 933 A 118 118 0 0 0 214.2 933", sparkle: { at: [222, 770], scale: 1, color: "#f28c28" }, numeral: "০৩", text: { left: "57%", top: "71%", width: "40%", align: "left" } },
+    { center: [110, 175], rays: { color: "#eab308", from: 165, to: 295 }, label: "ভাজুন •", labelArc: "M 7.8 234 A 118 118 0 0 0 212.2 234", sparkle: { at: [190, 70], scale: 1.1, color: "#19382d" }, numeral: "০১", text: { left: "57%", top: "7.54%", width: "40%", align: "left" } },
+    { center: [288, 525], rays: { color: "#f28c28", from: -75, to: 15 }, label: "মেশান •", labelArc: "M 185.8 584 A 118 118 0 0 0 390.2 584", sparkle: { at: [385, 405], scale: 1.3, color: "#2f9e5b" }, numeral: "০২", text: { left: "3%", top: "42%", width: "44%", align: "right" } },
+    { center: [112, 874], rays: { color: "#2f9e5b", from: 165, to: 295 }, label: "পরিবেশন •", labelArc: "M 9.8 933 A 118 118 0 0 0 214.2 933", sparkle: { at: [222, 770], scale: 1, color: "#f28c28" }, numeral: "০৩", text: { left: "57%", top: "76.46%", width: "40%", align: "left" } },
   ],
 };
 
