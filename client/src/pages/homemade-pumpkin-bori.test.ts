@@ -88,3 +88,15 @@ test("bori cooking time is 5–7 minutes everywhere on the page", () => {
   assert.doesNotMatch(pageSource, /১৫–২০/);
   assert.ok((pageSource.match(/৫–৭ মিনিট/g) ?? []).length >= 2, "timeline step and quote card");
 });
+
+const cookingPathSource = read("../features/kalojira-mixed/bori-cooking-path.tsx");
+
+test("mobile cooking timeline is a winding path; desktop timeline is unchanged", () => {
+  assert.match(pageSource, /import \{ BoriCookingPath \} from "@\/features\/kalojira-mixed\/bori-cooking-path";/);
+  assert.match(pageSource, /<BoriCookingPath steps=\{COOKING_STEPS\} className="md:hidden" \/>/);
+  assert.match(pageSource, /<ol className="relative hidden md:block">/);
+  for (const label of ["ভাজুন", "মেশান", "পরিবেশন"]) assert.ok(cookingPathSource.includes(label), `missing label: ${label}`);
+  for (const numeral of ["০১", "০২", "০৩"]) assert.ok(cookingPathSource.includes(numeral), `missing numeral: ${numeral}`);
+  assert.match(cookingPathSource, /pathLength/);
+  assert.match(cookingPathSource, /<textPath/);
+});
