@@ -81,3 +81,14 @@ A Chrome DevTools measurement with mobile emulation at 430 px showed Katimon has
 3. Both pack variants are selectable in checkout, and the total includes ৳100 delivery. Verify: in-browser check of the checkout summary.
 4. All WhatsApp links on the page (header, hero, footer, mobile bar, checkout) carry the bori message. Verify: new tests.
 5. The new test file and `katimon-mango.test.ts` pass under `npx tsx --test` (the repo has no `npm test` script; tests use `node:test`). `npm run check` (tsc) and `npm run build` pass.
+
+## Addendum (2026-09-27): cooking timeline section
+
+- **Placement:** replaces the bottom banner image (section 7), directly above checkout. `BORI_BANNER_IMAGE` is removed.
+- **Style:** a vertical timeline in the site's language. A thin gold connecting line runs through the same hand-drawn number badges used on the pack cards. On desktop, photo and text alternate sides of a centered line. On mobile, the line and badges sit on the left, with the photo and text stacked to the right. Steps fade up on scroll with framer-motion.
+- **Copy:** eyebrow `যেভাবে রান্না করবেন`, heading `রান্নার সহজ ধাপগুলো`
+  1. `হালকা ভেজে নিন`: `অল্প তেলে বড়িগুলো হালকা সোনালি করে ভেজে নিন।`
+  2. `তরকারিতে দিন`: `রান্না শেষ হওয়ার ৫–৭ মিনিট আগে ভাজা বড়ি মাছ বা সবজির ঝোলে দিন।`
+  3. `গরম গরম পরিবেশন করুন`: `ভাতের সঙ্গে উপভোগ করুন ঘরোয়া স্বাদের বড়ির তরকারি।`
+- **Images:** merchant-supplied photos, stored as static assets `client/public/bori-cook-step-1.webp` … `-3.webp`.
+- **Timing correction:** the quote card's cooking time also changes from `১৫–২০ মিনিট` to `৫–৭ মিনিট`. The product page's details tab is unchanged.
