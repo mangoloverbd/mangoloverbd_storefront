@@ -104,3 +104,9 @@ test("cooking timeline is a winding path on mobile and desktop", () => {
   assert.match(cookingPathSource, /pathLength/);
   assert.match(cookingPathSource, /<textPath/);
 });
+
+test("bori quote card uses the nutritionist cutout", () => {
+  assert.match(contentSource, /export const BORI_QUOTE_IMAGE = "\/bori-nutritionist\.webp";/);
+  assert.ok(existsSync(new URL("../../public/bori-nutritionist.webp", import.meta.url)), "missing nutritionist asset");
+  assert.match(pageSource, /aspect-square min-h-0 bg-contain bg-bottom bg-no-repeat md:aspect-auto md:min-h-full/);
+});
