@@ -122,13 +122,15 @@ test("bori header uses option B on mobile and desktop", () => {
   assert.match(header, /<header className="sticky top-0 z-40 border-b border-black\/\[0\.06\] bg-white\/95 backdrop-blur">/);
   assert.match(header, /<p className="hidden text-sm text-\[#19382d\]\/55 md:block"><span className="font-bold text-\[#19382d\]">ক্যাশ অন ডেলিভারি<\/span>/);
   assert.match(header, /সারা বাংলাদেশে<\/p>/);
-  assert.match(header, /className="absolute left-1\/2 flex -translate-x-1\/2 items-center"/);
-  assert.match(header, /className="inline-flex size-10 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:hidden"/);
-  assert.match(header, /className="hidden size-11 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:inline-flex"/);
+  assert.match(header, /className="flex items-center md:absolute md:left-1\/2 md:-translate-x-1\/2"/);
+  assert.match(header, /<nav aria-label="যোগাযোগ" className="ml-auto flex items-center gap-2\.5 md:gap-3\.5"><a href=\{BORI_CAMPAIGN_WHATSAPP_HREF\} aria-label="WhatsApp-এ অর্ডার করুন"[^>]*className="inline-flex size-10 items-center justify-center rounded-full border border-\[#25d366\]\/40[^"]*md:size-11"/);
+  assert.equal((header.match(/href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}/g) ?? []).length, 1, "one WhatsApp icon in header");
   assert.match(header, /<button type="button" onClick=\{scrollToOrder\} className="inline-flex min-h-10 items-center rounded-full bg-\[#eab308\][^"]*md:px-6 md:text-\[15px\]">অর্ডার করুন<\/button>/);
   assert.doesNotMatch(header, /bg-\[#25d366\] px-4/, "old green mobile pill removed");
   assert.doesNotMatch(header, /shadow-/);
   assert.doesNotMatch(header, /KALOJIRA_CAMPAIGN_PHONE_HREF/);
+  assert.match(header, /className="h-7 w-auto max-\[400px\]:h-6 max-\[340px\]:h-5 md:h-9"/);
+  assert.match(header, /px-4 text-\[13px\] max-\[400px\]:px-3 max-\[400px\]:text-xs/);
 });
 
 test("bori 1KG pack card uses the transparent pack image", () => {
