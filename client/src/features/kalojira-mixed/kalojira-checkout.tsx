@@ -28,6 +28,7 @@ import {
   KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 } from "./content";
 import { KATIMON_CAMPAIGN_WHATSAPP_HREF } from "./katimon-content";
+import { BORI_CAMPAIGN_WHATSAPP_HREF } from "./bori-content";
 
 import {
   getFirstKalojiraInvalidField,
@@ -140,7 +141,7 @@ function SupportActions({ whatsappHref }: { whatsappHref: string }) {
 
 export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
   const [, setLocation] = useLocation();
-  const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
+  const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : product?.slug === "homemade-pumpkin-bori" ? BORI_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
   const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
