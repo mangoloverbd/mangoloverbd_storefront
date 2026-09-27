@@ -15,7 +15,7 @@ test("bori WhatsApp href uses the exact Bengali order message", () => {
 });
 
 test("bori image slots are named constants", () => {
-  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_BANNER_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
+  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
     assert.match(contentSource, new RegExp(`export const ${name} =`));
   }
 });
@@ -57,7 +57,7 @@ test("bori story, quote, and image slots are present", () => {
   for (const text of ["ঘরোয়া পদ্ধতিতে তৈরি", "বাছাই করা মাষকলাইয়ের ডাল", "টাটকা চালকুমড়ো", "রোদে শুকানো", "ঐতিহ্যবাহী বাঙালি স্বাদ", "কুমড়ো বড়ির স্বাদ ও রান্নার ধারণা", "— পুষ্টিবিদ মুরাদ পারভেজ"]) {
     assert.ok(pageSource.includes(text), `missing: ${text}`);
   }
-  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_BANNER_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
+  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
     assert.ok(pageSource.includes(name), `missing image slot: ${name}`);
   }
 });
@@ -69,4 +69,22 @@ test("bori order CTAs scroll to checkout", () => {
 test("bori WhatsApp href encodes the exact message", async () => {
   const { BORI_CAMPAIGN_WHATSAPP_HREF } = await import("../features/kalojira-mixed/bori-content.ts");
   assert.equal(BORI_CAMPAIGN_WHATSAPP_HREF, `https://wa.me/8801301636461?text=${encodeURIComponent("হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori অর্ডার করতে চাই")}`);
+});
+
+test("bori cooking timeline replaces the bottom banner", () => {
+  for (const text of ["যেভাবে রান্না করবেন", "রান্নার সহজ ধাপগুলো", "হালকা ভেজে নিন", "তরকারিতে দিন", "গরম গরম পরিবেশন করুন", "রান্না শেষ হওয়ার ৫–৭ মিনিট আগে ভাজা বড়ি মাছ বা সবজির ঝোলে দিন।"]) {
+    assert.ok(pageSource.includes(text), `missing: ${text}`);
+  }
+  for (const n of [1, 2, 3]) {
+    assert.ok(pageSource.includes(`/bori-cook-step-${n}.webp`), `missing step image ${n}`);
+    assert.ok(existsSync(new URL(`../../public/bori-cook-step-${n}.webp`, import.meta.url)), `missing public asset ${n}`);
+  }
+  assert.doesNotMatch(pageSource, /BORI_BANNER_IMAGE/);
+  assert.doesNotMatch(contentSource, /BORI_BANNER_IMAGE/);
+  assert.ok(pageSource.indexOf("রান্নার সহজ ধাপগুলো") < pageSource.indexOf('id="order"'), "timeline sits above checkout");
+});
+
+test("bori cooking time is 5–7 minutes everywhere on the page", () => {
+  assert.doesNotMatch(pageSource, /১৫–২০/);
+  assert.ok((pageSource.match(/৫–৭ মিনিট/g) ?? []).length >= 2, "timeline step and quote card");
 });
