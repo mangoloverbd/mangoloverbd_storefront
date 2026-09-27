@@ -62,9 +62,8 @@ export default function KalojiraMixedThankYouPage({
   whatsappHref = KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
 }: ThankYouPageProps = {}) {
   const [confirmation] = useState(() => readKalojiraOrderConfirmation(getSessionStorage()));
-  const isKatimonOrder = confirmation?.productName.toLowerCase().includes("katimon") || confirmation?.productName.includes("কাটিমন");
-  const deliveryCharge = isKatimonOrder && confirmation?.deliveryCharge === 0 ? 100 : confirmation?.deliveryCharge ?? 0;
-  const total = confirmation ? confirmation.subtotal + deliveryCharge : 0;
+  const deliveryCharge = confirmation?.deliveryCharge ?? 0;
+  const total = confirmation?.total ?? 0;
 
   useEffect(() => {
     if (!confirmation) return;
