@@ -8,6 +8,7 @@ test("Kalojira checkout refuses an arbitrary 11-digit phone", () => {
 });
 import {
   KALOJIRA_CONFIRMATION_KEY,
+  buildKalojiraOrderConfirmation,
   buildKalojiraOrderPayload,
   calculateKalojiraOrder,
   getKalojiraPackOptions,
@@ -78,4 +79,34 @@ test("builds COD payload and persists only safe confirmation data", () => {
   }), true);
   assert.ok(storage.getItem(KALOJIRA_CONFIRMATION_KEY));
   assert.equal(readKalojiraOrderConfirmation(storage)?.orderRef, "ORD-123");
+});
+
+test("confirmation keeps a paid delivery charge through to the thank-you page", () => {
+  const payload = buildKalojiraOrderPayload({
+    productName: "হোমমেড কুমড়ো বড়ি | Homemade Pumpkin Bori",
+    pack: { variantId: "v1kg", label: "১ কেজি", unitPrice: 600 },
+    quantity: 2,
+    customerName: "পরীক্ষা গ্রাহক",
+    phone: "01712345678",
+    address: "বাড়ি ১২ সাভার ঢাকা",
+    deliveryCharge: 100,
+  });
+  const confirmation = buildKalojiraOrderConfirmation("ORD-456", payload);
+  assert.equal(confirmation.deliveryCharge, 100);
+  assert.equal(confirmation.total, 1300);
+  const storage = createMemoryStorage();
+  assert.equal(writeKalojiraOrderConfirmation(storage, confirmation), true);
+  const stored = readKalojiraOrderConfirmation(storage);
+  assert.equal(stored?.deliveryCharge, 100);
+  assert.equal(stored?.total, 1300);
+});
+
+test("confirmation reader rejects a total that does not match subtotal plus delivery", () => {
+  const storage = createMemoryStorage();
+  storage.setItem(KALOJIRA_CONFIRMATION_KEY, JSON.stringify({
+    orderRef: "ORD-789", productName: "Bori", variantLabel: "১ কেজি", quantity: 1, unitPrice: 600,
+    subtotal: 600, deliveryCharge: 100, total: 600,
+    customerName: "পরীক্ষা গ্রাহক", phone: "01712345678", address: "বাড়ি ১২ সাভার ঢাকা",
+  }));
+  assert.equal(readKalojiraOrderConfirmation(storage), null);
 });

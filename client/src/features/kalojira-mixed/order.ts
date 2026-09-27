@@ -168,7 +168,7 @@ export function buildKalojiraOrderConfirmation(
   orderRef: string,
   payload: KalojiraOrderPayload,
 ): KalojiraOrderConfirmation {
-  const totals = calculateKalojiraOrder(payload.bundlePrice / payload.quantity, payload.quantity);
+  const totals = calculateKalojiraOrder(payload.bundlePrice / payload.quantity, payload.quantity, payload.deliveryCharge);
   return {
     orderRef: requiredTrimmedString(orderRef, 128, "Order reference"),
     productName: requiredTrimmedString(payload.bundleTitle, 200, "Product name"),
@@ -191,6 +191,7 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
     const quantity = confirmation.quantity;
     const unitPrice = confirmation.unitPrice;
     const subtotal = confirmation.subtotal;
+    const deliveryCharge = confirmation.deliveryCharge;
     const total = confirmation.total;
     const customerName = requiredTrimmedString(confirmation.customerName, 120, "Customer name");
     const phone = requiredTrimmedString(confirmation.phone, 11, "Phone");
@@ -199,10 +200,10 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
     if (!isPositiveSafeInteger(quantity, MAX_QUANTITY)
       || !isPositiveSafeInteger(unitPrice, MAX_PRICE)
       || !Number.isSafeInteger(subtotal) || (subtotal as number) < 0
-      || confirmation.deliveryCharge !== KALOJIRA_DELIVERY_CHARGE
+      || !Number.isSafeInteger(deliveryCharge) || (deliveryCharge as number) < 0
       || !Number.isSafeInteger(total) || (total as number) < 0
       || subtotal !== unitPrice * quantity
-      || total !== subtotal + KALOJIRA_DELIVERY_CHARGE) {
+      || total !== (subtotal as number) + (deliveryCharge as number)) {
       return null;
     }
 
@@ -213,7 +214,7 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
       quantity,
       unitPrice,
       subtotal: subtotal as number,
-      deliveryCharge: KALOJIRA_DELIVERY_CHARGE,
+      deliveryCharge: deliveryCharge as number,
       total: total as number,
       customerName,
       phone,
