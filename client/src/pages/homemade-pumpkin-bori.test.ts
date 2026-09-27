@@ -127,3 +127,8 @@ test("bori mobile header is minimal: logo left, WhatsApp order pill right", () =
   assert.doesNotMatch(header, /shadow-/);
   assert.match(header, /href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}[^>]*className="hidden min-h-11 min-w-11 items-center justify-center gap-2 rounded-\[4px\] border border-\[#25d366\]\/50[^"]*md:inline-flex"/);
 });
+
+test("bori 1KG pack card uses the transparent pack image", () => {
+  assert.match(contentSource, /export const BORI_PACK_1KG_IMAGE = "\/bori-pack-1kg\.webp";/);
+  assert.ok(existsSync(new URL("../../public/bori-pack-1kg.webp", import.meta.url)), "missing 1KG pack asset");
+});

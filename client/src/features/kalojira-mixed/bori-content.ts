@@ -7,7 +7,7 @@ const BORI_PHOTO_BASE = "https://ldiktvcavyabivpxfwpn.supabase.co/storage/v1/obj
 const JAR_PACKSHOT = `${BORI_PHOTO_BASE}/b1d7185b-da63-4879-851e-cbddc95d3712/960.webp`;
 
 export const BORI_PACK_500G_IMAGE = JAR_PACKSHOT;
-export const BORI_PACK_1KG_IMAGE = JAR_PACKSHOT;
+export const BORI_PACK_1KG_IMAGE = "/bori-pack-1kg.webp";
 export const BORI_STRIP_IMAGE = `${BORI_PHOTO_BASE}/b4533922-8c5a-407c-a59a-ecbd20bc9e42/960.webp`;
 export const BORI_QUOTE_IMAGE = "/bori-nutritionist.webp";
 export const BORI_HERO_FALLBACK_IMAGE = JAR_PACKSHOT;
