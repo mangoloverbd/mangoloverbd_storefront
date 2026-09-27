@@ -116,3 +116,14 @@ test("mobile cooking path runs straight into checkout", () => {
   assert.match(cookingPathSource, /C 190 925 200 990 195 1040"/);
   assert.match(pageSource, /aria-labelledby="bori-cooking-heading" className="mx-auto max-w-5xl px-5 pb-0 pt-4 md:pt-8 lg:pb-20"/);
 });
+
+test("bori mobile header is minimal: logo left, WhatsApp order pill right", () => {
+  const header = pageSource.slice(pageSource.indexOf("<header"), pageSource.indexOf("</header>"));
+  assert.match(header, /<header className="sticky top-0 z-40 bg-white\/90 backdrop-blur md:border-b md:border-black\/10 md:bg-white\/95">/);
+  assert.match(header, /className="flex items-center md:absolute md:left-1\/2 md:-translate-x-1\/2"/);
+  assert.match(header, /aria-label="ফোনে অর্ডার করুন" className="hidden min-h-11/);
+  assert.match(header, /href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}[^>]*className="inline-flex min-h-10 items-center gap-1\.5 rounded-full bg-\[#25d366\][^"]*md:hidden"/);
+  assert.match(header, /<WhatsAppBrandIcon className="size-4" \/>অর্ডার করুন<\/a>/);
+  assert.doesNotMatch(header, /shadow-/);
+  assert.match(header, /href=\{BORI_CAMPAIGN_WHATSAPP_HREF\}[^>]*className="hidden min-h-11 min-w-11 items-center justify-center gap-2 rounded-\[4px\] border border-\[#25d366\]\/50[^"]*md:inline-flex"/);
+});
