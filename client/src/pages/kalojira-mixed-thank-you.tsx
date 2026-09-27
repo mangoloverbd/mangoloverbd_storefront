@@ -27,7 +27,7 @@ function getSessionStorage() {
   }
 }
 
-function SupportActions() {
+function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
       <a
@@ -38,7 +38,7 @@ function SupportActions() {
         কল করুন: {KALOJIRA_CAMPAIGN_PHONE_NUMBER}
       </a>
       <a
-        href={KALOJIRA_CAMPAIGN_WHATSAPP_HREF}
+        href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[4px] bg-[#187d48] px-5 py-3 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0b4c2a]"
@@ -54,7 +54,13 @@ function Money({ value }: { value: number }) {
   return <>৳{value.toLocaleString("en-US")}</>;
 }
 
-export default function KalojiraMixedThankYouPage() {
+type ThankYouPageProps = { backHref?: string; backLabel?: string; whatsappHref?: string };
+
+export default function KalojiraMixedThankYouPage({
+  backHref = "/step/kalojira-mixed",
+  backLabel = "কালোজিরা মিক্সড অর্ডার পেজে ফিরে যান",
+  whatsappHref = KALOJIRA_CAMPAIGN_WHATSAPP_HREF,
+}: ThankYouPageProps = {}) {
   const [confirmation] = useState(() => readKalojiraOrderConfirmation(getSessionStorage()));
   const isKatimonOrder = confirmation?.productName.toLowerCase().includes("katimon") || confirmation?.productName.includes("কাটিমন");
   const deliveryCharge = isKatimonOrder && confirmation?.deliveryCharge === 0 ? 100 : confirmation?.deliveryCharge ?? 0;
@@ -98,12 +104,12 @@ export default function KalojiraMixedThankYouPage() {
             অর্ডারের তথ্য পাওয়া যায়নি
           </h1>
           <p className="mt-4 leading-7 text-[#654b2f]">কোনো সাম্প্রতিক অর্ডারের তথ্য পাওয়া যায়নি।</p>
-          <Link href="/step/kalojira-mixed" className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-[#19382d] px-6 py-3 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]">
-            কালোজিরা মিক্সড অর্ডার পেজে ফিরে যান
+          <Link href={backHref} className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-[#19382d] px-6 py-3 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#19382d]">
+            {backLabel}
           </Link>
           <div className="mt-8 border-t border-[#dfd2b5] pt-6">
             <p className="mb-4 text-sm font-semibold text-[#654b2f]">সহায়তা দরকার?</p>
-            <SupportActions />
+            <SupportActions whatsappHref={whatsappHref} />
           </div>
         </section>
       </main>
@@ -147,7 +153,7 @@ export default function KalojiraMixedThankYouPage() {
 
         <div className="mt-8 border-t border-[#dfd2b5] pt-6 text-center">
           <p className="mb-4 text-sm font-semibold text-[#654b2f]">অর্ডার নিয়ে সহায়তা দরকার?</p>
-          <SupportActions />
+          <SupportActions whatsappHref={whatsappHref} />
         </div>
       </section>
     </main>

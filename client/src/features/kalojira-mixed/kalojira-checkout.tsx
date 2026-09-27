@@ -141,6 +141,7 @@ function SupportActions({ whatsappHref }: { whatsappHref: string }) {
 
 export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
   const [, setLocation] = useLocation();
+  const thankYouPath = product?.slug === "homemade-pumpkin-bori" ? "/step/homemade-pumpkin-bori/thank-you" : "/step/kalojira-mixed/thank-you";
   const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : product?.slug === "homemade-pumpkin-bori" ? BORI_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
   const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
@@ -360,7 +361,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
       capture.clear();
       const confirmation = buildKalojiraOrderConfirmation(result.orderRef, payload);
       writeKalojiraOrderConfirmation(window.sessionStorage, confirmation);
-      setLocation("/step/kalojira-mixed/thank-you");
+      setLocation(thankYouPath);
     } catch (error) {
       if (error instanceof OrderProtectionError) {
         setProtectionDecision("block");

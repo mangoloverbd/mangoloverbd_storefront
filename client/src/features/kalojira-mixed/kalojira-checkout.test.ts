@@ -18,7 +18,8 @@ test("checkout submits the live Kalojira variant through the COD API", () => {
   assert.match(source, /name="quantity"/);
   assert.match(source, /apiRequest\("POST", "\/api\/orders", payload\)/);
   assert.match(source, /writeKalojiraOrderConfirmation/);
-  assert.match(source, /setLocation\("\/step\/kalojira-mixed\/thank-you"\)/);
+  assert.match(source, /setLocation\(thankYouPath\)/);
+  assert.match(source, /: "\/step\/kalojira-mixed\/thank-you"/);
   assert.match(contentSource, /কালোজিরা মিক্সড/);
   assert.match(source, /კ্যাশ অন ডেলিভারি|ক্যাশ অন ডেলিভারি/);
 });
