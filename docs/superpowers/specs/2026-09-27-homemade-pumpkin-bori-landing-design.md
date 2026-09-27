@@ -44,7 +44,7 @@ Copy the Katimon page into a standalone page file, following the existing patter
    - Two CTAs: gold `এখনই অর্ডার করুন` (scroll to checkout) and green WhatsApp `এখনই অর্ডার করুন` (opens bori WhatsApp)
    - Live product gallery (Embla carousel + thumbnails), same as Katimon
 3. **Pack cards** (`বিশেষ প্যাকেজ` / `আপনার পছন্দের প্যাক বেছে নিন`):
-   - **500g**: `৳400`, struck-through `৳650`. Benefits: ১ ছোট পরিবারের জন্য উপযুক্ত · ২ প্রথমবার স্বাদ নিতে আদর্শ · ৩ হাতে তৈরি ও রোদে শুকানো · ৪ পরিচ্ছন্ন প্যাকেজিং
+   - **500G**: `৳400`, struck-through `৳650`. Benefits: ১ ছোট পরিবারের জন্য উপযুক্ত · ২ প্রথমবার স্বাদ নিতে আদর্শ · ৩ হাতে তৈরি ও রোদে শুকানো · ৪ পরিচ্ছন্ন প্যাকেজিং
    - **1KG**: `৳700`, struck-through `৳1,300`. Benefits: ১ বেশি পরিমাণে, বেশি সাশ্রয়ী · ২ মাসজুড়ে রান্নার জন্য · ৩ মাষকলাই ডাল ও চালকুমড়োর বড়ি · ৪ বড় পরিবার বা উপহারের জন্য পারফেক্ট
    - Each card has an `অর্ডার করুন` CTA that scrolls to checkout. Card prices are display-only; checkout charges the live variant price.
 4. **Story paragraph** with `TextHighlighter`: `<ঘরোয়া পদ্ধতিতে তৈরি>` কুমড়ো বড়ি—`<বাছাই করা মাষকলাইয়ের ডাল>` আর `<টাটকা চালকুমড়ো>` মিশিয়ে অভিজ্ঞ কারিগরদের হাতে বড়ি দেওয়া হয়, তারপর পরিষ্কার-পরিচ্ছন্নভাবে `<রোদে শুকানো>` হয়। মাছ, শাক কিংবা সবজির তরকারিতে যোগ করলেই ফিরে আসে `<ঐতিহ্যবাহী বাঙালি স্বাদ>`।
@@ -66,7 +66,7 @@ Copy the Katimon page into a standalone page file, following the existing patter
 
 ## Mobile overflow
 
-The Katimon page shows horizontal clipping at 430 px width (hero WhatsApp button, pack cards, story paragraph, strip image). The bori page must not repeat this. The implementer finds the overflowing element(s) in the copied markup and fixes them in the bori page only. Katimon stays untouched.
+A Chrome DevTools measurement with mobile emulation at 430 px showed Katimon has no horizontal overflow (`scrollWidth === 430`; the only off-screen boxes are the intentionally clipped carousel slides and a hidden input). The earlier clipped screenshot was an artifact of headless Chrome's minimum window width. The bori page keeps the Katimon layout as-is and verifies the same `scrollWidth <= 430` condition.
 
 ## Out of scope
 
