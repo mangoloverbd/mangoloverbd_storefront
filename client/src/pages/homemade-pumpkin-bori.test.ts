@@ -133,8 +133,8 @@ test("bori header uses option B on mobile and desktop", () => {
 });
 
 test("bori 1KG pack card uses the transparent pack image", () => {
-  assert.match(contentSource, /export const BORI_PACK_1KG_IMAGE = "\/bori-pack-1kg\.webp";/);
-  assert.ok(existsSync(new URL("../../public/bori-pack-1kg.webp", import.meta.url)), "missing 1KG pack asset");
+  assert.match(contentSource, /export const BORI_PACK_1KG_IMAGE = "\/bori-pack-1kg-v2\.webp";/);
+  assert.ok(existsSync(new URL("../../public/bori-pack-1kg-v2.webp", import.meta.url)), "missing 1KG pack asset");
 });
 
 test("bori pack cards show the pack image full-width on top on mobile", () => {
