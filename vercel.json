@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/go/:slug",
+      "destination": "/api/go?__campaign_slug=:slug"
+    },
+    {
       "source": "/product/stepprs-massage-insoles",
       "destination": "/api/legacy-gone"
     },
