@@ -4,7 +4,7 @@ import express from 'express';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { registerRoutes } from './routes.ts';
-import { signCampaignClick } from './campaign-links.ts';
+import { signCampaignClick, signCampaignReceipt } from './campaign-links.ts';
 import { createOrderHandler, processOrder as productionOrder, validateOrder } from '../api/orders.ts';
 import { createAbandonedCartHandler, processAbandonedCartCapture as productionCapture } from '../api/abandoned-carts.ts';
 import { processOrder as localOrder, orderRequestSchema } from './order-service.ts';
@@ -45,22 +45,23 @@ for (const platform of ['express', 'vercel'] as const) test(`${platform} forward
   } finally { server.closeAllConnections(); server.close(); if (previous === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET; else process.env.STOREFRONT_CONTEXT_SECRET = previous; }
 });
 for (const [label, service, body, path] of [
-  ['production order', productionOrder, validateOrder(order), '/api/public/v1/mangolover/orders'],
-  ['local order', localOrder, orderRequestSchema.parse(order), '/api/public/v1/mangolover/orders'],
+  ['production order', productionOrder, validateOrder(order), '/api/public/v1/mangoloverbd/orders'],
+  ['local order', localOrder, orderRequestSchema.parse(order), '/api/public/v1/mangoloverbd/orders'],
   ['production capture', productionCapture, capture, '/api/custom-orders/abandoned-checkouts'],
   ['local capture', localCapture, capture, '/api/custom-orders/abandoned-checkouts'],
 ] as const) test(`${label} sends internal click option through header, never through browser JSON`, async () => {
   let headers = new Headers(); let payload: Record<string, unknown> = {}; let url = '';
-  await service(body as never, { merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangolover', apiKey: 'test-api-key',
-    clientContextHeader: 'signed.context', campaignClickId: clickId,
+  await service(body as never, { merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangoloverbd', apiKey: 'test-api-key',
+    clientContextHeader: 'signed.context', campaignClickId: clickId, campaignReceipt: 'signed.receipt',
     fetchImpl: async (target, init) => { url = String(target); headers = new Headers(init?.headers); payload = JSON.parse(String(init?.body)); return new Response(JSON.stringify({ orderRef: 'ML-1' }), { status: 201 }); } });
   assert.equal(url, `https://suite.invalid${path}`); assert.equal(headers.get('x-mlbd-campaign-click-id'), clickId);
+  assert.equal(headers.get('x-mlbd-campaign-receipt'), 'signed.receipt');
   assert.equal(headers.get('x-mlbd-client-context'), 'signed.context'); assert.equal(Object.hasOwn(payload, 'campaignClickId'), false);
   if (label.includes('capture')) assert.deepEqual(payload.campaign, capture.campaign);
 });
 test('Express uses the shared redirect before its catch-all', async () => {
   const app = express(); const server = createServer(app);
-  await registerRoutes(server, app, { campaignRedirectOptions: { local: true, merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangolover', secret,
+  await registerRoutes(server, app, { campaignRedirectOptions: { local: true, merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangoloverbd', secret,
     fetchImpl: async () => new Response(JSON.stringify({ clickId, destinationPath: '/product/honey', utm: { utm_source: 'facebook', utm_medium: 'campaign_link', utm_campaign: 'himsagar-reel' } })) } });
   app.use((_req, res) => res.send('SPA'));
   server.listen(0, '127.0.0.1'); await once(server, 'listening'); const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
@@ -72,4 +73,33 @@ test('Express uses the shared redirect before its catch-all', async () => {
       assert.equal(result.headers.has('set-cookie'), method === 'GET');
     }
   } finally { server.closeAllConnections(); server.close(); }
+});
+
+test('edge-key v1 cookies coexist with legacy v1 cookies and receipt forwarding rejects mismatched IDs', async () => {
+  const previousContext = process.env.STOREFRONT_CONTEXT_SECRET;
+  const previousEdge = process.env.CAMPAIGN_EDGE_SECRET;
+  const edgeSecret = 'new-campaign-edge-secret-test-0123456789';
+  process.env.STOREFRONT_CONTEXT_SECRET = secret;
+  process.env.CAMPAIGN_EDGE_SECRET = edgeSecret;
+  const events = { v: 1, handle: 'mangoloverbd', linkId: clickId, clickId, clickedAt: new Date().toISOString(), isBot: false,
+    visitorHash: null, referrerHost: null, device: 'unknown' };
+  const receipt = signCampaignReceipt(events, edgeSecret);
+  const calls: Record<string, unknown>[] = [];
+  const app = express(); app.use(express.json());
+  app.post('/api/orders', createOrderHandler({ processOrder: async (_order, options = {}) => { calls.push(options); return { orderRef: 'ML-2', decision: 'allow' }; } }));
+  const server = createServer(app); server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  try {
+    for (const [id, proof, expectedProof] of [[clickId, receipt, receipt], [clickId, signCampaignReceipt({ ...events, clickId: '22222222-2222-4222-8222-222222222222' }, edgeSecret), undefined]] as const) {
+      const response = await fetch(`${base}/api/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json',
+        cookie: `ml_cclick=${signCampaignClick(id, edgeSecret)}; ml_cproof=${proof}` }, body: JSON.stringify(order) });
+      assert.equal(response.status, 201);
+      assert.equal(calls.at(-1)?.campaignClickId, id);
+      assert.equal(calls.at(-1)?.campaignReceipt, expectedProof);
+    }
+  } finally {
+    server.closeAllConnections(); server.close();
+    if (previousContext === undefined) delete process.env.STOREFRONT_CONTEXT_SECRET; else process.env.STOREFRONT_CONTEXT_SECRET = previousContext;
+    if (previousEdge === undefined) delete process.env.CAMPAIGN_EDGE_SECRET; else process.env.CAMPAIGN_EDGE_SECRET = previousEdge;
+  }
 });

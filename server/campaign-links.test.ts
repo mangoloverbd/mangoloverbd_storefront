@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mergeCampaignDestination, readCampaignClickCookie, signCampaignClick, resolveCampaignRedirect } from './campaign-links.ts';
+import { mergeCampaignDestination, readCampaignClickCookie, readCampaignReceipt, signCampaignClick, signCampaignReceipt, resolveCampaignRedirect } from './campaign-links.ts';
 import { normalizeLandingPagePath } from './landing-page-attribution.ts';
 
 export const secret = 'test-campaign-context-secret-0123456789abcdef';
 export const clickId = '11111111-1111-4111-8111-111111111111';
 export const utm = { utm_source: 'facebook', utm_medium: 'campaign_link', utm_campaign: 'himsagar-reel' };
 const req = (url = '/go/himsagar-reel', method = 'GET') => ({ url, method, headers: { 'user-agent': 'Mozilla/5.0 FBAN/FBIOS', 'x-vercel-forwarded-for': '103.12.44.7' }, socket: { remoteAddress: '127.0.0.1' } });
-const config = { merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangolover', secret, local: false };
+const config = { merchantSuiteUrl: 'https://suite.invalid', storefrontHandle: 'mangoloverbd', secret, local: false };
 const response = (data: unknown) => new Response(JSON.stringify(data));
 test('query merge retains first values, empty values, destination-only keys and fragment', () => {
   const merged = new URL(mergeCampaignDestination('/product/himsagar?utm_source=instagram&variant=large&variant=small#buy', '?utm_source=&utm_source=custom&fbclid=abc&ad_id=42', utm), 'https://www.mangolover.com.bd');
@@ -29,6 +29,18 @@ test('signed cookie rejects tampering, duplicate names, missing secrets and over
   assert.equal(read(`ml_cclick=${clickId}`), undefined);
   assert.equal(read('x'.repeat(9000)), undefined);
   assert.equal(readCampaignClickCookie({ headers: { cookie: `ml_cclick=${cookie}` } }, 'short'), undefined);
+  const edgeCookie = signCampaignClick(clickId, secret);
+  assert.equal(readCampaignClickCookie({ headers: { cookie: `ml_cclick=${edgeCookie}` } }, '', secret), clickId);
+});
+test('receipt is forwarded only when signed, current, attributable, and bound to the matching legacy click cookie', () => {
+  const event = { v: 1, handle: 'mangoloverbd', linkId: clickId, clickId, clickedAt: new Date().toISOString(), isBot: false,
+    visitorHash: null, referrerHost: null, device: 'unknown' };
+  const proof = signCampaignReceipt(event, secret);
+  const request = (receipt: string, click = clickId) => ({ headers: { cookie: `ml_cclick=${signCampaignClick(click, secret)}; ml_cproof=${receipt}` } });
+  assert.equal(readCampaignReceipt(request(proof), secret, secret), proof);
+  assert.equal(readCampaignReceipt(request(proof, '22222222-2222-4222-8222-222222222222'), secret, secret), undefined);
+  assert.equal(readCampaignReceipt(request(`${proof.slice(0, -1)}x`), secret, secret), undefined);
+  assert.equal(readCampaignReceipt(request(signCampaignReceipt({ ...event, isBot: true }, secret)), secret, secret), undefined);
 });
 test('resolved redirects send trusted context and a navigation UUID, not spoofed browser IP', async () => {
   let sent: RequestInit | undefined;

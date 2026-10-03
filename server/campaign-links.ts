@@ -6,6 +6,7 @@ const ORIGIN = 'https://www.mangolover.com.bd';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UNSAFE = /[\\\u0000-\u001f\u007f]/;
 export const CAMPAIGN_CLICK_HEADER = 'x-mlbd-campaign-click-id';
+export const CAMPAIGN_RECEIPT_HEADER = 'x-mlbd-campaign-receipt';
 export type CampaignRequest = { url?: string; method?: string; headers: IncomingHttpHeaders; socket?: { remoteAddress?: string } };
 export type CampaignRedirectOptions = { fetchImpl?: typeof fetch; merchantSuiteUrl?: string; storefrontHandle?: string; secret?: string; local?: boolean };
 
@@ -50,16 +51,44 @@ export function mergeCampaignDestination(destination: string, incoming: string, 
 export function signCampaignClick(id: string, secret: string): string {
   return `${id}.${createHmac('sha256', secret).update(`campaign-cookie-v1:${id}`).digest('hex')}`;
 }
-export function readCampaignClickCookie(req: Pick<CampaignRequest, 'headers'>, secret = process.env.STOREFRONT_CONTEXT_SECRET): string | undefined {
+export function readCampaignClickCookie(req: Pick<CampaignRequest, 'headers'>, secret = process.env.STOREFRONT_CONTEXT_SECRET, edgeSecret = process.env.CAMPAIGN_EDGE_SECRET): string | undefined {
   const header = req.headers.cookie;
-  if (typeof header !== 'string' || header.length > 8192 || !secret || secret.length < 32) return undefined;
+  if (typeof header !== 'string' || header.length > 8192 || ((!secret || secret.length < 32) && (!edgeSecret || edgeSecret.length < 32))) return undefined;
   const matches = header.split(';').map(part => part.trim()).filter(part => part.split('=', 1)[0] === 'ml_cclick');
   if (matches.length !== 1) return undefined;
   const value = matches[0].slice('ml_cclick='.length);
   const [id, signature, extra] = value.split('.');
   if (extra !== undefined || !UUID.test(id) || !/^[a-f0-9]{64}$/.test(signature || '')) return undefined;
-  const expected = signCampaignClick(id, secret).split('.')[1];
-  return timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expected, 'hex')) ? id : undefined;
+  const candidates = [secret, edgeSecret].filter((candidate): candidate is string => typeof candidate === 'string' && candidate.length >= 32);
+  return candidates.some(candidate => timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(signCampaignClick(id, candidate).split('.')[1], 'hex'))) ? id : undefined;
+}
+
+export function signCampaignReceipt(value: Record<string, unknown>, secret = process.env.CAMPAIGN_EDGE_SECRET): string {
+  if (!secret || secret.length < 32) throw new Error('Invalid campaign edge secret');
+  const payload = Buffer.from(JSON.stringify(value)).toString('base64url');
+  const signature = createHmac('sha256', secret).update(`campaign-receipt-v1:${payload}`).digest('hex');
+  return `${payload}.${signature}`;
+}
+
+export function readCampaignReceipt(req: Pick<CampaignRequest, 'headers'>, secret = process.env.CAMPAIGN_EDGE_SECRET, contextSecret = process.env.STOREFRONT_CONTEXT_SECRET): string | undefined {
+  const cookie = req.headers.cookie;
+  if (typeof cookie !== 'string' || cookie.length > 8192 || !secret || secret.length < 32) return undefined;
+  const matches = cookie.split(';').map(part => part.trim()).filter(part => part.split('=', 1)[0] === 'ml_cproof');
+  if (matches.length !== 1) return undefined;
+  const token = matches[0].slice('ml_cproof='.length);
+  const [payload, signature, extra] = token.split('.');
+  if (extra !== undefined || !payload || !/^[a-f0-9]{64}$/.test(signature || '') || payload.length > 1800) return undefined;
+  const expected = createHmac('sha256', secret).update(`campaign-receipt-v1:${payload}`).digest();
+  if (!timingSafeEqual(Buffer.from(signature, 'hex'), expected)) return undefined;
+  try {
+    const event = JSON.parse(Buffer.from(payload, 'base64url').toString()) as Record<string, unknown>;
+    const age = Date.now() - Date.parse(String(event.clickedAt || ''));
+    if (event.v !== 1 || event.handle !== 'mangoloverbd' || typeof event.clickId !== 'string' || !UUID.test(event.clickId)
+      || typeof event.linkId !== 'string' || !UUID.test(event.linkId) || event.isBot !== false
+      || !Number.isFinite(age) || age < -60_000 || age > 30 * 86400000
+      || readCampaignClickCookie(req, contextSecret, secret) !== event.clickId) return undefined;
+    return token;
+  } catch { return undefined; }
 }
 
 export async function resolveCampaignRedirect(req: CampaignRequest, value: unknown, options: CampaignRedirectOptions = {}): Promise<{ location: string; cookie?: string }> {

@@ -10,7 +10,7 @@ import {
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
 import { createSignedClientContext } from "./client-context.ts";
 import { readOrCreateDeviceId } from "./device-id.ts";
-import { readCampaignClickCookie, type CampaignRedirectOptions } from './campaign-links.js';
+import { readCampaignClickCookie, readCampaignReceipt, type CampaignRedirectOptions } from './campaign-links.js';
 import { readAnalyticsSessionCookie } from './analytics-session.js';
 import { createGoHandler } from '../api/go.js';
 import {
@@ -21,7 +21,7 @@ import {
 } from "./abandoned-cart-service.ts";
 
 type RouteDependencies = {
-  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string; campaignClickId?: string; analyticsSessionId?: string }) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string; campaignClickId?: string; campaignReceipt?: string; analyticsSessionId?: string }) => Promise<OrderProcessResult>;
   campaignRedirectOptions?: CampaignRedirectOptions;
   processAbandonedCartCapture?: typeof processAbandonedCartCapture;
 };
@@ -41,7 +41,8 @@ export async function registerRoutes(
       const capture = parseAbandonedCartCapture(req.body);
       const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
       const campaignClickId = readCampaignClickCookie(req);
-      await processCapture(capture, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}) });
+      const campaignReceipt = readCampaignReceipt(req);
+      await processCapture(capture, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}), ...(campaignReceipt ? { campaignReceipt } : {}) });
       res.status(202).json({ ok: true });
     } catch (error) {
       if (error instanceof AbandonedCartValidationError) {
@@ -64,8 +65,9 @@ export async function registerRoutes(
         deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
       }, process.env.STOREFRONT_CONTEXT_SECRET);
       const campaignClickId = readCampaignClickCookie(req);
+      const campaignReceipt = readCampaignReceipt(req);
       const analyticsSessionId = readAnalyticsSessionCookie(req);
-      const result = await submitOrder(order, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}),
+      const result = await submitOrder(order, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}), ...(campaignReceipt ? { campaignReceipt } : {}),
         ...(analyticsSessionId ? { analyticsSessionId } : {}) });
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
