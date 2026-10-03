@@ -4,6 +4,7 @@ import { normalizeLandingPagePath } from "../server/landing-page-attribution.js"
 import { CLIENT_CONTEXT_HEADER, createSignedClientContext, parseCheckoutTelemetry, type CheckoutTelemetryInput } from "../server/client-context.js";
 import { readOrCreateDeviceId } from "../server/device-id.js";
 import { normalizeBdMobile } from "../shared/bd-phone.js";
+import { CAMPAIGN_CLICK_HEADER, readCampaignClickCookie } from '../server/campaign-links.js';
 
 export { OrderProtectionError } from "../server/order-protection-errors.js";
 
@@ -67,10 +68,11 @@ type OrderServiceDependencies = {
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
   clientContextHeader?: string;
+  campaignClickId?: string;
 };
 
 type OrderHandlerDependencies = {
-  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string; campaignClickId?: string }) => Promise<OrderProcessResult>;
   signContext?: typeof createSignedClientContext;
 };
 
@@ -240,6 +242,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       headers: {
         "Content-Type": "application/json",
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
+        ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
       },
       body: JSON.stringify({
         customerName: order.customerName,
@@ -313,7 +316,8 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
           deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
         }, process.env.STOREFRONT_CONTEXT_SECRET);
       } catch { console.warn("[Order] client context signing unavailable"); }
-      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
+      const campaignClickId = readCampaignClickCookie(req);
+      const result = await submitOrder(order, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}) });
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 

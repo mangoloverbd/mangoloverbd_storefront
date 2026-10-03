@@ -10,6 +10,8 @@ import {
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
 import { createSignedClientContext } from "./client-context.ts";
 import { readOrCreateDeviceId } from "./device-id.ts";
+import { readCampaignClickCookie, type CampaignRedirectOptions } from './campaign-links.js';
+import { createGoHandler } from '../api/go.js';
 import {
   AbandonedCartUpstreamError,
   AbandonedCartValidationError,
@@ -18,7 +20,8 @@ import {
 } from "./abandoned-cart-service.ts";
 
 type RouteDependencies = {
-  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string }) => Promise<OrderProcessResult>;
+  processOrder?: (order: OrderRequest, options?: { clientContextHeader?: string; campaignClickId?: string }) => Promise<OrderProcessResult>;
+  campaignRedirectOptions?: CampaignRedirectOptions;
   processAbandonedCartCapture?: typeof processAbandonedCartCapture;
 };
 
@@ -29,13 +32,15 @@ export async function registerRoutes(
 ): Promise<Server> {
   const submitOrder = dependencies.processOrder ?? processOrder;
   const processCapture = dependencies.processAbandonedCartCapture ?? processAbandonedCartCapture;
+  app.get('/go/:slug', createGoHandler({ ...dependencies.campaignRedirectOptions, local: true }));
 
   app.post("/api/abandoned-carts", async (req, res, next) => {
     const { deviceId } = readOrCreateDeviceId(req, res);
     try {
       const capture = parseAbandonedCartCapture(req.body);
       const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
-      await processCapture(capture, clientContextHeader ? { clientContextHeader } : {});
+      const campaignClickId = readCampaignClickCookie(req);
+      await processCapture(capture, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}) });
       res.status(202).json({ ok: true });
     } catch (error) {
       if (error instanceof AbandonedCartValidationError) {
@@ -57,7 +62,8 @@ export async function registerRoutes(
       const clientContextHeader = createSignedClientContext(req, {
         deviceId, fingerprint: order.deviceFingerprint, telemetry: order.checkoutTelemetry,
       }, process.env.STOREFRONT_CONTEXT_SECRET);
-      const result = await submitOrder(order, clientContextHeader ? { clientContextHeader } : {});
+      const campaignClickId = readCampaignClickCookie(req);
+      const result = await submitOrder(order, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}) });
       const decision = result.decision ?? "allow";
       const orderRef = "orderRef" in result ? String(result.orderRef ?? "") : "";
 

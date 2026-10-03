@@ -3,6 +3,7 @@ import { OrderProtectionError, type OrderProcessResult } from "./order-protectio
 import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 import { normalizeBdMobile } from "../shared/bd-phone.ts";
+import { CAMPAIGN_CLICK_HEADER } from './campaign-links.js';
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
 
@@ -70,6 +71,7 @@ type OrderServiceDependencies = {
   storefrontHandle?: string;
   timeoutSignal?: () => AbortSignal;
   clientContextHeader?: string;
+  campaignClickId?: string;
 };
 
 function getCanonicalOrderRef(value: unknown) {
@@ -93,6 +95,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       headers: {
         "Content-Type": "application/json",
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
+        ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
       },
       body: JSON.stringify({
         customerName: order.customerName,

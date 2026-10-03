@@ -2,6 +2,7 @@ import { z } from "zod";
 import { isIP } from "node:net";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 import { normalizeBdMobile } from "../shared/bd-phone.ts";
+import { CAMPAIGN_CLICK_HEADER } from './campaign-links.js';
 
 const MAX_MONEY = 10_000_000;
 const CAPTURE_TIMEOUT_MS = 5_000;
@@ -102,6 +103,9 @@ function omitBlank(value: string | undefined) {
 }
 
 export function parseAbandonedCartCapture(body: unknown): AbandonedCartCapture {
+  if (body && typeof body === 'object' && !Array.isArray(body) && Object.hasOwn(body, 'campaignClickId')) {
+    const clean = { ...body } as Record<string, unknown>; delete clean.campaignClickId; body = clean;
+  }
   const parsed = captureSchema.safeParse(body);
   if (!parsed.success) throw new AbandonedCartValidationError();
 
@@ -129,6 +133,7 @@ type AbandonedCartServiceDependencies = {
   timeoutSignal?: () => AbortSignal;
   forwardedClientIp?: string;
   clientContextHeader?: string;
+  campaignClickId?: string;
 };
 
 export async function processAbandonedCartCapture(
@@ -157,6 +162,7 @@ export async function processAbandonedCartCapture(
         "x-api-key": apiKey,
         ...(forwardedClientIp ? { "x-storefront-client-ip": forwardedClientIp } : {}),
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
+        ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),
