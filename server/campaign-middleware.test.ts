@@ -197,7 +197,7 @@ test('cache refresh requires a fresh Suite signature and expires only campaign t
 });
 
 test('the deployed middleware only matches campaign links and defers without its secret', async () => {
-  assert.deepEqual(config.matcher, ['/go/:path*']);
+  assert.deepEqual(config, { runtime: 'nodejs', matcher: ['/go/:path*'] });
   const previous = process.env.CAMPAIGN_EDGE_SECRET;
   delete process.env.CAMPAIGN_EDGE_SECRET;
   try {

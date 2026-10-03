@@ -2,8 +2,8 @@ import { getCache, ipAddress, next } from '@vercel/functions';
 import { createCampaignMiddleware } from './server/campaign-middleware.js';
 
 // Vercel Routing Middleware. Only campaign links run here; every other storefront
-// request skips it entirely.
-export const config = { matcher: ['/go/:path*'] };
+// request skips it entirely. Node.js runtime per Vercel's edge deprecation.
+export const config = { runtime: 'nodejs', matcher: ['/go/:path*'] };
 
 export default function middleware(request: Request, context: { waitUntil(promise: Promise<unknown>): void }) {
   return createCampaignMiddleware({

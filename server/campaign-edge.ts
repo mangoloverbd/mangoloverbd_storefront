@@ -1,5 +1,5 @@
-// Web Crypto only: this module runs in Vercel Routing Middleware (edge runtime),
-// where node:crypto and Buffer are unavailable. Signatures must stay byte-for-byte
+// Web Crypto only, so it runs in any runtime Vercel Routing Middleware uses
+// (Node.js or edge). Signatures must stay byte-for-byte
 // compatible with server/campaign-links.ts and Merchant Suite's campaignEvents.js.
 const ORIGIN = 'https://www.mangolover.com.bd';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
