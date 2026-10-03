@@ -3,7 +3,7 @@ import { isIP } from "node:net";
 import { CLIENT_CONTEXT_HEADER, createSignedClientContext } from "../server/client-context.js";
 import { readOrCreateDeviceId } from "../server/device-id.js";
 import { normalizeBdMobile } from "../shared/bd-phone.js";
-import { CAMPAIGN_CLICK_HEADER, readCampaignClickCookie } from '../server/campaign-links.js';
+import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER, readCampaignClickCookie, readCampaignReceipt } from '../server/campaign-links.js';
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const MAX_MONEY = 10_000_000;
@@ -66,7 +66,7 @@ class RequestBodyError extends Error {
 type CaptureHandlerDependencies = {
   processCapture?: (
     capture: AbandonedCartCapture,
-    context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string },
+    context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string; campaignReceipt?: string },
   ) => Promise<void>;
 };
 
@@ -78,6 +78,7 @@ type AbandonedCartServiceDependencies = {
   forwardedClientIp?: string;
   clientContextHeader?: string;
   campaignClickId?: string;
+  campaignReceipt?: string;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -240,6 +241,7 @@ export async function processAbandonedCartCapture(
         ...(forwardedClientIp ? { "x-storefront-client-ip": forwardedClientIp } : {}),
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
         ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
+        ...(dependencies.campaignReceipt ? { [CAMPAIGN_RECEIPT_HEADER]: dependencies.campaignReceipt } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),
@@ -322,10 +324,12 @@ export function createAbandonedCartHandler(dependencies: CaptureHandlerDependenc
       const capture = parseAbandonedCartCapture(await readBody(req));
       const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
       const campaignClickId = readCampaignClickCookie(req);
+      const campaignReceipt = readCampaignReceipt(req);
       await processCapture(capture, {
         forwardedClientIp: getVercelClientIp(req),
         ...(clientContextHeader ? { clientContextHeader } : {}),
         ...(campaignClickId ? { campaignClickId } : {}),
+        ...(campaignReceipt ? { campaignReceipt } : {}),
       });
       sendJson(res, 202, { ok: true });
     } catch (error) {

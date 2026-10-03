@@ -2,7 +2,7 @@ import { z } from "zod";
 import { isIP } from "node:net";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 import { normalizeBdMobile } from "../shared/bd-phone.ts";
-import { CAMPAIGN_CLICK_HEADER } from './campaign-links.js';
+import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER } from './campaign-links.js';
 
 const MAX_MONEY = 10_000_000;
 const CAPTURE_TIMEOUT_MS = 5_000;
@@ -134,6 +134,7 @@ type AbandonedCartServiceDependencies = {
   forwardedClientIp?: string;
   clientContextHeader?: string;
   campaignClickId?: string;
+  campaignReceipt?: string;
 };
 
 export async function processAbandonedCartCapture(
@@ -163,6 +164,7 @@ export async function processAbandonedCartCapture(
         ...(forwardedClientIp ? { "x-storefront-client-ip": forwardedClientIp } : {}),
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
         ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
+        ...(dependencies.campaignReceipt ? { [CAMPAIGN_RECEIPT_HEADER]: dependencies.campaignReceipt } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),

@@ -3,7 +3,7 @@ import { OrderProtectionError, type OrderProcessResult } from "./order-protectio
 import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 import { normalizeBdMobile } from "../shared/bd-phone.ts";
-import { CAMPAIGN_CLICK_HEADER } from './campaign-links.js';
+import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER } from './campaign-links.js';
 import { ANALYTICS_SESSION_HEADER } from './analytics-session.js';
 
 export { OrderProtectionError } from "./order-protection-errors.ts";
@@ -73,6 +73,7 @@ type OrderServiceDependencies = {
   timeoutSignal?: () => AbortSignal;
   clientContextHeader?: string;
   campaignClickId?: string;
+  campaignReceipt?: string;
   analyticsSessionId?: string;
 };
 
@@ -98,6 +99,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
         "Content-Type": "application/json",
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
         ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
+        ...(dependencies.campaignReceipt ? { [CAMPAIGN_RECEIPT_HEADER]: dependencies.campaignReceipt } : {}),
         ...(dependencies.analyticsSessionId ? { [ANALYTICS_SESSION_HEADER]: dependencies.analyticsSessionId } : {}),
       },
       body: JSON.stringify({

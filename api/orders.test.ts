@@ -99,7 +99,7 @@ test("rejects invalid quantities", () => {
 
 const dependencies = {
   merchantSuiteUrl: "https://suite.invalid",
-  storefrontHandle: "mangolover",
+  storefrontHandle: "mangoloverbd",
   timeoutSignal: () => new AbortController().signal,
 };
 
@@ -235,7 +235,7 @@ test("posts canonical checkout data to the public handle endpoint", async () => 
     },
   });
 
-  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangolover/orders");
+  assert.equal(outboundUrl, "https://suite.invalid/api/public/v1/mangoloverbd/orders");
   assert.deepEqual(outboundHeaders, { "Content-Type": "application/json" });
   assert.deepEqual(result, { orderRef: "ML-150002", decision: "allow" });
   assert.deepEqual(outboundBody, {

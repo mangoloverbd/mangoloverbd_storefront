@@ -18,8 +18,20 @@ export function createGoHandler(options: CampaignRedirectOptions = {}) {
     } else {
       // Vercel rewrite supplies this private routing parameter. Do not carry it
       // into the storefront destination; ordinary incoming keys are preserved.
-      slug = url.searchParams.get('__campaign_slug') ?? undefined;
-      url.searchParams.delete('__campaign_slug');
+      const privateSlug = url.searchParams.get('__campaign_slug');
+      slug = privateSlug ?? undefined;
+      if (privateSlug !== null) {
+        // Vercel's rewrite also appends `slug`. Remove only one matching value;
+        // preserve other duplicate caller values and unrelated query keys.
+        const clean = new URLSearchParams();
+        let removedRewriteSlug = false;
+        url.searchParams.forEach((value, key) => {
+          if (key === '__campaign_slug') return;
+          if (!removedRewriteSlug && key === 'slug' && value === privateSlug) { removedRewriteSlug = true; return; }
+          clean.append(key, value);
+        });
+        url.search = clean.toString();
+      }
     }
     const result = await resolveCampaignRedirect({ headers: req.headers, socket: req.socket, method: req.method, url: `${url.pathname}${url.search}` }, slug, options);
     if (result.cookie) {
