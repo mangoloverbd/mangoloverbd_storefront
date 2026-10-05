@@ -2,14 +2,13 @@ import { createRoot } from "react-dom/client";
 import { MotionConfig } from "framer-motion";
 import App from "./App";
 import "./index.css";
-import { getMerchantSuiteTrackerUrl } from "./lib/tracker";
+import { getMerchantSuiteTrackerUrl, PRODUCTION_MERCHANT_SUITE_URL } from "./lib/tracker";
 
-// Auto-inject the Merchant Suite visitor tracker. Merchant Suite deploys this
-// storefront per merchant with VITE_MERCHANT_SUITE_URL + VITE_STOREFRONT_ID
-// baked in, so the tracker points at that merchant's own dashboard — no manual
-// copy/paste needed. Skipped when those env vars are absent (local dev without them).
+// The build puts the Merchant Suite visitor tracker in the HTML head (see
+// vite-plugin-merchant-suite-tracker.ts). This is only a fallback for HTML
+// served without it; the element id keeps the tracker from loading twice.
 const TRACKER_SUITE = import.meta.env.PROD
-  ? "https://admin.mangolover.com.bd"
+  ? PRODUCTION_MERCHANT_SUITE_URL
   : import.meta.env.VITE_MERCHANT_SUITE_URL;
 const TRACKER_ORG = import.meta.env.VITE_STOREFRONT_ID;
 const trackerUrl = getMerchantSuiteTrackerUrl(TRACKER_SUITE, TRACKER_ORG);
