@@ -3,6 +3,7 @@ import { LoaderCircle, MessageCircle, Minus, Phone, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 
 import { apiRequest } from "@/lib/queryClient";
+import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { currentLandingPagePath } from "@/lib/landing-page-attribution";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
@@ -220,6 +221,7 @@ export function HoneyNutCheckout({
     )
       return;
     beganCheckoutRef.current = true;
+    trackMerchantSuiteEvent("checkout");
     trackGoogleEcommerceEvent("begin_checkout", {
       pageType: "checkout",
       value: selectedPack.unitPrice * quantity,
@@ -377,6 +379,7 @@ export function HoneyNutCheckout({
         window.sessionStorage,
         buildHoneyNutOrderConfirmation(result.orderRef, payload),
       );
+      trackMerchantSuiteEvent("purchased");
       setLocation("/step/honey-nut/thank-you");
     } catch (error) {
       if (error instanceof OrderProtectionError) {

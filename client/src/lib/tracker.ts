@@ -1,3 +1,5 @@
+export const PRODUCTION_MERCHANT_SUITE_URL = "https://admin.mangolover.com.bd";
+
 const FREE_NGROK_HOST = /\.ngrok-free\.(?:app|dev)$/i;
 
 export function getMerchantSuiteTrackerUrl(

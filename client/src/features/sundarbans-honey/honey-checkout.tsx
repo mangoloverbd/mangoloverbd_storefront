@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
+import { trackMerchantSuiteEvent } from "@/lib/merchant-suite";
 import { currentLandingPagePath } from "@/lib/landing-page-attribution";
 import { OrderProtectionError } from "@/lib/order-protection-errors";
 import { useCheckoutProtectionSignals } from "@/lib/order-protection";
@@ -203,6 +204,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
   const beginCheckout = () => {
     if (beganCheckoutRef.current || status !== "ready" || !selectedPack || !product) return;
     beganCheckoutRef.current = true;
+    trackMerchantSuiteEvent("checkout");
     trackGoogleEcommerceEvent("begin_checkout", {
       pageType: "checkout",
       value: selectedPack.unitPrice * quantity,
@@ -349,6 +351,7 @@ export function HoneyCheckout({ product, status, productQuery, inventoryQuery, o
       capture.clear();
       const confirmation = buildHoneyOrderConfirmation(result.orderRef, payload);
       writeHoneyOrderConfirmation(window.sessionStorage, confirmation);
+      trackMerchantSuiteEvent("purchased");
       setLocation("/step/sundarbans-natural-honey/thank-you");
     } catch (error) {
       if (error instanceof OrderProtectionError) {
