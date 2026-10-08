@@ -6,7 +6,7 @@ import "@videojs/react/video/skin.css";
 import { Gesture, PlayButton } from "@videojs/react";
 import { Video, VideoPlayer, VideoSkin } from "@videojs/react/video";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus } from "lucide-react";
+import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus, VolumeX } from "lucide-react";
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -116,14 +116,16 @@ function ProductSkeleton() {
 }
 
 // Reels are served from the Cloudflare R2 media bucket; poster stills are small
-// frames bundled with the storefront so phones never download video for a preview.
+// WebP frames bundled with the storefront so phones never download video for a preview.
+// Each reel is re-encoded to ~1 Mbps 720p H.264 (mono 64 kbps audio, faststart) and
+// named by the MD5 of that file, so R2 can cache it for a year without going stale.
 const REEL_MEDIA = [
-  "c9d544706ce4d4449fec7c318815b622",
-  "043f4f5e2fd61a6b670a2cd8021637db",
-  "536f20e620b43f4948a5c31cc51ff198",
+  "b328c1cfc46fbf658f31b2e704a5c073",
+  "27700732d0455ef49af15e3bcc6521b1",
+  "040e4943d719f5809860c48e5583352d",
 ].map((id) => ({
   src: `https://media.mangolover.com.bd/${id}.mp4`,
-  poster: `/reels/${id}.jpg`,
+  poster: `/reels/${id}.webp`,
 }));
 
 // Public Video.js skin settings: match the reel card corners and the brand yellow.
@@ -169,9 +171,11 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
 
   const [activeImage, setActiveImage] = useState(0);
   const [currentReel, setCurrentReel] = useState(0);
-  // The Video.js player mounts only after a tap on play. Until then every slide is a
-  // poster image, so swiping never builds a player or a video decoder mid-animation.
+  // The Video.js player (with sound) mounts only after a tap. Until then every reel
+  // plays as a plain muted loop while the section is on screen.
   const [playerReel, setPlayerReel] = useState<number | null>(null);
+  const [reelsInView, setReelsInView] = useState(false);
+  const previewVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const quantityControlRef = useRef<HTMLDivElement>(null);
   const [quantityControlWidth, setQuantityControlWidth] = useState<number | null>(null);
   // Only one <video> is ever mounted. Mounting all three attaches three hardware
@@ -204,11 +208,18 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     resizeObserver.observe(quantityControl);
     return () => resizeObserver.disconnect();
   }, []);
-  const startReel = (i: number) => {
+  const startReel = (i: number, fromTime = 0) => {
     // Mount synchronously so play() still runs inside the tap: iOS only allows
     // unmuted playback that starts within the user's gesture.
     flushSync(() => setPlayerReel(i));
-    void activeReelVideoRef.current?.play().catch(() => undefined);
+    const video = activeReelVideoRef.current;
+    if (!video) return;
+    // Pick up where the muted preview was, so tapping just turns the sound on.
+    if (fromTime > 0) {
+      if (video.readyState >= 1) video.currentTime = fromTime;
+      else video.addEventListener("loadedmetadata", () => (video.currentTime = fromTime), { once: true });
+    }
+    void video.play().catch(() => undefined);
   };
   const goReel = (dir: number) => {
     if (reelApi) {
@@ -257,6 +268,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
       if (dragStartX === null || Math.abs(event.clientX - dragStartX) < 10) return;
       dragStartX = null;
       activeReelVideoRef.current?.pause();
+      // Freeze the previews on their current frame so the moving track isn't decoding.
+      previewVideoRefs.current.forEach((video) => video?.pause());
     };
     const endDrag = () => {
       dragStartX = null;
@@ -277,17 +290,31 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
     const syncActiveReel = () => {
       const selected = reelApi.selectedScrollSnap();
       setCurrentReel(selected);
-      // Leaving a slide tears its player down; the next one stays a plain poster.
+      // Leaving a slide tears its player down; it goes back to a muted preview.
       setPlayerReel((reel) => (reel === selected ? reel : null));
     };
+    const resumePreviews = () =>
+      previewVideoRefs.current.forEach((video) => void video?.play().catch(() => undefined));
     syncActiveReel();
     reelApi.on("select", syncActiveReel);
     reelApi.on("reInit", syncActiveReel);
+    reelApi.on("settle", resumePreviews);
     return () => {
       reelApi.off("select", syncActiveReel);
       reelApi.off("reInit", syncActiveReel);
+      reelApi.off("settle", resumePreviews);
     };
   }, [reelApi]);
+  useEffect(() => {
+    if (!reelApi) return;
+    // Previews only download and play while the reels are on screen.
+    const observer = new IntersectionObserver(([entry]) => setReelsInView(entry.isIntersecting), {
+      rootMargin: "100px 0px",
+    });
+    observer.observe(reelApi.rootNode());
+    return () => observer.disconnect();
+  }, [reelApi]);
+  const showPreviews = reelsInView && !shouldReduceMotion;
   const { data: merchantProduct, isFetchedAfterMount, isSuccess, refetch } = useQuery({
     queryKey: ["merchant-suite-product", slug],
     queryFn: () => fetchStorefrontProduct(slug),
@@ -1119,14 +1146,49 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                                     decoding="async"
                                     className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
                                   />
-                                  <button
-                                    type="button"
-                                    aria-label={i === currentReel ? `Play reel ${i + 1}` : `Show reel ${i + 1}`}
-                                    onClick={() => (i === currentReel ? startReel(i) : reelApi?.scrollTo(i))}
-                                    className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                                  >
-                                    <Play className="ml-1 h-7 w-7 fill-current" />
-                                  </button>
+                                  {showPreviews ? (
+                                    <>
+                                      {/* Muted + playsInline lets phones start it without a tap. */}
+                                      <video
+                                        ref={(video) => {
+                                          previewVideoRefs.current[i] = video;
+                                        }}
+                                        src={src}
+                                        poster={poster}
+                                        muted
+                                        autoPlay
+                                        loop
+                                        playsInline
+                                        preload="auto"
+                                        disablePictureInPicture
+                                        aria-hidden="true"
+                                        className="pointer-events-none absolute inset-0 z-10 h-full w-full object-cover"
+                                      />
+                                      <button
+                                        type="button"
+                                        aria-label={i === currentReel ? `Play reel ${i + 1} with sound` : `Show reel ${i + 1}`}
+                                        onClick={() =>
+                                          i === currentReel
+                                            ? startReel(i, previewVideoRefs.current[i]?.currentTime ?? 0)
+                                            : reelApi?.scrollTo(i)
+                                        }
+                                        className="absolute inset-0 z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/80"
+                                      >
+                                        <span className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white">
+                                          <VolumeX className="h-4 w-4" />
+                                        </span>
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      aria-label={i === currentReel ? `Play reel ${i + 1}` : `Show reel ${i + 1}`}
+                                      onClick={() => (i === currentReel ? startReel(i) : reelApi?.scrollTo(i))}
+                                      className="absolute left-1/2 top-1/2 z-20 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                                    >
+                                      <Play className="ml-1 h-7 w-7 fill-current" />
+                                    </button>
+                                  )}
                                 </>
                               )}
                             </div>

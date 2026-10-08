@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
 const productSource = readFileSync(new URL("./product.tsx", import.meta.url), "utf8");
@@ -151,8 +151,18 @@ test("renders product reels as a left-aligned horizontal snap carousel", () => {
   // instead of three decoding video layers.
   assert.match(productSource, /i === currentReel/);
   assert.match(productSource, /preload="metadata"/);
-  assert.doesNotMatch(productSource, /autoPlay=/);
-  assert.match(productSource, /poster: `\/reels\/\$\{id\}\.jpg`/);
+  // The sound player never autoplays; only the muted preview does.
+  assert.doesNotMatch(productSource, /<Video\b[^>]*autoPlay/);
+  assert.match(productSource, /poster: `\/reels\/\$\{id\}\.webp`/);
+  // Re-encoded ~1 Mbps reels (content-hash names, cached for a year on R2).
+  for (const id of [
+    "b328c1cfc46fbf658f31b2e704a5c073",
+    "27700732d0455ef49af15e3bcc6521b1",
+    "040e4943d719f5809860c48e5583352d",
+  ]) {
+    assert.match(productSource, new RegExp(`"${id}"`));
+    assert.ok(existsSync(new URL(`../../public/reels/${id}.webp`, import.meta.url)), `${id}.webp poster missing`);
+  }
   assert.match(productSource, /Play className/);
   assert.match(productSource, /activeReelVideoRef/);
   assert.match(productSource, /src=\{poster\}[\s\S]*?pointer-events-none/);
@@ -172,9 +182,6 @@ test("renders product reels as a left-aligned horizontal snap carousel", () => {
   assert.match(productSource, /<Gesture type="tap" action="togglePaused" pointer="touch" \/>/);
   assert.match(productSource, /<PlayButton[\s\S]*?hidden=\{!state\.paused\}/);
   assert.doesNotMatch(productSource, /pointer-events-none md:pointer-events-auto/);
-  assert.match(productSource, /c9d544706ce4d4449fec7c318815b622/);
-  assert.match(productSource, /043f4f5e2fd61a6b670a2cd8021637db/);
-  assert.match(productSource, /536f20e620b43f4948a5c31cc51ff198/);
   assert.doesNotMatch(productSource, /snap-center/);
   assert.match(productSource, /\[touch-action:pan-y_pinch-zoom\]/);
   assert.doesNotMatch(productSource, /scale-\[0\.94\]/);
@@ -220,4 +227,20 @@ test("uses the poster while the active native video is loading", () => {
   assert.match(productSource, /preload="metadata"/);
   assert.match(productSource, /poster=\{poster\}/);
   assert.doesNotMatch(productSource, /loadedHoneyNutReel/);
+});
+
+test("autoplays every on-screen reel as a muted loop and taps in sound", () => {
+  // Muted + playsInline is what lets iOS and Android start a video without a tap.
+  assert.match(productSource, /<video[\s\S]*?muted[\s\S]*?autoPlay[\s\S]*?loop[\s\S]*?playsInline/);
+  // Every reel previews (not just the active one) while the section is on screen.
+  assert.match(productSource, /showPreviews = reelsInView && !shouldReduceMotion/);
+  assert.match(productSource, /showPreviews \? \(/);
+  assert.match(productSource, /new IntersectionObserver/);
+  // A drag freezes the previews on their current frame and settling resumes them,
+  // so the moving track never carries three decoding videos.
+  assert.match(productSource, /previewVideoRefs\.current\.forEach\(\(video\) => video\?\.pause\(\)\)/);
+  assert.match(productSource, /reelApi\.on\("settle", resumePreviews\)/);
+  // Tapping the active reel hands over to the sound player at the same moment.
+  assert.match(productSource, /startReel\(i, previewVideoRefs\.current\[i\]\?\.currentTime/);
+  assert.match(productSource, /`Play reel \$\{i \+ 1\} with sound`/);
 });
