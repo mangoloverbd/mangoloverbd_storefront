@@ -604,7 +604,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <img src="https://cdn.reicon.dev/logos/instagram/original.svg" alt="Instagram" width={20} height={20} className="w-5 h-5" />
               </a>
               <a href="https://www.youtube.com/@mango.lover.11" target="_blank" rel="noopener noreferrer" aria-label="Youtube" className="hover:opacity-80 transition-opacity">
-                <img src="https://cdn.reicon.dev/logos/youtube/original.svg" alt="Youtube" width={24} height={24} className="w-6 h-6" />
+                <img src="https://cdn.reicon.dev/logos/youtube/original.svg" alt="Youtube" width={24} height={72} className="w-6 h-6" />
               </a>
             </div>
             <div className="space-y-6 pt-2">
@@ -698,20 +698,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="text-center md:text-left">
               <a
                 href="https://api.whatsapp.com/send/?phone=8801733670129"
-                className="group inline-flex items-center gap-2 text-black transition-colors hover:text-[#163B33]"
+                className="group inline-flex items-center gap-3 text-black transition-colors hover:text-[#163B33]"
               >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#FBBB14] transition-transform duration-300 group-hover:scale-125" />
-                <span className="text-[7px] font-medium uppercase tracking-[0.28em] text-black/40">
-                  Designed &amp; Developed by
+                <span className="-mr-[0.28em] text-[8px] font-medium uppercase tracking-[0.28em] text-black/55">
+                  Designed &amp; Engineered by
                 </span>
-                <span
-                  className="max-md:-translate-y-0.5 text-[14px] font-bold tracking-[0.12em] underline decoration-[#FBBB14] decoration-2 underline-offset-4 md:text-[13px]"
-                  style={{ fontFamily: "'Garet', 'Space Grotesk', 'Inter', sans-serif" }}
-                >
-                  Arc Labs Corporation
-                </span>
+                <span aria-hidden="true" className="h-4 w-px shrink-0 bg-black/20" />
+                <img
+                  src="/arc-labs-emblem.webp"
+                  alt="Arc Labs Corporation"
+                  width={173}
+                  height={72}
+                  className="h-[22px] w-auto transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                  decoding="async"
+                />
               </a>
-              <span className="mt-2 block text-[8px] tracking-normal text-black/40">
+              <span className="mt-3 block text-[8px] tracking-normal text-black/40">
                 © 2026 ম্যাংগো লাভার - Mango Lover
               </span>
             </div>
