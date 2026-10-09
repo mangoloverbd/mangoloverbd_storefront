@@ -4,6 +4,7 @@ import { CLIENT_CONTEXT_HEADER, createSignedClientContext } from "../server/clie
 import { readOrCreateDeviceId } from "../server/device-id.js";
 import { normalizeBdMobile } from "../shared/bd-phone.js";
 import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER, readCampaignClickCookie, readCampaignReceipt } from '../server/campaign-links.js';
+import { ANALYTICS_SESSION_HEADER, readAnalyticsSessionCookie } from '../server/analytics-session.js';
 
 const MAX_REQUEST_BYTES = 32 * 1024;
 const MAX_MONEY = 10_000_000;
@@ -66,7 +67,7 @@ class RequestBodyError extends Error {
 type CaptureHandlerDependencies = {
   processCapture?: (
     capture: AbandonedCartCapture,
-    context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string; campaignReceipt?: string },
+    context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string; campaignReceipt?: string; analyticsSessionId?: string },
   ) => Promise<void>;
 };
 
@@ -79,6 +80,7 @@ type AbandonedCartServiceDependencies = {
   clientContextHeader?: string;
   campaignClickId?: string;
   campaignReceipt?: string;
+  analyticsSessionId?: string;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -242,6 +244,7 @@ export async function processAbandonedCartCapture(
         ...(dependencies.clientContextHeader ? { [CLIENT_CONTEXT_HEADER]: dependencies.clientContextHeader } : {}),
         ...(dependencies.campaignClickId ? { [CAMPAIGN_CLICK_HEADER]: dependencies.campaignClickId } : {}),
         ...(dependencies.campaignReceipt ? { [CAMPAIGN_RECEIPT_HEADER]: dependencies.campaignReceipt } : {}),
+        ...(dependencies.analyticsSessionId ? { [ANALYTICS_SESSION_HEADER]: dependencies.analyticsSessionId } : {}),
       },
       body: JSON.stringify(capture),
       signal: (dependencies.timeoutSignal ?? (() => AbortSignal.timeout(CAPTURE_TIMEOUT_MS)))(),
@@ -303,10 +306,11 @@ function sendJson(res: ServerResponse, statusCode: number, body: unknown) {
 
 export function createAbandonedCartHandler(dependencies: CaptureHandlerDependencies = {}) {
   const processCapture = dependencies.processCapture
-    ?? ((capture: AbandonedCartCapture, context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string }) => processAbandonedCartCapture(capture, {
+    ?? ((capture: AbandonedCartCapture, context?: { forwardedClientIp?: string; clientContextHeader?: string; campaignClickId?: string; analyticsSessionId?: string }) => processAbandonedCartCapture(capture, {
       forwardedClientIp: context?.forwardedClientIp,
       clientContextHeader: context?.clientContextHeader,
       campaignClickId: context?.campaignClickId,
+      analyticsSessionId: context?.analyticsSessionId,
     }));
 
   return async function handler(
@@ -325,11 +329,13 @@ export function createAbandonedCartHandler(dependencies: CaptureHandlerDependenc
       const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
       const campaignClickId = readCampaignClickCookie(req);
       const campaignReceipt = readCampaignReceipt(req);
+      const analyticsSessionId = readAnalyticsSessionCookie(req);
       await processCapture(capture, {
         forwardedClientIp: getVercelClientIp(req),
         ...(clientContextHeader ? { clientContextHeader } : {}),
         ...(campaignClickId ? { campaignClickId } : {}),
         ...(campaignReceipt ? { campaignReceipt } : {}),
+        ...(analyticsSessionId ? { analyticsSessionId } : {}),
       });
       sendJson(res, 202, { ok: true });
     } catch (error) {

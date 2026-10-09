@@ -42,7 +42,9 @@ export async function registerRoutes(
       const clientContextHeader = createSignedClientContext(req, { deviceId, fingerprint: null, telemetry: {} }, process.env.STOREFRONT_CONTEXT_SECRET);
       const campaignClickId = readCampaignClickCookie(req);
       const campaignReceipt = readCampaignReceipt(req);
-      await processCapture(capture, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}), ...(campaignReceipt ? { campaignReceipt } : {}) });
+      const analyticsSessionId = readAnalyticsSessionCookie(req);
+      await processCapture(capture, { ...(clientContextHeader ? { clientContextHeader } : {}), ...(campaignClickId ? { campaignClickId } : {}), ...(campaignReceipt ? { campaignReceipt } : {}),
+        ...(analyticsSessionId ? { analyticsSessionId } : {}) });
       res.status(202).json({ ok: true });
     } catch (error) {
       if (error instanceof AbandonedCartValidationError) {
