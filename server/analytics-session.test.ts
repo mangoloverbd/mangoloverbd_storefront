@@ -7,6 +7,8 @@ import { readAnalyticsSessionCookie } from './analytics-session.ts';
 import { registerRoutes } from './routes.ts';
 import { createOrderHandler, processOrder as productionOrder, validateOrder } from '../api/orders.ts';
 import { processOrder as localOrder, orderRequestSchema } from './order-service.ts';
+import { createAbandonedCartHandler, processAbandonedCartCapture as productionCapture } from '../api/abandoned-carts.ts';
+import { processAbandonedCartCapture as localCapture } from './abandoned-cart-service.ts';
 
 const visit = '9f8e7d6c-5b4a-4c3d-9e2f-1a0b9c8d7e6f';
 const product = '11111111-1111-4111-8111-111111111111';
@@ -47,4 +49,51 @@ for (const [label, service, body] of [
     fetchImpl: async (_target, init) => { headers = new Headers(init?.headers); payload = JSON.parse(String(init?.body)); return new Response(JSON.stringify({ orderRef: 'ML-1' }), { status: 201 }); } });
   assert.equal(headers.get('x-mlbd-analytics-session-id'), visit);
   assert.equal(JSON.stringify(payload).includes(visit), false);
+});
+
+// Abandoned checkouts turned into orders by staff are linked to the visit that captured them.
+const capture = { draftKey: product, source: 'storefront', sourcePath: '/checkout', phone: '01712345678',
+  items: [{ productName: 'Honey', quantity: 1, unitPrice: 100 }], subtotal: 100, deliveryRate: 0, total: 100 };
+
+for (const platform of ['express', 'vercel'] as const) test(`${platform} capture route passes the visit cookie to the Suite call`, async () => {
+  const calls: Array<Record<string, unknown>> = [];
+  const submitCapture = async (_body: unknown, options = {}) => { calls.push(options); };
+  const app = express(); app.use(express.json()); const server = createServer(app);
+  if (platform === 'express') await registerRoutes(server, app, { processAbandonedCartCapture: submitCapture });
+  else app.post('/api/abandoned-carts', createAbandonedCartHandler({ processCapture: submitCapture }));
+  server.listen(0, '127.0.0.1'); await once(server, 'listening'); const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  try {
+    for (const cookie of [`ms_sid=${visit}`, 'ms_sid=forged', '']) {
+      const result = await fetch(`${base}/api/abandoned-carts`, { method: 'POST', headers: { 'Content-Type': 'application/json', cookie }, body: JSON.stringify(capture) });
+      assert.equal(result.status, 202);
+      assert.equal(calls.at(-1)!.analyticsSessionId, cookie === `ms_sid=${visit}` ? visit : undefined);
+    }
+  } finally { server.closeAllConnections(); server.close(); }
+});
+
+for (const [label, service] of [['production', productionCapture], ['local', localCapture]] as const) test(`${label} capture service sends the visit as a header, never in the body`, async () => {
+  let headers = new Headers(); let payload = '';
+  await service(capture as never, { merchantSuiteUrl: 'https://suite.invalid', apiKey: 'test-api-key', analyticsSessionId: visit,
+    fetchImpl: async (_target, init) => { headers = new Headers(init?.headers); payload = String(init?.body); return new Response('{}', { status: 201 }); } });
+  assert.equal(headers.get('x-mlbd-analytics-session-id'), visit);
+  assert.equal(payload.includes(visit), false);
+});
+
+test('the default Vercel capture handler forwards the visit all the way to the Suite', async () => {
+  const previous = { url: process.env.MERCHANT_SUITE_URL, key: process.env.CUSTOM_ORDERS_API_KEY, fetch: globalThis.fetch };
+  process.env.MERCHANT_SUITE_URL = 'https://suite.invalid'; process.env.CUSTOM_ORDERS_API_KEY = 'test-api-key';
+  let headers = new Headers();
+  globalThis.fetch = (async (_target: unknown, init?: RequestInit) => { headers = new Headers(init?.headers); return new Response('{}', { status: 201 }); }) as typeof fetch;
+  const app = express(); app.use(express.json()); app.post('/api/abandoned-carts', createAbandonedCartHandler());
+  const server = createServer(app); server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  try {
+    const result = await previous.fetch(`${base}/api/abandoned-carts`, { method: 'POST', headers: { 'Content-Type': 'application/json', cookie: `ms_sid=${visit}` }, body: JSON.stringify(capture) });
+    assert.equal(result.status, 202);
+    assert.equal(headers.get('x-mlbd-analytics-session-id'), visit);
+  } finally {
+    server.closeAllConnections(); server.close(); globalThis.fetch = previous.fetch;
+    if (previous.url === undefined) delete process.env.MERCHANT_SUITE_URL; else process.env.MERCHANT_SUITE_URL = previous.url;
+    if (previous.key === undefined) delete process.env.CUSTOM_ORDERS_API_KEY; else process.env.CUSTOM_ORDERS_API_KEY = previous.key;
+  }
 });
