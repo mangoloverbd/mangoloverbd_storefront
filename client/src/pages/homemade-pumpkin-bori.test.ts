@@ -15,7 +15,7 @@ test("bori WhatsApp href uses the exact Bengali order message", () => {
 });
 
 test("bori image slots are named constants", () => {
-  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
+  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_2KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
     assert.match(contentSource, new RegExp(`export const ${name} =`));
   }
 });
@@ -48,7 +48,7 @@ test("every bori WhatsApp entry point uses the bori href", () => {
 });
 
 test("bori hero and pack copy match the spec", () => {
-  for (const text of ["ঐতিহ্যবাহী ঘরোয়া স্বাদ", "ঘরে তৈরি, রোদে শুকানো", "কুমড়ো বড়ি", "৳400", "৳650", "৳700", "৳1,300", "500G", "1KG", "ছোট পরিবারের জন্য উপযুক্ত", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"]) {
+  for (const text of ["ঐতিহ্যবাহী ঘরোয়া স্বাদ", "ঘরে তৈরি, রোদে শুকানো", "কুমড়ো বড়ি", "৳700", "৳1,300", "৳1,400", "৳2,600", "1KG", "2KG", "ছোট পরিবারের জন্য উপযুক্ত", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"]) {
     assert.ok(pageSource.includes(text), `missing: ${text}`);
   }
 });
@@ -57,7 +57,7 @@ test("bori story, quote, and image slots are present", () => {
   for (const text of ["ঘরোয়া পদ্ধতিতে তৈরি", "বাছাই করা মাষকলাইয়ের ডাল", "টাটকা চালকুমড়ো", "রোদে শুকানো", "ঐতিহ্যবাহী বাঙালি স্বাদ", "কুমড়ো বড়ি নিয়ে পুষ্টিবিদের কথা", "একজন পুষ্টিবিদ হিসেবে আমি সবসময় বলি", "— পুষ্টিবিদ মুরাদ পারভেজ"]) {
     assert.ok(pageSource.includes(text), `missing: ${text}`);
   }
-  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_1KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
+  for (const name of ["BORI_PACK_500G_IMAGE", "BORI_PACK_2KG_IMAGE", "BORI_STRIP_IMAGE", "BORI_QUOTE_IMAGE", "BORI_HERO_FALLBACK_IMAGE"]) {
     assert.ok(pageSource.includes(name), `missing image slot: ${name}`);
   }
 });
@@ -132,9 +132,9 @@ test("bori header uses option B on mobile and desktop", () => {
   assert.match(header, /px-4 text-\[13px\] max-\[400px\]:px-3 max-\[400px\]:text-xs/);
 });
 
-test("bori 1KG pack card uses the transparent pack image", () => {
-  assert.match(contentSource, /export const BORI_PACK_1KG_IMAGE = "\/bori-pack-1kg-v2\.webp";/);
-  assert.ok(existsSync(new URL("../../public/bori-pack-1kg-v2.webp", import.meta.url)), "missing 1KG pack asset");
+test("bori 2KG pack card uses the cookie jar hero image", () => {
+  assert.match(contentSource, /export const BORI_PACK_2KG_IMAGE = "\/bori-pack-2kg\.webp";/);
+  assert.ok(existsSync(new URL("../../public/bori-pack-2kg.webp", import.meta.url)), "missing 2KG pack asset");
 });
 
 test("bori pack cards show the pack image full-width on top on mobile", () => {
@@ -144,9 +144,9 @@ test("bori pack cards show the pack image full-width on top on mobile", () => {
   assert.doesNotMatch(pageSource, /absolute right-1 top-16 h-48 w-\[40%\]/);
 });
 
-test("bori 1KG pack art sits flush against the card's right edge", () => {
-  assert.match(pageSource, /size: "1KG"[^}]*bleedRight: true/);
-  assert.match(pageSource, /size: "500G"[^}]*bleedRight: false/);
+test("bori 2KG pack art sits flush against the card's right edge", () => {
+  assert.match(pageSource, /size: "2KG"[^}]*bleedRight: true/);
+  assert.match(pageSource, /size: "1KG"[^}]*bleedRight: false/);
   assert.match(pageSource, /pack\.bleedRight \? "justify-end pl-4 pr-0" : "justify-center px-4"/);
   assert.match(pageSource, /pack\.bleedRight \? "md:right-0" : "md:right-6"/);
   assert.match(pageSource, /pack\.bleedRight \? " object-right" : ""/);
