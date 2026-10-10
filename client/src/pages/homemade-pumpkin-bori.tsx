@@ -10,7 +10,7 @@ import { ShiningText } from "@/components/ui/shining-text";
 import mangoLoverLogo from "@assets/mango-lover-logo.avif";
 import { WhatsAppBrandIcon } from "@/features/kalojira-mixed/campaign-layout";
 import { KALOJIRA_CAMPAIGN_PHONE_HREF } from "@/features/kalojira-mixed/content";
-import { BORI_CAMPAIGN_WHATSAPP_HREF, BORI_HERO_FALLBACK_IMAGE, BORI_PACK_1KG_IMAGE, BORI_PACK_500G_IMAGE, BORI_QUOTE_IMAGE, BORI_STRIP_IMAGE } from "@/features/kalojira-mixed/bori-content";
+import { BORI_CAMPAIGN_WHATSAPP_HREF, BORI_HERO_FALLBACK_IMAGE, BORI_PACK_2KG_IMAGE, BORI_PACK_500G_IMAGE, BORI_QUOTE_IMAGE, BORI_STRIP_IMAGE } from "@/features/kalojira-mixed/bori-content";
 import { KalojiraCheckout } from "@/features/kalojira-mixed/kalojira-checkout";
 import { WhatsAppSwitch } from "@/features/kalojira-mixed/whatsapp-switch";
 import { BoriCookingPath } from "@/features/kalojira-mixed/bori-cooking-path";
@@ -25,8 +25,8 @@ const BENEFIT_BADGE = "relative flex size-9 shrink-0 rotate-[-6deg] items-center
 const BADGE_NUMERALS = ["১", "২", "৩", "৪"];
 
 const PACKS = [
-  { size: "500G", price: "৳400", comparePrice: "৳650", image: BORI_PACK_500G_IMAGE, imageAlt: "৫০০ গ্রাম কুমড়ো বড়ির প্যাকেজ", borderClass: "border-black/15", benefits: ["ছোট পরিবারের জন্য উপযুক্ত", "প্রথমবার স্বাদ নিতে আদর্শ", "হাতে তৈরি ও রোদে শুকানো", "পরিচ্ছন্ন প্যাকেজিং"], bleedRight: false },
-  { size: "1KG", price: "৳700", comparePrice: "৳1,300", image: BORI_PACK_1KG_IMAGE, imageAlt: "১ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-[#b98500]/45", benefits: ["বেশি পরিমাণে, বেশি সাশ্রয়ী", "মাসজুড়ে রান্নার জন্য", "মাষকলাই ডাল ও চালকুমড়োর বড়ি", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"], bleedRight: true },
+  { size: "1KG", price: "৳700", comparePrice: "৳1,300", image: BORI_PACK_500G_IMAGE, imageAlt: "১ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-black/15", benefits: ["ছোট পরিবারের জন্য উপযুক্ত", "প্রথমবার স্বাদ নিতে আদর্শ", "হাতে তৈরি ও রোদে শুকানো", "পরিচ্ছন্ন প্যাকেজিং"], bleedRight: false },
+  { size: "2KG", price: "৳1,400", comparePrice: "৳2,600", image: BORI_PACK_2KG_IMAGE, imageAlt: "২ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-[#b98500]/45", benefits: ["বেশি পরিমাণে, বেশি সাশ্রয়ী", "মাসজুড়ে রান্নার জন্য", "মাষকলাই ডাল ও চালকুমড়োর বড়ি", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"], bleedRight: true },
 ];
 
 const COOKING_STEPS = [
