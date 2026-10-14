@@ -142,7 +142,7 @@ export default function KalojiraMixedThankYouPage({
           </div>
           <div className="flex items-center justify-between gap-4 border-b border-[#eee4cf] py-4">
             <dt className="text-[#654b2f]">ডেলিভারি</dt>
-            <dd className="font-semibold"><Money value={deliveryCharge} /></dd>
+            <dd className="font-semibold">{deliveryCharge ? <Money value={deliveryCharge} /> : <span className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">ফ্রি</span>}</dd>
           </div>
           <div className="flex items-center justify-between gap-4 py-4 text-lg">
             <dt className="font-bold">মোট</dt>
