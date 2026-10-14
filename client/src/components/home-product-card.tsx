@@ -77,7 +77,7 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
       className={`group flex min-w-0 flex-col ${className}`}
     >
       <Link href={`/product/${product.slug}`} className="block flex-1">
-        <div className="relative aspect-[3/4] overflow-hidden bg-[#e5e5e5]">
+        <div className="relative overflow-hidden bg-[#e5e5e5]">
           {image ? (
             <img
               src={image}
@@ -86,10 +86,10 @@ export default function HomeProductCard({ product, className = "" }: HomeProduct
               alt={product.name}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              className="block h-auto w-full transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
+            <div className="flex aspect-[3/4] w-full items-center justify-center text-[10px] uppercase tracking-[0.3em] text-black/30">
               No image
             </div>
           )}

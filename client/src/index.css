@@ -94,6 +94,15 @@
     bottom: 1.5rem;
   }
 }
+/* Homepage stories hero: one bar fills per story, then advances (stories-hero.tsx). */
+@keyframes story-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.story-progress {
+  transform-origin: left;
+  animation: story-progress linear forwards;
+}
 /* Add-to-cart toast progress: shrinks over NOTICE_DURATION_MS (3.5s) in
    cart-added-toast.tsx. Paused via inline animationPlayState on hover/focus. */
 @keyframes cart-toast-progress {
