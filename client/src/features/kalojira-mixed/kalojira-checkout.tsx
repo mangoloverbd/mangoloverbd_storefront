@@ -140,7 +140,9 @@ function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   );
 }
 
-export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE }: KalojiraCheckoutProps & { deliveryCharge?: number }) {
+export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, freeDeliveryVariantIds = [], packSavings }: KalojiraCheckoutProps & { deliveryCharge?: number; freeDeliveryVariantIds?: readonly string[]; packSavings?: Readonly<Record<string, number>> }) {
+  // Merchant-Suite ships these packs free (server/shippingCalculation.js), so the checkout must match.
+  const deliveryChargeFor = (pack: KalojiraPackOption) => freeDeliveryVariantIds.includes(pack.variantId) ? 0 : deliveryCharge;
   const [, setLocation] = useLocation();
   const thankYouPath = product?.slug === "homemade-pumpkin-bori" ? "/step/homemade-pumpkin-bori/thank-you" : "/step/kalojira-mixed/thank-you";
   const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : product?.slug === "homemade-pumpkin-bori" ? BORI_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
@@ -171,7 +173,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
     ? calculateKalojiraOrder(
         presentedPack.unitPrice,
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= 100 ? quantity : 1,
-        deliveryCharge,
+        deliveryChargeFor(presentedPack),
       )
     : null;
 
@@ -339,9 +341,9 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           customerName: name,
           phone,
           address: combinedAddress,
-          deliveryCharge,
+          deliveryCharge: deliveryChargeFor(freshPack),
         }),
-        deliveryCharge,
+        deliveryCharge: deliveryChargeFor(freshPack),
         paymentMethod: "cash_on_delivery" as const,
         items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
         ...buildProtectionPayload(website),
@@ -451,11 +453,11 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
                   {status === "ready" ? (
                     <span className="flex flex-col items-end gap-1.5">
                       <span className="font-bold text-[#6f4b0f]">৳{pack.unitPrice.toLocaleString("en-US")}</span>
-                      {pack.label.includes("কেজি") ? (
+                      {packSavings ? (packSavings[pack.variantId] ? <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳{packSavings[pack.variantId]}</span> : null) : pack.label.includes("কেজি") ? (
                         <span className="rounded-full bg-[#e5672e] px-3 py-1 text-sm font-extrabold text-white">Save ৳460</span>
                       ) : null}
                       <span className="flex items-center gap-1.5">
-                        <span className="rounded-[4px] bg-[#fcc435] px-2.5 py-0.5 text-[11px] font-bold text-black">{deliveryCharge ? `ডেলিভারি ৳${deliveryCharge}` : "ডেলিভারি ফ্রি"}</span>
+                        {deliveryChargeFor(pack) ? <span className="rounded-[4px] bg-[#fcc435] px-2.5 py-0.5 text-[11px] font-bold text-black">ডেলিভারি ৳{deliveryChargeFor(pack)}</span> : <span className={`rounded-[4px] px-2.5 py-0.5 text-[11px] font-bold ${deliveryCharge ? "bg-[#187d48] text-white" : "bg-[#fcc435] text-black"}`}>ডেলিভারি ফ্রি</span>}
                         {pack.label.includes("10") ? <span className="whitespace-nowrap rounded-[4px] border border-[#b98500]/35 bg-gradient-to-r from-[#fcc435] to-[#ffd968] px-2.5 py-0.5 text-[11px] font-bold tracking-[0.02em] text-black shadow-[0_2px_6px_rgba(185,133,0,0.18)]">গ্রাহকের পছন্দ</span> : null}
                       </span>
                     </span>
@@ -580,7 +582,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
-            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{deliveryCharge ? `৳${deliveryCharge}` : "ফ্রি"}</dd></div>
+            <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{(totals?.deliveryCharge ?? deliveryCharge) ? `৳${totals?.deliveryCharge ?? deliveryCharge}` : "ফ্রি"}</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
           <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-sm font-bold leading-6 sm:text-left">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
