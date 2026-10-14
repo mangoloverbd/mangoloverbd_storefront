@@ -267,29 +267,21 @@ test("prioritizes the first category images with lightweight thumbnails", () => 
   assert.match(homeSource, /fetchPriority=\{index < 4 \? "high" : "auto"\}/);
 });
 
-test("uses the Mango Lover hero poster", () => {
-  assert.match(homeSource, /src="\/hero-mango-lover\.webp"/);
-  assert.doesNotMatch(homeSource, /hero1\.webp/);
+test("renders the khejur gur stories hero", () => {
+  assert.match(homeSource, /import StoriesHero from "@\/components\/stories-hero"/);
+  assert.match(homeSource, /\{\/\* Hero Section \*\/\}\s*<StoriesHero \/>/);
+  assert.doesNotMatch(homeSource, /hero-mango-lover\.webp/);
 });
 
-test("renders a full-bleed editorial hero", () => {
-  assert.match(homeSource, /className="w-full bg-\[#f6f6f6\] pt-0 pb-0"/);
-  assert.match(homeSource, /className="w-full px-0"/);
-  // Mobile crops ~8% of leaf off the top of the 940x1411 poster and leaves no
-  // bare yellow band below it; desktop keeps the uncropped fixed-height hero.
-  assert.match(homeSource, /className="relative aspect-\[940\/1298\] w-full overflow-hidden bg-\[#FBBB14\] md:aspect-auto md:min-h-\[760px\]"/);
-  // Desktop contains the whole portrait poster so none of its baked-in Bangla
-  // type is cropped. Mobile covers instead, anchored to the bottom so the only
-  // thing the crop can eat is leaf at the top.
-  assert.match(homeSource, /className="h-full w-full object-cover object-bottom md:object-contain md:object-center"/);
-  assert.match(homeSource, /pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-end/);
-  assert.match(homeSource, /pointer-events-auto inline-flex w-fit/);
-  assert.match(homeSource, /md:px-7 md:py-3 md:text-base/);
-  assert.match(homeSource, /DISCOVER MORE/);
-  assert.doesNotMatch(homeSource, /SS26 STATEMENT PIECES/);
-  assert.doesNotMatch(homeSource, /Bold by/);
-  assert.doesNotMatch(homeSource, /Shop now/);
-  assert.doesNotMatch(homeSource, /Discover New Arrival/);
+test("stories hero cycles four fixed brand images without hardcoded prices", () => {
+  const storiesSource = readFileSync(new URL("../components/stories-hero.tsx", import.meta.url), "utf8");
+  for (const image of ["village", "jhola-gur", "bij-gur", "patali"]) {
+    assert.match(storiesSource, new RegExp(`src: "/hero-stories/${image}\\.webp"`));
+  }
+  assert.match(storiesSource, /onAnimationEnd=\{\(\) => go\(active \+ 1\)\}/);
+  assert.match(storiesSource, /animationPlayState: paused \? "paused" : "running"/);
+  assert.match(storiesSource, /const ORDER_HREF = "\/collection\/jaggery"/);
+  assert.doesNotMatch(storiesSource, /৳/);
 });
 
 test("uses subtle fade-and-lift Framer animations on homepage sections", () => {
