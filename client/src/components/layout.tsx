@@ -707,8 +707,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <img
                   src="/arc-labs-emblem.webp"
                   alt="Arc Labs Corporation"
-                  width={189}
-                  height={78}
+                  width={435}
+                  height={156}
                   className="h-[26px] w-auto transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                   decoding="async"
