@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import express from "express";
 import { createServer } from "node:http";
 import test from "node:test";
+import { MAX_LINE_QUANTITY_MESSAGE } from "../shared/order-limits.ts";
 import {
   OrderProtectionError,
   OrderUpstreamError,
@@ -40,6 +41,14 @@ test("accepts exactly 11 English phone digits", () => {
   const order = orderRequestSchema.parse(validEnglishOrder);
 
   assert.equal(order.phone, "01712345678");
+});
+
+test("caps each line at 10 units with a message pointing bulk buyers to WhatsApp", () => {
+  const withQuantity = (quantity: number) => ({ ...validEnglishOrder, items: canonicalItems.map((item) => ({ ...item, quantity })) });
+  assert.equal(orderRequestSchema.parse(withQuantity(10)).items[0].quantity, 10);
+  const result = orderRequestSchema.safeParse(withQuantity(100));
+  assert.equal(result.success, false);
+  assert.ok(result.error?.issues.some((issue) => issue.message === MAX_LINE_QUANTITY_MESSAGE));
 });
 
 test("local checkout accepts a concise valid address", () => {

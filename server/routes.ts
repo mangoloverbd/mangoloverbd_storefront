@@ -10,6 +10,7 @@ import {
 import { OrderProtectionError, type OrderProcessResult } from "./order-protection-errors.ts";
 import { createSignedClientContext } from "./client-context.ts";
 import { readOrCreateDeviceId } from "./device-id.ts";
+import { MAX_LINE_QUANTITY_MESSAGE } from "../shared/order-limits.ts";
 import { readCampaignClickCookie, readCampaignReceipt, type CampaignRedirectOptions } from './campaign-links.js';
 import { readAnalyticsSessionCookie } from './analytics-session.js';
 import { createGoHandler } from '../api/go.js';
@@ -81,8 +82,9 @@ export async function registerRoutes(
       res.status(201).json({ orderRef, decision: "allow" });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        const tooMany = error.issues.some((issue) => issue.message === MAX_LINE_QUANTITY_MESSAGE);
         res.status(400).json({
-          message: "Invalid order details",
+          message: tooMany ? MAX_LINE_QUANTITY_MESSAGE : "Invalid order details",
         });
         return;
       }
