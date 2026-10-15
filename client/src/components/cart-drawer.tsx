@@ -6,6 +6,7 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useMemo, useState, useEffect } from "react";
 import OrderDialog, { type OrderDialogBundle } from "@/components/order-dialog";
 import { parseCurrencyAmount, toGoogleAnalyticsItem } from "@/lib/google-analytics";
+import { MAX_LINE_QUANTITY } from "@shared/order-limits";
 
 const cartEase = [0.22, 1, 0.36, 1] as const;
 
@@ -143,6 +144,7 @@ function CartInnerContent({ items, isOpen, setIsOpen, removeFromCart, updateQuan
                                                         </span>
                                                         <button
                                                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                            disabled={item.quantity >= MAX_LINE_QUANTITY}
                                                              className="flex h-9 w-9 items-center justify-center transition-all hover:bg-black hover:text-white md:h-10 md:w-10"
                                                         >
                                                             <Plus className="w-3 h-3" />

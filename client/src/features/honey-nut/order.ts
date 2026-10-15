@@ -1,12 +1,13 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { MAX_LINE_QUANTITY } from "../../../../shared/order-limits";
 
 export const HONEY_NUT_DELIVERY_CHARGE = 100 as const;
 export const HONEY_NUT_CONFIRMATION_KEY = "honey-nut-order-confirmation-v1";
 
 const MAX_PRICE = 10_000_000;
-const MAX_QUANTITY = 100;
+const MAX_QUANTITY = MAX_LINE_QUANTITY;
 
 type HoneyNutConfirmationStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 

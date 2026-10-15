@@ -1,12 +1,13 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { MAX_LINE_QUANTITY } from "../../../../shared/order-limits";
 
 export const KALOJIRA_DELIVERY_CHARGE = 0;
 export const KALOJIRA_CONFIRMATION_KEY = "kalojira-mixed-order-confirmation-v1";
 
 const MAX_PRICE = 10_000_000;
-const MAX_QUANTITY = 100;
+const MAX_QUANTITY = MAX_LINE_QUANTITY;
 
 type KalojiraConfirmationStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 

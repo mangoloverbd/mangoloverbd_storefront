@@ -10,6 +10,7 @@ import { ArrowDownRight, Phone, ChevronLeft, ChevronRight, Minus, Play, Plus, Vo
 import { ShoppingBag, ClipboardCheck } from "reicon-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { MAX_LINE_QUANTITY } from "@shared/order-limits";
 import HomeProductCard from "@/components/home-product-card";
 import RecentlyViewed from "@/components/recently-viewed";
 import { useCart } from "@/contexts/cart-context";
@@ -783,7 +784,8 @@ export default function ProductPage({ params }: { params?: { id: string } }) {
                     <button
                       type="button"
                       aria-label="Increase quantity"
-                      onClick={() => setQuantity((current) => current + 1)}
+                      disabled={quantity >= MAX_LINE_QUANTITY}
+                      onClick={() => setQuantity((current) => Math.min(MAX_LINE_QUANTITY, current + 1))}
                       className="flex h-11 w-11 items-center justify-center text-black transition-colors hover:bg-black/5"
                     >
                       <Plus className="h-4 w-4" aria-hidden="true" />
