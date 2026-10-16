@@ -25,8 +25,8 @@ const BENEFIT_BADGE = "relative flex size-9 shrink-0 rotate-[-6deg] items-center
 const BADGE_NUMERALS = ["১", "২", "৩", "৪"];
 
 const PACKS = [
-  { size: "1KG", price: "৳700", comparePrice: "৳1,300", image: BORI_PACK_500G_IMAGE, imageAlt: "১ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-black/15", benefits: ["ছোট পরিবারের জন্য উপযুক্ত", "প্রথমবার স্বাদ নিতে আদর্শ", "হাতে তৈরি ও রোদে শুকানো", "পরিচ্ছন্ন প্যাকেজিং"], bleedRight: false, freeDelivery: false },
-  { size: "2KG", price: "৳1,400", comparePrice: "৳2,600", image: BORI_PACK_2KG_IMAGE, imageAlt: "২ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-[#b98500]/45", benefits: ["বেশি পরিমাণে, বেশি সাশ্রয়ী", "মাসজুড়ে রান্নার জন্য", "মাষকলাই ডাল ও চালকুমড়োর বড়ি", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"], bleedRight: true, freeDelivery: true },
+  { size: "1KG", price: "৳650", comparePrice: "৳1,250", image: BORI_PACK_500G_IMAGE, imageAlt: "১ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-black/15", benefits: ["ছোট পরিবারের জন্য উপযুক্ত", "প্রথমবার স্বাদ নিতে আদর্শ", "হাতে তৈরি ও রোদে শুকানো", "পরিচ্ছন্ন প্যাকেজিং"], bleedRight: false, freeDelivery: false },
+  { size: "2KG", price: "৳1,300", comparePrice: "৳2,500", image: BORI_PACK_2KG_IMAGE, imageAlt: "২ কেজি কুমড়ো বড়ির প্যাকেজ", borderClass: "border-[#b98500]/45", benefits: ["বেশি পরিমাণে, বেশি সাশ্রয়ী", "মাসজুড়ে রান্নার জন্য", "মাষকলাই ডাল ও চালকুমড়োর বড়ি", "বড় পরিবার বা উপহারের জন্য পারফেক্ট"], bleedRight: true, freeDelivery: true },
 ];
 
 const COOKING_STEPS = [
