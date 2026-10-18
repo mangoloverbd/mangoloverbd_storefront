@@ -144,25 +144,9 @@ const REEL_SKIN_STYLE = {
   "--media-popover": "oklch(0% 0 0 / 0.55)",
 } as CSSProperties;
 
-const HONEY_NUT_REEL_MEDIA = [
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__7925.jpg",
-  },
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/snapsave-app_1432224402135483_hd.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/snapsave-app_1432224402135483_hd.jpg",
-  },
-  {
-    src: "https://res.cloudinary.com/n0d6bs08/video/upload/f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.mp4",
-    poster: "https://res.cloudinary.com/n0d6bs08/video/upload/so_1,w_480,f_auto,q_auto/FDown.vn_Facebook_Video_Downloader_720p_HD__8e09.jpg",
-  },
-] as const;
-
 export default function ProductPage({ params }: { params?: { id: string } }) {
   const slug = getMerchantSlug(params?.id || "");
-  const honeyNutReelMedia = slug === "honey-nut" ? HONEY_NUT_REEL_MEDIA : null;
-  const reelMedia = honeyNutReelMedia ? honeyNutReelMedia : REEL_MEDIA;
+  const reelMedia = REEL_MEDIA;
   const reelCount = reelMedia.length;
   const { addToCart } = useCart();
   const [orderOpen, setOrderOpen] = useState(false);
