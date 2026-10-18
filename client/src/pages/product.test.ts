@@ -193,16 +193,11 @@ test("renders product reels as a left-aligned horizontal snap carousel", () => {
   assert.doesNotMatch(productSource, /wistia-player/);
 });
 
-test("uses native Cloudinary reels only for Honey Nut", () => {
-  assert.match(productSource, /const HONEY_NUT_REEL_MEDIA = \[/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__7925\.mp4/);
-  assert.match(productSource, /snapsave-app_1432224402135483_hd\.mp4/);
-  assert.match(productSource, /FDown\.vn_Facebook_Video_Downloader_720p_HD__8e09\.mp4/);
-  assert.doesNotMatch(productSource, /player\.cloudinary\.com\/embed/);
-  assert.match(productSource, /const honeyNutReelMedia = slug === "honey-nut" \? HONEY_NUT_REEL_MEDIA : null/);
-  assert.match(productSource, /const reelMedia = honeyNutReelMedia \? honeyNutReelMedia : REEL_MEDIA/);
+test("uses the shared Pumpkin Bori reels on every product page, including Honey Nut", () => {
+  assert.match(productSource, /const reelMedia = REEL_MEDIA;/);
+  assert.doesNotMatch(productSource, /HONEY_NUT_REEL_MEDIA|honeyNutReelMedia/);
+  assert.doesNotMatch(productSource, /res\.cloudinary\.com|player\.cloudinary\.com\/embed/);
   assert.match(productSource, /reelMedia\.map\(\(\{ src, poster \}, i\) =>/);
-  assert.match(productSource, /video\/upload\/so_1,w_480,f_auto,q_auto/);
   assert.match(productSource, /poster=\{poster\}/);
   assert.match(productSource, /className="relative aspect-\[9\/16\] w-full overflow-hidden rounded-\[6px\] bg-black"/);
 });
