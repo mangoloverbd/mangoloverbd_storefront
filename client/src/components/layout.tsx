@@ -697,7 +697,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3 md:gap-6">
             <div className="text-center md:text-left">
               <a
-                href="https://api.whatsapp.com/send/?phone=8801733670129"
+                href="https://www.arc-bangladesh.com/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 text-black transition-colors hover:text-[#163B33]"
               >
                 <span className="-mr-[0.28em] text-[8px] font-medium uppercase tracking-[0.28em] text-black/55">

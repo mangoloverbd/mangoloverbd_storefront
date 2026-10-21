@@ -109,14 +109,15 @@ test("connects footer information and support links to real pages", () => {
   assert.doesNotMatch(layoutSource, /href="#"/);
 });
 
-test("uses Mango Lover WhatsApp in customer navigation and Arc Labs WhatsApp only for the developer credit", () => {
+test("uses Mango Lover WhatsApp in customer navigation and links the developer credit to Arc Bangladesh", () => {
   const bottomBarIndex = layoutSource.indexOf("/* Bottom Bar */");
   assert.notEqual(bottomBarIndex, -1);
   const customerNavigationSource = layoutSource.slice(0, bottomBarIndex);
 
   assert.match(customerNavigationSource, /phone=8801301636461/);
   assert.doesNotMatch(customerNavigationSource, /phone=8801733670129/);
-  assert.match(layoutSource.slice(bottomBarIndex), /phone=8801733670129/);
+  assert.match(layoutSource.slice(bottomBarIndex), /href="https:\/\/www\.arc-bangladesh\.com\/"\s+target="_blank"\s+rel="noopener noreferrer"/);
+  assert.doesNotMatch(layoutSource, /phone=8801733670129/);
 });
 
 test("mounts the floating add-to-cart toast beside the cart drawer", () => {

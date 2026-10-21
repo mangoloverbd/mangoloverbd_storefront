@@ -138,6 +138,7 @@ test("the Katimon nutritionist section matches the gallery side gap on mobile", 
 });
 
 test("the Katimon footer credits Arc Labs with the emblem", () => {
+  assert.match(pageSource, /<a href="https:\/\/www\.arc-bangladesh\.com\/" target="_blank" rel="noopener noreferrer" className="group mt-3/);
   assert.match(pageSource, /Designed &amp; Engineered by<\/span><span aria-hidden="true" className="h-4 w-px[^"]*" \/><img src="\/arc-labs-emblem\.webp" alt="Arc Labs Corporation"/);
 });
 
