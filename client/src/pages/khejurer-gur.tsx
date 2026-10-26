@@ -197,7 +197,7 @@ export default function KhejurerGurPage() {
 
         <div className="amsotto am-k in">
           <section className="v1-order" id="orderK" aria-labelledby="km-heading" ref={orderRef}>
-            <KhejurCheckout products={stableProducts} status={status} catalogSettled={catalogSettled} refresh={refresh} addRequest={addRequest} />
+            <KhejurCheckout products={stableProducts} status={status} refresh={refresh} addRequest={addRequest} />
           </section>
         </div>
       </main>
