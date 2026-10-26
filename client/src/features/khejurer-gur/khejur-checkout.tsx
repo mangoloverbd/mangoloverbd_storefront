@@ -27,7 +27,6 @@ import {
   toBanglaDigits,
 } from "./content";
 import {
-  KHEJUR_FREE_DELIVERY_THRESHOLD,
   buildKhejurConfirmation,
   buildKhejurOrderPayload,
   calculateKhejurTotals,
@@ -220,11 +219,10 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
     const rail = railRef.current;
     if (rail) rail.scrollTo({ left: index * rail.clientWidth, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
-  const freeDeliveryGap = totals.units && totals.deliveryCharge ? KHEJUR_FREE_DELIVERY_THRESHOLD - totals.subtotal : 0;
 
   return (
     <div className="skx v1-memo"><div className="skx-main">
-      <div className="skx-intro"><span className="skx-script">শীতের স্বাদ, ঘরে পৌঁছে দিই</span><p>আপনার পছন্দের খেজুরের গুড় এবার আপনার ঠিকানায়।</p></div>
+      <div className="skx-intro"><span className="skx-script">শিশির ভেজা ভোর, গুড়ের মিঠে ঘোর</span><p>গাছ থেকে হাঁড়ি, হাঁড়ি থেকে বাড়ি — ম্যাংগো লাভারের খেজুরের গুড় এবার আপনার দোরগোড়ায়।</p></div>
       <div className="skx-paper-wrap">
         <svg className="paper-clip paper-clip-back" viewBox="0 0 28 76" aria-hidden="true"><g fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#5d6268" strokeWidth="2.5" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#a7abb1" strokeWidth="1.6" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#ffffff" strokeWidth=".55" opacity="0.55" transform="translate(-.35 -.4)" /></g></svg>
         <article className="skx-paper">
@@ -303,9 +301,11 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
             </section>
             <section className="skx-payment" aria-label="পেমেন্ট ও ডেলিভারি"><div className="skx-stamp" aria-hidden="true">আগে অর্ডার<br /><b>পরে পেমেন্ট</b><small>ক্যাশ অন ডেলিভারি</small></div></section>
             <div className="skx-amounts">
-              <div><span>পণ্যের দাম</span><strong>{formatTaka(totals.subtotal)}</strong></div>
-              <div>
-                <span>ডেলিভারি চার্জ<small className="v1-eta">সম্ভাব্য ডেলিভারি <b>{eta}</b></small>{freeDeliveryGap > 0 ? <small>আরও {formatTaka(freeDeliveryGap)} হলে ডেলিভারি ফ্রি</small> : null}</span>
+              {totals.items.map(({ line, quantity }) => (
+                <div key={line.variantId} className="km-item"><span>{displayProductName(line.productName)}<small>{line.label} × {toBanglaDigits(quantity)}</small></span><strong>{formatTaka(line.unitPrice * quantity)}</strong></div>
+              ))}
+              <div className="km-delivery">
+                <span>ডেলিভারি চার্জ<small className="v1-eta">সম্ভাব্য ডেলিভারি <b>{eta}</b></small></span>
                 <strong>{totals.units && !totals.deliveryCharge ? "ফ্রি" : formatTaka(totals.units ? totals.deliveryCharge : 100)}</strong>
               </div>
               <div className="skx-grand"><span>সর্বমোট<small>হাতে পেয়ে পরিশোধ করবেন</small></span><strong><span className="v1-roll">{totals.units ? formatTaka(totals.total) : "—"}</span></strong></div>

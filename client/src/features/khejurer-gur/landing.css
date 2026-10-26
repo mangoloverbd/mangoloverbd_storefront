@@ -929,3 +929,7 @@
   .sp .pa-card p{font-size:13px;}
   .sp .pa-card .buy .btn{min-height:40px; padding:0 16px; font-size:14px;}
 }
+/* Selected gur listed above the memo totals */
+.sp .skx-amounts .km-item{font-size:13.5px; font-weight:700;}
+.sp .skx-amounts .km-item small{font-weight:500;}
+.sp .skx-amounts .km-delivery{margin-top:14px; padding-top:12px; border-top:1px dashed rgba(91,45,23,.22);}
