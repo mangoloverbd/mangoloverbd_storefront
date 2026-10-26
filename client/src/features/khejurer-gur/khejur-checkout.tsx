@@ -57,11 +57,17 @@ function validate(selectionUnits: number, name: string, phone: string, address: 
 const designFor = (slug: string) => KHEJUR_PRODUCTS.find((product) => product.slug === slug);
 const analyticsItem = (line: KhejurLine, quantity: number) => toGoogleAnalyticsItem({ id: line.variantId, name: line.productName, variant: line.label, price: line.unitPrice, quantity });
 
+// The memo's tick: a 10-point scalloped "sale" sticker.
+const STICKER_POINTS = Array.from({ length: 20 }, (_, i) => {
+  const angle = (Math.PI * i) / 10 - Math.PI / 2;
+  const radius = i % 2 ? 11.2 : 14;
+  return `${(16 + radius * Math.cos(angle)).toFixed(2)},${(16 + radius * Math.sin(angle)).toFixed(2)}`;
+}).join(" ");
 
-export function KhejurCheckout({ products, status, catalogSettled, refresh, addRequest }: {
+
+export function KhejurCheckout({ products, status, refresh, addRequest }: {
   products: (StorefrontProduct | null)[];
   status: Status;
-  catalogSettled: boolean;
   refresh: () => Promise<(StorefrontProduct | null)[]>;
   addRequest: { slug: string; at: number } | null;
 }) {
@@ -83,18 +89,33 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
   const submittingRef = useRef(false);
   const beganCheckoutRef = useRef(false);
   const viewedRef = useRef(false);
-  const preselectedRef = useRef(false);
+  const preselectedRef = useRef(new Set<string>());
   const railRef = useRef<HTMLDivElement>(null);
+  const galleryPausedRef = useRef(false);
   const totals = useMemo(() => calculateKhejurTotals(lines, selection), [lines, selection]);
   const eta = useMemo(() => deliveryWindowLabel(), []);
 
-  // Start with the first gur selected, like the paper memo did — once every product has loaded,
-  // so whichever request finishes first doesn't decide the default.
+  // Advance the memo gallery every 3s, looping. Keyed on activeSlide so a manual swipe restarts
+  // the wait; held while the shopper touches, hovers or focuses it, and off for reduced motion.
   useEffect(() => {
-    if (preselectedRef.current || !catalogSettled || !lines.length) return;
-    preselectedRef.current = true;
-    setSelection({ [lines[0].variantId]: 1 });
-  }, [lines, catalogSettled]);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => {
+      const rail = railRef.current;
+      if (!rail || galleryPausedRef.current) return;
+      const next = (activeSlide + 1) % KHEJUR_PRODUCTS.length;
+      rail.scrollTo({ left: next * rail.clientWidth, behavior: "smooth" });
+    }, 3000);
+    return () => window.clearInterval(timer);
+  }, [activeSlide]);
+
+  // Every gur starts selected at one each, including ones that load late. A gur the shopper
+  // has unticked is never re-added, because each one is only preselected the first time it appears.
+  useEffect(() => {
+    const fresh = lines.filter((line) => !preselectedRef.current.has(line.variantId));
+    if (!fresh.length) return;
+    fresh.forEach((line) => preselectedRef.current.add(line.variantId));
+    setSelection((current) => ({ ...Object.fromEntries(fresh.map((line) => [line.variantId, 1])), ...current }));
+  }, [lines]);
 
   useEffect(() => {
     if (viewedRef.current || status !== "ready" || !lines.length) return;
@@ -228,7 +249,9 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
         <article className="skx-paper">
           <div className="skx-paper-head"><img className="km-mango" src={KHEJUR_ASSET("mango-mark.webp")} alt="" width={240} height={171} /><div><h2 id="km-heading" tabIndex={-1}>অর্ডার মেমো</h2><p>ম্যাংগো লাভার · রাজশাহী</p></div><span className="skx-serial" aria-hidden="true">খাতা নং<br /><b>০১</b></span></div>
           <div className="skx-order">
-            <div className="v1-gal">
+            <div className="v1-gal"
+              onPointerEnter={() => { galleryPausedRef.current = true; }} onPointerLeave={() => { galleryPausedRef.current = false; }}
+              onFocusCapture={() => { galleryPausedRef.current = true; }} onBlurCapture={() => { galleryPausedRef.current = false; }}>
               <div className="v1-gal-rail" ref={railRef} role="region" aria-label="খেজুরের গুড়ের ছবি" tabIndex={0}
                 onScroll={(event) => { const rail = event.currentTarget; setActiveSlide(Math.round(rail.scrollLeft / Math.max(rail.clientWidth, 1))); }}>
                 {slides.map((slide) => <div key={slide.slug} className="v1-gal-slide"><img src={KHEJUR_ASSET(slide.sunImage)} alt={slide.short} width={900} height={900} draggable={false} /></div>)}
@@ -249,18 +272,29 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
                   <div key={line.variantId} className="v1-memo-pack" data-checked={quantity > 0}>
                     <label>
                       <input className="sr-only" type="checkbox" checked={quantity > 0} onChange={(event) => setQuantity(line, event.target.checked ? 1 : 0)} />
-                      <span className="dot" aria-hidden="true" />
-                      <span className="lbl"><b>{displayProductName(line.productName)}</b> · {line.label}{percentOff > 0 ? <em className="off">{toBanglaDigits(percentOff)}% ছাড়</em> : null}<small>{design?.uses.join(" · ")}</small></span>
+                      <svg className="stk" viewBox="0 0 32 32" aria-hidden="true">
+                        <polygon className="stk-ring" points={STICKER_POINTS} />
+                        <polygon className="stk-edge" points={STICKER_POINTS} />
+                        <polygon className="stk-fill" points={STICKER_POINTS} />
+                        <path className="stk-check" d="M10.5 16.5l3.6 3.6 7.6-8.2" />
+                      </svg>
+                      <span className="lbl"><b>{displayProductName(line.productName)}</b> · {line.label}</span>
                     </label>
-                    <div className="end">
-                      <span className="pr">{formatTaka(line.unitPrice)}{line.comparePrice ? <s>{formatTaka(line.comparePrice)}</s> : null}</span>
+                    <span className="tot">{quantity ? formatTaka(line.unitPrice * quantity) : "—"}</span>
+                    <span className="prow">
+                      <span className="pr">{formatTaka(line.unitPrice)}</span>
+                      {line.comparePrice ? <s>{formatTaka(line.comparePrice)}</s> : null}
+                      {percentOff > 0 ? <em className="off">{toBanglaDigits(percentOff)}% ছাড়</em> : null}
+                    </span>
+                    <div className="foot">
+                      <small>{design?.uses.join(" · ")}</small>
                       {quantity ? (
                         <div className="skx-qty" role="group" aria-label={`${displayProductName(line.productName)} পরিমাণ`}>
                           <button type="button" aria-label="কমান" onClick={() => setQuantity(line, quantity - 1)}>−</button>
                           <output>{toBanglaDigits(quantity)}</output>
                           <button type="button" aria-label="বাড়ান" disabled={quantity >= MAX_LINE_QUANTITY} onClick={() => setQuantity(line, quantity + 1)}>+</button>
                         </div>
-                      ) : null}
+                      ) : <span className="add" aria-hidden="true">যোগ করুন</span>}
                     </div>
                   </div>
                 );
