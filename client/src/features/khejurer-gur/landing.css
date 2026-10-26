@@ -917,3 +917,15 @@
 .sp .ft-badge{position:relative; display:grid; place-items:center; width:136px; height:136px; margin:0 auto 4px;}
 .sp .ft-badge-bg{position:absolute; inset:0; filter:drop-shadow(0 0 0 1.5px #1d243014) drop-shadow(0 8px 14px #a8700a40);}
 .sp .ft-logo.ft-logo-stacked{position:relative; height:84px; width:auto;}
+/* Mango Lover fruit mark on the order memo */
+.sp .skx-paper-head img.km-mango{width:52px; height:auto; object-fit:contain;}
+.sp .skx-signoff img.km-mango-sm{width:34px; height:auto;}
+/* Bigger product images in "কোনটা আপনার?" on phones: wider picture column, jar fills more of its sticker */
+@media (max-width:599px){
+  .sp .pa-card{grid-template-columns:54% 1fr; gap:8px;}
+  .sp .pa-card:nth-child(even){grid-template-columns:1fr 54%;}
+  .sp .pa-pic img{left:3%; top:3%; width:94%; height:94%;}
+  .sp .pa-card h3{font-size:24px;}
+  .sp .pa-card p{font-size:13px;}
+  .sp .pa-card .buy .btn{min-height:40px; padding:0 16px; font-size:14px;}
+}
