@@ -933,3 +933,7 @@
 .sp .skx-amounts .km-item{font-size:13.5px; font-weight:700;}
 .sp .skx-amounts .km-item small{font-weight:500;}
 .sp .skx-amounts .km-delivery{margin-top:14px; padding-top:12px; border-top:1px dashed rgba(91,45,23,.22);}
+/* Phones: more breathing room between the three product cards */
+@media (max-width:599px){
+  .sp .pa-list{gap:76px;}
+}
