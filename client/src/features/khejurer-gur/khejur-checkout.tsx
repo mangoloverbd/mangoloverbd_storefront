@@ -228,7 +228,7 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
       <div className="skx-paper-wrap">
         <svg className="paper-clip paper-clip-back" viewBox="0 0 28 76" aria-hidden="true"><g fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#5d6268" strokeWidth="2.5" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#a7abb1" strokeWidth="1.6" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#ffffff" strokeWidth=".55" opacity="0.55" transform="translate(-.35 -.4)" /></g></svg>
         <article className="skx-paper">
-          <div className="skx-paper-head"><img src={KHEJUR_ASSET("leaf-mark.webp")} alt="" width={48} height={48} /><div><h2 id="km-heading" tabIndex={-1}>অর্ডার মেমো</h2><p>ম্যাংগো লাভার · রাজশাহী</p></div><span className="skx-serial" aria-hidden="true">খাতা নং<br /><b>০১</b></span></div>
+          <div className="skx-paper-head"><img className="km-mango" src={KHEJUR_ASSET("mango-mark.webp")} alt="" width={240} height={171} /><div><h2 id="km-heading" tabIndex={-1}>অর্ডার মেমো</h2><p>ম্যাংগো লাভার · রাজশাহী</p></div><span className="skx-serial" aria-hidden="true">খাতা নং<br /><b>০১</b></span></div>
           <div className="skx-order">
             <div className="v1-gal">
               <div className="v1-gal-rail" ref={railRef} role="region" aria-label="খেজুরের গুড়ের ছবি" tabIndex={0}
@@ -327,7 +327,7 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
               <summary>ডেলিভারি ও ফেরত নীতি <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></summary>
               <ul>{DELIVERY_POLICY.map((item) => <li key={item}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg><span>{item}</span></li>)}</ul>
             </details>
-            <div className="skx-signoff"><span>বিশ্বাসের সঙ্গে,</span><b>ম্যাংগো লাভার</b><img src={KHEJUR_ASSET("leaf-mark.webp")} alt="" width={30} height={30} /></div>
+            <div className="skx-signoff"><span>বিশ্বাসের সঙ্গে,</span><b>ম্যাংগো লাভার</b><img className="km-mango km-mango-sm" src={KHEJUR_ASSET("mango-mark.webp")} alt="" width={240} height={171} /></div>
           </form>
         </article>
         <svg className="paper-clip paper-clip-front" viewBox="0 0 28 76" aria-hidden="true"><g fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14 V66 A8 8 0 0 1 4 66 V10 A10 10 0 0 1 24 10 V56" stroke="#6b7077" strokeWidth="2.5" /><path d="M20 14 V66 A8 8 0 0 1 4 66 V10 A10 10 0 0 1 24 10 V56" stroke="#c9cdd2" strokeWidth="1.6" /><path d="M20 14 V66 A8 8 0 0 1 4 66 V10 A10 10 0 0 1 24 10 V56" stroke="#ffffff" strokeWidth=".55" opacity="0.9" transform="translate(-.35 -.4)" /></g></svg>

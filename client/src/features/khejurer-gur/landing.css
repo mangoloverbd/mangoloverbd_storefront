@@ -917,3 +917,6 @@
 .sp .ft-badge{position:relative; display:grid; place-items:center; width:136px; height:136px; margin:0 auto 4px;}
 .sp .ft-badge-bg{position:absolute; inset:0; filter:drop-shadow(0 0 0 1.5px #1d243014) drop-shadow(0 8px 14px #a8700a40);}
 .sp .ft-logo.ft-logo-stacked{position:relative; height:84px; width:auto;}
+/* Mango Lover fruit mark on the order memo */
+.sp .skx-paper-head img.km-mango{width:52px; height:auto; object-fit:contain;}
+.sp .skx-signoff img.km-mango-sm{width:34px; height:auto;}
