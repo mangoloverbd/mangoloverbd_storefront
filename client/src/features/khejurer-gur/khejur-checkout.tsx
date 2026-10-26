@@ -304,8 +304,7 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
               {totals.items.map(({ line, quantity }) => (
                 <div key={line.variantId} className="km-item"><span>{displayProductName(line.productName)}<small>{line.label} × {toBanglaDigits(quantity)}</small></span><strong>{formatTaka(line.unitPrice * quantity)}</strong></div>
               ))}
-              <div className="km-subtotal"><span>পণ্যের দাম</span><strong>{formatTaka(totals.subtotal)}</strong></div>
-              <div>
+              <div className="km-delivery">
                 <span>ডেলিভারি চার্জ<small className="v1-eta">সম্ভাব্য ডেলিভারি <b>{eta}</b></small></span>
                 <strong>{totals.units && !totals.deliveryCharge ? "ফ্রি" : formatTaka(totals.units ? totals.deliveryCharge : 100)}</strong>
               </div>
