@@ -222,7 +222,7 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
 
   return (
     <div className="skx v1-memo"><div className="skx-main">
-      <div className="skx-intro"><span className="skx-script">শীতের স্বাদ, ঘরে পৌঁছে দিই</span><p>আপনার পছন্দের খেজুরের গুড় এবার আপনার ঠিকানায়।</p></div>
+      <div className="skx-intro"><span className="skx-script">শিশির ভেজা ভোর, গুড়ের মিঠে ঘোর</span><p>গাছ থেকে হাঁড়ি, হাঁড়ি থেকে বাড়ি — ম্যাংগো লাভারের খেজুরের গুড় এবার আপনার দোরগোড়ায়।</p></div>
       <div className="skx-paper-wrap">
         <svg className="paper-clip paper-clip-back" viewBox="0 0 28 76" aria-hidden="true"><g fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#5d6268" strokeWidth="2.5" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#a7abb1" strokeWidth="1.6" /><path d="M10 52 V14 A5 5 0 0 1 20 14" stroke="#ffffff" strokeWidth=".55" opacity="0.55" transform="translate(-.35 -.4)" /></g></svg>
         <article className="skx-paper">
