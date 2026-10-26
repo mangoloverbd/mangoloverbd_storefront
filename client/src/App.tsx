@@ -18,6 +18,8 @@ import HoneyNutPage from "@/pages/honey-nut";
 import HoneyNutThankYouPage from "@/pages/honey-nut-thank-you";
 import KatimonMangoPage from "@/pages/katimon-mango";
 import HomemadePumpkinBoriPage from "@/pages/homemade-pumpkin-bori";
+import KhejurerGurPage from "@/pages/khejurer-gur";
+import KhejurerGurThankYouPage from "@/pages/khejurer-gur-thank-you";
 import { BORI_CAMPAIGN_WHATSAPP_HREF } from "@/features/kalojira-mixed/bori-content";
 import CollectionPage from "@/pages/collection";
 import SiteInformationPage from "@/pages/site-information";
@@ -34,6 +36,8 @@ const CAMPAIGN_PAGE_TITLES: Record<string, string> = {
   "/step/katimon-mango": "কাটিমন আম | ম্যাংগো লাভার",
   "/step/homemade-pumpkin-bori": "কুমড়ো বড়ি | ম্যাংগো লাভার",
   "/step/homemade-pumpkin-bori/thank-you": "কুমড়ো বড়ি অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
+  "/step/khejurer-gur": "খেজুরের গুড় | ম্যাংগো লাভার",
+  "/step/khejurer-gur/thank-you": "খেজুরের গুড় অর্ডারের জন্য ধন্যবাদ | ম্যাংগো লাভার",
 };
 
 function CampaignMetadata({ location }: { location: string }) {
@@ -229,6 +233,12 @@ function Router() {
           </Route>
           <Route path="/step/homemade-pumpkin-bori">
             <PageTransition><HomemadePumpkinBoriPage /></PageTransition>
+          </Route>
+          <Route path="/step/khejurer-gur/thank-you">
+            <PageTransition><KhejurerGurThankYouPage /></PageTransition>
+          </Route>
+          <Route path="/step/khejurer-gur">
+            <PageTransition><KhejurerGurPage /></PageTransition>
           </Route>
           <Route path="/">
             <PageTransition>
