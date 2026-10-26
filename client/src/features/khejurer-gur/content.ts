@@ -31,7 +31,7 @@ export const KHEJUR_SLUGS = KHEJUR_PRODUCTS.map(({ slug }) => slug);
 
 export const ROAD_STOPS = [
   { time: "ভোর ৪টা", title: "রস নামানো", body: "কুয়াশা কাটার আগেই গাছি রসের হাঁড়ি নামিয়ে আনেন।", image: "road-tap.webp", kind: "tap", r1: "-6deg", r2: "0deg" },
-  { time: "সকাল ৭টা", title: "জ্বাল দেওয়া", body: "কাঠের আগুনে রস ফোটে। জ্বাল যত, গুড় তত ঘন।", image: "road-boil.webp", kind: "boil", r1: "16deg", r2: "3deg" },
+  { time: "সকাল ৭টা", title: "জ্বাল দেওয়া", body: "কাঠের আগুনে রস ফোটে। জ্বাল যত, গুড় তত ঘন।", image: "road-boil-hearth.webp", kind: "boil", r1: "16deg", r2: "3deg" },
   { time: "দুপুর ১২টা", title: "তিন রূপে গুড়", body: "কম জ্বালে ঝোলা, আরেকটু জ্বালে বীজ, বেশি জ্বালে পাটালি।", image: "trio.webp", kind: "trio", r1: "-10deg", r2: "-2deg" },
 ] as const;
 
