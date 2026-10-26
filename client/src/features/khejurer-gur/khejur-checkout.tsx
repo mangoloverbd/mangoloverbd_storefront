@@ -27,7 +27,6 @@ import {
   toBanglaDigits,
 } from "./content";
 import {
-  KHEJUR_FREE_DELIVERY_THRESHOLD,
   buildKhejurConfirmation,
   buildKhejurOrderPayload,
   calculateKhejurTotals,
@@ -220,7 +219,6 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
     const rail = railRef.current;
     if (rail) rail.scrollTo({ left: index * rail.clientWidth, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
-  const freeDeliveryGap = totals.units && totals.deliveryCharge ? KHEJUR_FREE_DELIVERY_THRESHOLD - totals.subtotal : 0;
 
   return (
     <div className="skx v1-memo"><div className="skx-main">
@@ -303,9 +301,12 @@ export function KhejurCheckout({ products, status, catalogSettled, refresh, addR
             </section>
             <section className="skx-payment" aria-label="পেমেন্ট ও ডেলিভারি"><div className="skx-stamp" aria-hidden="true">আগে অর্ডার<br /><b>পরে পেমেন্ট</b><small>ক্যাশ অন ডেলিভারি</small></div></section>
             <div className="skx-amounts">
-              <div><span>পণ্যের দাম</span><strong>{formatTaka(totals.subtotal)}</strong></div>
+              {totals.items.map(({ line, quantity }) => (
+                <div key={line.variantId} className="km-item"><span>{displayProductName(line.productName)}<small>{line.label} × {toBanglaDigits(quantity)}</small></span><strong>{formatTaka(line.unitPrice * quantity)}</strong></div>
+              ))}
+              <div className="km-subtotal"><span>পণ্যের দাম</span><strong>{formatTaka(totals.subtotal)}</strong></div>
               <div>
-                <span>ডেলিভারি চার্জ<small className="v1-eta">সম্ভাব্য ডেলিভারি <b>{eta}</b></small>{freeDeliveryGap > 0 ? <small>আরও {formatTaka(freeDeliveryGap)} হলে ডেলিভারি ফ্রি</small> : null}</span>
+                <span>ডেলিভারি চার্জ<small className="v1-eta">সম্ভাব্য ডেলিভারি <b>{eta}</b></small></span>
                 <strong>{totals.units && !totals.deliveryCharge ? "ফ্রি" : formatTaka(totals.units ? totals.deliveryCharge : 100)}</strong>
               </div>
               <div className="skx-grand"><span>সর্বমোট<small>হাতে পেয়ে পরিশোধ করবেন</small></span><strong><span className="v1-roll">{totals.units ? formatTaka(totals.total) : "—"}</span></strong></div>
