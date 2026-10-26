@@ -46,6 +46,9 @@ test("assigns every current product to exactly one collection", () => {
     "amsotto-pickle",
     "lachcha-semai",
     "jhalmuri-moshla",
+    "date-palm-bij-gur",
+    "date-palm-jhola-gur",
+    "date-palm-patali-gur",
   ];
 
   assert.equal(new Set(assignments.map(({ productSlug }) => productSlug)).size, assignments.length);
@@ -82,18 +85,25 @@ test("assigns functional products to Functional Food instead of Homemade", () =>
   );
 });
 
-test("assigns both sugarcane products to the visible Jaggery category", () => {
+test("assigns the date palm gur and sugarcane products to the visible Jaggery category", () => {
   const homemade = getFeaturedCollection("homemade");
   const jaggery = getFeaturedCollection("jaggery");
 
   assert.ok(homemade);
   assert.ok(jaggery);
   assert.equal(homemade.productSlugs.includes("sugarcane-juice-powder"), false);
-  assert.deepEqual(jaggery.productSlugs, ["sugarcane-juice-powder", "granulated-sugarcane-jaggery"]);
+  assert.deepEqual(jaggery.productSlugs, [
+    "date-palm-bij-gur",
+    "date-palm-jhola-gur",
+    "date-palm-patali-gur",
+    "sugarcane-juice-powder",
+    "granulated-sugarcane-jaggery",
+  ]);
   assert.deepEqual(
     getVisibleFeaturedCollections([
       { slug: "sugarcane-juice-powder", name: "Sugarcane Juice Powder" },
       { slug: "granulated-sugarcane-jaggery", name: "Granulated Sugarcane Jaggery" },
+      { slug: "date-palm-patali-gur", name: "Date Palm Patali Gur" },
     ]).map(({ slug }) => slug),
     ["jaggery"],
   );

@@ -70,7 +70,13 @@ export const FEATURED_COLLECTIONS = [
     slug: "jaggery",
     label: "Jaggery-গুড়",
     image: "/categories/jaggery-1-320.webp",
-    productSlugs: ["sugarcane-juice-powder", "granulated-sugarcane-jaggery"],
+    productSlugs: [
+      "date-palm-bij-gur",
+      "date-palm-jhola-gur",
+      "date-palm-patali-gur",
+      "sugarcane-juice-powder",
+      "granulated-sugarcane-jaggery",
+    ],
   },
   {
     slug: "semai",
