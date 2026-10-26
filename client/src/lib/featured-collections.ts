@@ -8,6 +8,9 @@ export type FeaturedCollection = {
 };
 
 export const TOP_SELLING_PRODUCT_SLUGS = [
+  "date-palm-bij-gur",
+  "date-palm-jhola-gur",
+  "date-palm-patali-gur",
   "katimon-mango",
   "honey-nut",
   "sundarbans-natural-honey",

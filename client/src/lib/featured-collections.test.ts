@@ -148,7 +148,7 @@ test("hides collections with no matching products without removing their definit
   assert.ok(getFeaturedCollection("jaggery"));
 });
 
-test("orders Top Selling Products with the three hero products first", () => {
+test("orders Top Selling Products with the date palm gur products first", () => {
   assert.equal(TOP_SELLING_COLLECTION.slug, "top-selling-products");
   assert.equal(TOP_SELLING_COLLECTION.label, "Top Selling Products - সেরা বিক্রিত পণ্য");
 
@@ -162,10 +162,16 @@ test("orders Top Selling Products with the three hero products first", () => {
     { slug: "kalojira-mixed", name: "Kalojira Mixed" },
     { slug: "sundarbans-natural-honey", name: "Sundarbans Natural Honey" },
     { slug: "katimon-mango", name: "Katimon Mango" },
+    { slug: "date-palm-patali-gur", name: "Date Palm Patali Gur" },
+    { slug: "date-palm-bij-gur", name: "Date Palm Bij Gur" },
+    { slug: "date-palm-jhola-gur", name: "Date Palm Jhola Gur" },
   ];
   assert.deepEqual(
-    getTopSellingProducts(products).slice(0, 6).map(({ slug }) => slug),
+    getTopSellingProducts(products).slice(0, 10).map(({ slug }) => slug),
     [
+      "date-palm-bij-gur",
+      "date-palm-jhola-gur",
+      "date-palm-patali-gur",
       "katimon-mango",
       "honey-nut",
       "sundarbans-natural-honey",
