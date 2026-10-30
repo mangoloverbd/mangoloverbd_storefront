@@ -146,6 +146,18 @@ test("Vercel capture signs client context with a first-party device cookie", asy
   }
 });
 
+test("both capture relays accept every source the browser can send", async () => {
+  const { ABANDONED_CART_SOURCE_PATHS } = await import("../client/src/lib/abandoned-cart-capture.ts");
+  const { parseAbandonedCartCapture: parseVercelCapture } = await import("./abandoned-carts.ts");
+  const { parseAbandonedCartCapture: parseLocalCapture } = await import("../server/abandoned-cart-service.ts");
+
+  for (const [source, sourcePath] of Object.entries(ABANDONED_CART_SOURCE_PATHS)) {
+    const capture = { ...validCapture, source, sourcePath };
+    assert.equal(parseVercelCapture(capture).source, source);
+    assert.equal(parseLocalCapture(capture).source, source);
+  }
+});
+
 test("Vercel parsing matches the local strict capture contract", async () => {
   const { parseAbandonedCartCapture: parseVercelCapture } = await import("./abandoned-carts.ts");
   const { parseAbandonedCartCapture: parseLocalCapture } = await import("../server/abandoned-cart-service.ts");

@@ -12,6 +12,7 @@ const sourcePaths = {
   storefront: "/checkout",
   sundarbans_honey: "/step/sundarbans-natural-honey",
   kalojira_mixed: "/step/kalojira-mixed",
+  homemade_pumpkin_bori: "/step/homemade-pumpkin-bori",
   honey_nut: "/step/honey-nut",
 } as const;
 
@@ -19,6 +20,7 @@ const sourceSchema = z.enum([
   "storefront",
   "sundarbans_honey",
   "kalojira_mixed",
+  "homemade_pumpkin_bori",
   "honey_nut",
 ]);
 
