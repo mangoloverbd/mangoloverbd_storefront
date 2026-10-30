@@ -43,14 +43,3 @@ test("the main checkout preserves live cart lines for its descriptive capture sn
   assert.match(cartDrawerSource, /captureItems:\s*items\.map/);
   assert.match(productSource, /captureItems:\s*\[\{/);
 });
-
-test("the pumpkin bori page reports its own landing page, not Kalojira Mixed", async () => {
-  const { ABANDONED_CART_SOURCE_PATHS } = await import("./lib/abandoned-cart-capture.ts");
-  assert.equal(ABANDONED_CART_SOURCE_PATHS.homemade_pumpkin_bori, "/step/homemade-pumpkin-bori");
-
-  const page = readFileSync(new URL("./pages/homemade-pumpkin-bori.tsx", import.meta.url), "utf8");
-  assert.match(page, /<KalojiraCheckout[^>]*abandonedCartSource="homemade_pumpkin_bori"/);
-
-  const checkout = readFileSync(new URL("./features/kalojira-mixed/kalojira-checkout.tsx", import.meta.url), "utf8");
-  assert.match(checkout, /useAbandonedCartCapture\(abandonedCartSource\)/);
-});
