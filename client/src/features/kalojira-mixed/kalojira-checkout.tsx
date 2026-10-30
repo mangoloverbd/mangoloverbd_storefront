@@ -13,7 +13,7 @@ import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
 import { MAX_LINE_QUANTITY, MAX_LINE_QUANTITY_MESSAGE } from "../../../../shared/order-limits";
 import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
-import { readAbandonedCartCampaign, type AbandonedCartSource } from "@/lib/abandoned-cart-capture";
+import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
@@ -141,14 +141,13 @@ function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   );
 }
 
-// abandonedCartSource tells Merchant-Suite which landing page an unfinished checkout came from.
-export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, freeDeliveryVariantIds = [], packSavings, abandonedCartSource = "kalojira_mixed" }: KalojiraCheckoutProps & { deliveryCharge?: number; freeDeliveryVariantIds?: readonly string[]; packSavings?: Readonly<Record<string, number>>; abandonedCartSource?: AbandonedCartSource }) {
+export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, freeDeliveryVariantIds = [], packSavings }: KalojiraCheckoutProps & { deliveryCharge?: number; freeDeliveryVariantIds?: readonly string[]; packSavings?: Readonly<Record<string, number>> }) {
   // Merchant-Suite ships these packs free (server/shippingCalculation.js), so the checkout must match.
   const deliveryChargeFor = (pack: KalojiraPackOption) => freeDeliveryVariantIds.includes(pack.variantId) ? 0 : deliveryCharge;
   const [, setLocation] = useLocation();
   const thankYouPath = product?.slug === "homemade-pumpkin-bori" ? "/step/homemade-pumpkin-bori/thank-you" : "/step/kalojira-mixed/thank-you";
   const whatsappHref = product?.slug === "katimon-mango" ? KATIMON_CAMPAIGN_WHATSAPP_HREF : product?.slug === "homemade-pumpkin-bori" ? BORI_CAMPAIGN_WHATSAPP_HREF : WHATSAPP_HREF;
-  const capture = useAbandonedCartCapture(abandonedCartSource);
+  const capture = useAbandonedCartCapture("kalojira_mixed");
   const livePacks = useMemo(() => product ? getKalojiraPackOptions(product) : [], [product]);
   const lastPacksRef = useRef(livePacks);
   if (status === "ready" && livePacks.length) lastPacksRef.current = livePacks;
