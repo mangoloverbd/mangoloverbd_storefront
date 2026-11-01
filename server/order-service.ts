@@ -4,6 +4,7 @@ import { normalizeLandingPagePath } from "./landing-page-attribution.ts";
 import { CLIENT_CONTEXT_HEADER } from "./client-context.ts";
 import { normalizeBdMobile } from "../shared/bd-phone.ts";
 import { MAX_LINE_QUANTITY, MAX_LINE_QUANTITY_MESSAGE } from "../shared/order-limits.ts";
+import { isOrderRefusalCode, type OrderRefusalCode } from "../shared/order-refusal.ts";
 import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER } from './campaign-links.js';
 import { ANALYTICS_SESSION_HEADER } from './analytics-session.js';
 
@@ -61,7 +62,8 @@ export const orderRequestSchema = z.object({
 export type OrderRequest = z.infer<typeof orderRequestSchema>;
 
 export class OrderUpstreamError extends Error {
-  constructor(readonly statusCode: 429 | 502 = 502) {
+  // `reason` is the Suite's refusal code (409), shown to the customer as a specific message.
+  constructor(readonly statusCode: 409 | 429 | 502 = 502, readonly reason?: OrderRefusalCode) {
     super("Merchant-Suite did not confirm the order");
     this.name = "OrderUpstreamError";
   }
@@ -128,6 +130,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       review_id?: unknown;
       reviewId?: unknown;
       retryable?: unknown;
+      code?: unknown;
     };
     if (response.status === 202 && data.decision === "review") {
       const reviewId = getCanonicalOrderRef(data.reviewId ?? data.review_id);
@@ -138,6 +141,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
     }
     if (response.status === 429) throw new OrderUpstreamError(429);
+    if (!response.ok && isOrderRefusalCode(data.code)) throw new OrderUpstreamError(409, data.code);
     if (!response.ok) throw new Error(`Dashboard returned status ${response.status}`);
     const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");

@@ -1,5 +1,6 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { ADDRESS_MIN_WORDS, addressWordCount } from "../../../../shared/checkout-address";
 import { MAX_LINE_QUANTITY } from "../../../../shared/order-limits";
 import { getKalojiraPackOptions } from "../kalojira-mixed/order.ts";
 
@@ -128,7 +129,8 @@ export function buildKhejurOrderPayload(input: {
   const customerName = trimmed(input.customerName, 120);
   const phone = normalizeBdMobile(input.phone);
   const address = trimmed(input.address, 500);
-  if (!customerName || customerName.length < 2 || !phone || !address || address.length < 5) {
+  if (!customerName || customerName.length < 2 || !phone || !address || address.length < 5
+    || addressWordCount(address) < ADDRESS_MIN_WORDS) {
     throw new Error("Customer details are invalid");
   }
   const details = totals.items

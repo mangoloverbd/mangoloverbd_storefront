@@ -11,6 +11,8 @@ import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
 import { MAX_LINE_QUANTITY, MAX_LINE_QUANTITY_MESSAGE } from "../../../../shared/order-limits";
+import { ADDRESS_ERROR, isCompleteAddress } from "../../../../shared/checkout-address";
+import { CheckoutConnectionError, checkoutFailureMessage } from "@/lib/checkout-errors";
 import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
@@ -111,8 +113,8 @@ function getFieldErrors(
     errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   if (!normalizeBdMobile(fields.phone))
     errors.phone = "ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।";
-  if (fields.address.trim().length < 5 || fields.address.trim().length > 300)
-    errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
+  if (!isCompleteAddress(fields.address))
+    errors.address = ADDRESS_ERROR;
   if (!packs.some(({ variantId }) => variantId === fields.selectedVariantId))
     errors.pack = "অর্ডারের জন্য একটি পাওয়া যাচ্ছে এমন প্যাক বেছে নিন।";
   if (
@@ -305,7 +307,7 @@ export function HoneyNutCheckout({
         inventoryQuery.refetch(),
       ]);
       if (productRefresh.isError || inventoryRefresh.isError)
-        throw new Error("refresh-failed");
+        throw new CheckoutConnectionError();
       const refreshedProduct = mergeInventory(
         productRefresh.data,
         inventoryRefresh.data?.inventory,
@@ -391,9 +393,7 @@ export function HoneyNutCheckout({
         return;
       }
       setRequestError(true);
-      setAnnouncement(
-        "অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।",
-      );
+      setAnnouncement(checkoutFailureMessage(error));
     } finally {
       submittingRef.current = false;
       setIsPending(false);

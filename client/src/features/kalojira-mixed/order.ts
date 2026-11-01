@@ -1,6 +1,7 @@
 import type { StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
+import { ADDRESS_MIN_WORDS, addressWordCount } from "../../../../shared/checkout-address";
 import { MAX_LINE_QUANTITY } from "../../../../shared/order-limits";
 
 export const KALOJIRA_DELIVERY_CHARGE = 0;
@@ -148,7 +149,7 @@ export function buildKalojiraOrderPayload(input: {
   if (customerName.length < 2
     || !phone
     || address.length < 5
-    || address.split(/\s+/).filter(Boolean).length < 3) {
+    || addressWordCount(address) < ADDRESS_MIN_WORDS) {
     throw new Error("Customer details are invalid");
   }
 

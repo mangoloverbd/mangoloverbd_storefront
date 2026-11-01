@@ -445,3 +445,16 @@ test("local handler returns a stable 502", async () => {
     body: { message: "Could not confirm order. Please try again." },
   });
 });
+
+test("passes the Suite's refusal reason on as a 409 with its code", async () => {
+  for (const code of ["out_of_stock", "product_unavailable", "shipping_unavailable"] as const) {
+    await assert.rejects(() => processOrder(orderRequestSchema.parse(validEnglishOrder), {
+      merchantSuiteUrl: "https://suite.invalid", storefrontHandle: "mangoloverbd",
+      fetchImpl: async () => new Response(JSON.stringify({ error: "refused", code }), { status: 400 }),
+    }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 409 && error.reason === code);
+  }
+  await assert.rejects(() => processOrder(orderRequestSchema.parse(validEnglishOrder), {
+    merchantSuiteUrl: "https://suite.invalid", storefrontHandle: "mangoloverbd",
+    fetchImpl: async () => new Response(JSON.stringify({ error: "boom" }), { status: 500 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 502 && error.reason === undefined);
+});

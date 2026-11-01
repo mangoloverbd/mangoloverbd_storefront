@@ -60,7 +60,7 @@ test("embedded checkout has pack, quantity, and accessible Bangla validation con
   assert.match(checkoutSource, /aria-describedby/);
   assert.match(checkoutSource, /aria-live="polite"/);
   assert.match(checkoutSource, /মোবাইল নম্বর/);
-  assert.match(checkoutSource, /ডেলিভারি ঠিকানা/);
+  assert.match(checkoutSource, /errors\.address = ADDRESS_ERROR/);
   assert.match(checkoutSource, /ক্যাশ অন ডেলিভারি/);
   assert.doesNotMatch(checkoutSource, /Dialog/);
 });

@@ -8,6 +8,8 @@ import { useCheckoutProtectionSignals } from "@/lib/order-protection";
 import { OrderProtectionMessage } from "@/components/order-protection-message";
 import { TurnstileChallenge } from "@/components/turnstile-challenge";
 import { normalizeBdMobile } from "../../../shared/bd-phone";
+import { ADDRESS_ERROR, ADDRESS_MAX_LENGTH, isCompleteAddress } from "../../../shared/checkout-address";
+import { checkoutFailureMessage } from "@/lib/checkout-errors";
 import { OrderHoldConfirmation } from "@/components/order-hold-confirmation";
 import { readAbandonedCartCampaign, type AbandonedCartItem } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
@@ -241,8 +243,8 @@ export default function OrderDialog({
       failField("address", "Please enter your delivery address.");
       return;
     }
-    if (address.trim().length < 5) {
-      failField("address", "সঠিক ডেলিভারি ঠিকানা লিখুন।");
+    if (!isCompleteAddress(address)) {
+      failField("address", ADDRESS_ERROR);
       return;
     }
 
@@ -312,11 +314,7 @@ export default function OrderDialog({
         setOrderError("");
         return;
       }
-      setOrderError(
-        error instanceof Error
-          ? error.message
-          : "Could not place your order. Please try again.",
-      );
+      setOrderError(checkoutFailureMessage(error));
     } finally {
       setOrderSubmitting(false);
       resetTurnstile();
@@ -551,6 +549,7 @@ export default function OrderDialog({
                     <textarea
                       required
                       name="address"
+                      maxLength={ADDRESS_MAX_LENGTH}
                       rows={2}
                       className="w-full resize-none rounded-[8px] border border-black/15 bg-white/70 px-4 py-3 text-[16px] font-normal max-md:text-[13px] outline-none transition-colors focus:border-black max-md:rounded-[8px]"
                         placeholder="House, road, area, city - বাড়ি, রাস্তা, এলাকা, শহর"
