@@ -17,6 +17,7 @@ import { Deco, GurRoad, Ribbon, RollWord, useRevealOnScroll } from "@/features/k
 import { MotionShape, Shape } from "@/features/khejurer-gur/shapes";
 import { NutritionistBento } from "@/features/khejurer-gur/nutritionist";
 import "@/features/khejurer-gur/landing.css";
+import { CheckoutConnectionError } from "@/lib/checkout-errors";
 
 const FONTS_HREF = "https://fonts.googleapis.com/css2?family=Galada&family=Geist:wght@400..800&family=Noto+Serif+Bengali:wght@400..900&display=swap";
 
@@ -99,7 +100,7 @@ export default function KhejurerGurPage() {
       Promise.all(productQueries.map((query) => query.refetch())),
       Promise.all(inventoryQueries.map((query) => query.refetch())),
     ]);
-    if (productResults.some((result) => result.isError) || inventoryResults.some((result) => result.isError)) throw new Error("refresh-failed");
+    if (productResults.some((result) => result.isError) || inventoryResults.some((result) => result.isError)) throw new CheckoutConnectionError();
     return productResults.map((result, i) => mergeInventory(result.data as StorefrontProduct | null | undefined, inventoryResults[i].data?.inventory));
   }, [productQueries, inventoryQueries]);
 

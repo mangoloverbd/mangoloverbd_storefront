@@ -449,3 +449,16 @@ test("Vercel handler preserves a retryable 429 and ignores malformed telemetry",
   assert.equal(called, true);
   assert.equal(read().status, 429);
 });
+
+test("passes the Suite's refusal reason on as a 409 with its code", async () => {
+  await assert.rejects(() => processOrder(validateOrder(validOrder), { ...dependencies,
+    fetchImpl: async () => new Response(JSON.stringify({ error: "refused", code: "out_of_stock" }), { status: 400 }),
+  }), (error: unknown) => error instanceof OrderUpstreamError && error.statusCode === 409 && error.reason === "out_of_stock");
+
+  const { response, read } = createResponse();
+  const handler = createOrderHandler({
+    processOrder: async () => { throw new OrderUpstreamError(409, "out_of_stock"); },
+  });
+  await handler(createRequest(validOrder), response);
+  assert.deepEqual(read(), { status: 409, body: { message: "Order refused", code: "out_of_stock" } });
+});

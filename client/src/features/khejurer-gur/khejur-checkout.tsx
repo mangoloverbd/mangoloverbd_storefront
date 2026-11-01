@@ -14,6 +14,8 @@ import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import { toGoogleAnalyticsItem, trackGoogleEcommerceEvent } from "@/lib/google-analytics";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
 import { MAX_LINE_QUANTITY } from "../../../../shared/order-limits";
+import { ADDRESS_ERROR, isCompleteAddress } from "../../../../shared/checkout-address";
+import { checkoutFailureMessage } from "@/lib/checkout-errors";
 import {
   DELIVERY_POLICY,
   KHEJUR_ASSET,
@@ -50,7 +52,7 @@ function validate(selectionUnits: number, name: string, phone: string, address: 
   if (!selectionUnits) errors.items = "অন্তত একটি গুড় বেছে নিন।";
   if (name.trim().length < 2 || name.trim().length > 120) errors.name = "আপনার পুরো নাম কমপক্ষে ২ অক্ষরে লিখুন।";
   if (!normalizeBdMobile(phone)) errors.phone = "ইংরেজি সংখ্যায় ১১ সংখ্যার মোবাইল নম্বর লিখুন, যেমন 01712345678।";
-  if (address.trim().length < 5 || address.trim().length > 300) errors.address = "সঠিক ডেলিভারি ঠিকানা লিখুন।";
+  if (!isCompleteAddress(address)) errors.address = ADDRESS_ERROR;
   return errors;
 }
 
@@ -225,7 +227,7 @@ export function KhejurCheckout({ products, status, refresh, addRequest }: {
         return;
       }
       setRequestError(true);
-      setAnnouncement("অর্ডারটি পাঠানো যায়নি। আপনার তথ্য ঠিক আছে—আবার চেষ্টা করুন বা আমাদের সঙ্গে যোগাযোগ করুন।");
+      setAnnouncement(checkoutFailureMessage(error));
     } finally {
       submittingRef.current = false;
       setIsPending(false);

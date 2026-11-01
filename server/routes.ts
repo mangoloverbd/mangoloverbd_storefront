@@ -89,6 +89,10 @@ export async function registerRoutes(
         return;
       }
 
+      if (error instanceof OrderUpstreamError && error.reason) {
+        res.status(409).json({ message: "Order refused", code: error.reason });
+        return;
+      }
       if (error instanceof OrderUpstreamError) {
         res.status(error.statusCode).json({ message: error.statusCode === 429
           ? "অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।" : "Could not confirm order. Please try again." });

@@ -4,6 +4,7 @@ import { normalizeLandingPagePath } from "../server/landing-page-attribution.js"
 import { CLIENT_CONTEXT_HEADER, createSignedClientContext, parseCheckoutTelemetry, type CheckoutTelemetryInput } from "../server/client-context.js";
 import { readOrCreateDeviceId } from "../server/device-id.js";
 import { normalizeBdMobile } from "../shared/bd-phone.js";
+import { isOrderRefusalCode, type OrderRefusalCode } from "../shared/order-refusal.js";
 import { CAMPAIGN_CLICK_HEADER, CAMPAIGN_RECEIPT_HEADER, readCampaignClickCookie, readCampaignReceipt } from '../server/campaign-links.js';
 import { ANALYTICS_SESSION_HEADER, readAnalyticsSessionCookie } from '../server/analytics-session.js';
 
@@ -57,7 +58,8 @@ class RequestBodyError extends Error {
 }
 
 export class OrderUpstreamError extends Error {
-  constructor(readonly statusCode: 429 | 502 = 502) {
+  // `reason` is the Suite's refusal code (409), shown to the customer as a specific message.
+  constructor(readonly statusCode: 409 | 429 | 502 = 502, readonly reason?: OrderRefusalCode) {
     super("Merchant-Suite did not confirm the order");
     this.name = "OrderUpstreamError";
   }
@@ -273,6 +275,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       review_id?: unknown;
       reviewId?: unknown;
       retryable?: unknown;
+      code?: unknown;
     };
     if (response.status === 202 && data.decision === "review") {
       const reviewId = getCanonicalOrderRef(data.reviewId ?? data.review_id);
@@ -283,6 +286,7 @@ export async function processOrder(order: OrderRequest, dependencies: OrderServi
       throw new OrderProtectionError("block", data.retryable === true, response.status || 403);
     }
     if (response.status === 429) throw new OrderUpstreamError(429);
+    if (!response.ok && isOrderRefusalCode(data.code)) throw new OrderUpstreamError(409, data.code);
     if (!response.ok) throw new Error("Merchant-Suite rejected order");
     const orderRef = getCanonicalOrderRef(data.orderRef ?? data.order_id ?? data.orderId);
     if (!orderRef) throw new Error("Missing canonical order ID");
@@ -341,6 +345,10 @@ export function createOrderHandler(dependencies: OrderHandlerDependencies = {}) 
       }
       if (error instanceof OrderValidationError) {
         sendJson(res, 400, { message: "Invalid order details" });
+        return;
+      }
+      if (error instanceof OrderUpstreamError && error.reason) {
+        sendJson(res, 409, { message: "Order refused", code: error.reason });
         return;
       }
       if (error instanceof OrderUpstreamError) {
