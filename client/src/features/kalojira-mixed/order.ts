@@ -1,4 +1,4 @@
-import type { StorefrontProduct } from "../../lib/storefront-products.ts";
+import type { StorefrontOrderOffer, StorefrontProduct } from "../../lib/storefront-products.ts";
 import { isProductOrderable } from "../../lib/storefront-product-orderability.ts";
 import { normalizeBdMobile } from "../../../../shared/bd-phone";
 import { ADDRESS_MIN_WORDS, addressWordCount } from "../../../../shared/checkout-address";
@@ -23,7 +23,26 @@ export type KalojiraOrderTotals = {
   quantity: number;
   subtotal: number;
   deliveryCharge: number;
+  addOnPrice: number;
   total: number;
+};
+
+// A checkout add-on (e.g. mustard oil with bori), always one unit.
+export type KalojiraAddOn = {
+  offerId: string;
+  productId: string;
+  variantId: string;
+  name: string;
+  label: string;
+  price: number;
+  regularPrice: number;
+  imageUrl: string | null;
+};
+
+export type KalojiraConfirmationAddOn = {
+  name: string;
+  label: string;
+  price: number;
 };
 
 export type KalojiraOrderPayload = {
@@ -50,6 +69,7 @@ export type KalojiraOrderConfirmation = {
   customerName: string;
   phone: string;
   address: string;
+  addOn?: KalojiraConfirmationAddOn;
 };
 
 function isPositiveSafeInteger(value: unknown, max = Number.MAX_SAFE_INTEGER): value is number {
@@ -92,7 +112,47 @@ export function getKalojiraPackOptions(product: StorefrontProduct): KalojiraPack
   });
 }
 
-export function calculateKalojiraOrder(unitPrice: number, quantity: number, deliveryCharge = KALOJIRA_DELIVERY_CHARGE): KalojiraOrderTotals {
+// The Suite's offer for this product, when it can be sold right now. The
+// Suite decides the price; this only checks the data is usable for display.
+export function getKalojiraAddOn(
+  offers: readonly StorefrontOrderOffer[] | undefined,
+  product: Pick<StorefrontProduct, "id"> | null | undefined,
+): KalojiraAddOn | null {
+  if (!offers?.length || product?.id === undefined || product.id === null) return null;
+  const offer = offers.find((candidate) => candidate?.triggerProductId === String(product.id));
+  if (!offer || offer.available !== true) return null;
+  if (!isPositiveSafeInteger(offer.offerPrice, MAX_PRICE)
+    || !isPositiveSafeInteger(offer.regularPrice, MAX_PRICE)
+    || offer.offerPrice >= offer.regularPrice) return null;
+  const name = String(offer.productName ?? "").split("|")[0].trim();
+  const label = String(offer.variantLabel ?? "").trim();
+  const productId = String(offer.productId ?? "").trim();
+  const variantId = String(offer.variantId ?? "").trim();
+  if (!name || !label || !productId || !variantId) return null;
+  return {
+    offerId: offer.id,
+    productId,
+    variantId,
+    name,
+    label,
+    price: offer.offerPrice,
+    regularPrice: offer.regularPrice,
+    imageUrl: typeof offer.imageUrl === "string" && offer.imageUrl ? offer.imageUrl : null,
+  };
+}
+
+export function buildKalojiraOrderItems(
+  productId: string,
+  pack: KalojiraPackOption,
+  quantity: number,
+  addOn: KalojiraAddOn | null | undefined,
+) {
+  const items = [{ productId, variantId: pack.variantId, quantity }];
+  if (addOn) items.push({ productId: addOn.productId, variantId: addOn.variantId, quantity: 1 });
+  return items;
+}
+
+export function calculateKalojiraOrder(unitPrice: number, quantity: number, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, addOnPrice = 0): KalojiraOrderTotals {
   if (!isPositiveSafeInteger(unitPrice, MAX_PRICE)) {
     throw new Error("Unit price is invalid");
   }
@@ -100,8 +160,12 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number, deli
     throw new Error("Quantity is invalid");
   }
 
+  if (!Number.isSafeInteger(addOnPrice) || addOnPrice < 0 || addOnPrice > MAX_PRICE) {
+    throw new Error("Add-on price is invalid");
+  }
+
   const subtotal = unitPrice * quantity;
-  const total = subtotal + deliveryCharge;
+  const total = subtotal + deliveryCharge + addOnPrice;
   if (!Number.isSafeInteger(subtotal) || subtotal > MAX_PRICE || !Number.isSafeInteger(total)) {
     throw new Error("Order total is invalid");
   }
@@ -111,6 +175,7 @@ export function calculateKalojiraOrder(unitPrice: number, quantity: number, deli
     quantity,
     subtotal,
     deliveryCharge,
+    addOnPrice,
     total,
   };
 }
@@ -141,6 +206,7 @@ export function buildKalojiraOrderPayload(input: {
   phone: string;
   address: string;
   deliveryCharge?: number;
+  addOn?: KalojiraAddOn | null;
 }): KalojiraOrderPayload {
   const totals = calculateKalojiraOrder(input.pack.unitPrice, input.quantity, input.deliveryCharge);
   const customerName = requiredTrimmedString(input.customerName, 120, "Customer name");
@@ -155,7 +221,11 @@ export function buildKalojiraOrderPayload(input: {
 
   return {
     bundleTitle: requiredTrimmedString(input.productName, 200, "Product name"),
-    bundleDetails: requiredTrimmedString(input.pack.label, 300, "Pack label"),
+    bundleDetails: requiredTrimmedString(
+      input.addOn ? `${input.pack.label} + ${input.addOn.name} ${input.addOn.label}` : input.pack.label,
+      300,
+      "Pack label",
+    ),
     bundlePrice: totals.subtotal,
     quantity: totals.quantity,
     deliveryCharge: totals.deliveryCharge,
@@ -169,17 +239,39 @@ export function buildKalojiraOrderPayload(input: {
 export function buildKalojiraOrderConfirmation(
   orderRef: string,
   payload: KalojiraOrderPayload,
+  addOn?: KalojiraAddOn | null,
 ): KalojiraOrderConfirmation {
-  const totals = calculateKalojiraOrder(payload.bundlePrice / payload.quantity, payload.quantity, payload.deliveryCharge);
+  const { addOnPrice: _addOnPrice, ...totals } = calculateKalojiraOrder(
+    payload.bundlePrice / payload.quantity,
+    payload.quantity,
+    payload.deliveryCharge,
+    addOn?.price ?? 0,
+  );
+  const packLabel = addOn ? payload.bundleDetails.split(" + ")[0] : payload.bundleDetails;
   return {
     orderRef: requiredTrimmedString(orderRef, 128, "Order reference"),
     productName: requiredTrimmedString(payload.bundleTitle, 200, "Product name"),
-    variantLabel: requiredTrimmedString(payload.bundleDetails, 300, "Pack label"),
+    variantLabel: requiredTrimmedString(packLabel, 300, "Pack label"),
     ...totals,
     customerName: requiredTrimmedString(payload.customerName, 120, "Customer name"),
     phone: requiredTrimmedString(payload.phone, 11, "Phone"),
     address: requiredTrimmedString(payload.address, 500, "Address"),
+    ...(addOn ? { addOn: { name: addOn.name, label: addOn.label, price: addOn.price } } : {}),
   };
+}
+
+function parseConfirmationAddOn(value: unknown): KalojiraConfirmationAddOn | null | undefined {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object") return null;
+  const addOn = value as Record<string, unknown>;
+  try {
+    const name = requiredTrimmedString(addOn.name, 200, "Add-on name");
+    const label = requiredTrimmedString(addOn.label, 100, "Add-on label");
+    if (!isPositiveSafeInteger(addOn.price, MAX_PRICE)) return null;
+    return { name, label, price: addOn.price };
+  } catch {
+    return null;
+  }
 }
 
 function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmation | null {
@@ -198,6 +290,8 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
     const customerName = requiredTrimmedString(confirmation.customerName, 120, "Customer name");
     const phone = requiredTrimmedString(confirmation.phone, 11, "Phone");
     const address = requiredTrimmedString(confirmation.address, 500, "Address");
+    const addOn = parseConfirmationAddOn(confirmation.addOn);
+    if (addOn === null) return null;
 
     if (!isPositiveSafeInteger(quantity, MAX_QUANTITY)
       || !isPositiveSafeInteger(unitPrice, MAX_PRICE)
@@ -205,7 +299,7 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
       || !Number.isSafeInteger(deliveryCharge) || (deliveryCharge as number) < 0
       || !Number.isSafeInteger(total) || (total as number) < 0
       || subtotal !== unitPrice * quantity
-      || total !== (subtotal as number) + (deliveryCharge as number)) {
+      || total !== (subtotal as number) + (deliveryCharge as number) + (addOn?.price ?? 0)) {
       return null;
     }
 
@@ -221,6 +315,7 @@ function parseKalojiraOrderConfirmation(value: unknown): KalojiraOrderConfirmati
       customerName,
       phone,
       address,
+      ...(addOn ? { addOn } : {}),
     };
   } catch {
     return null;

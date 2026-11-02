@@ -48,6 +48,7 @@ test("calculates Kalojira order totals with home delivery", () => {
     quantity: 1,
     subtotal: 1600,
     deliveryCharge: 0,
+    addOnPrice: 0,
     total: 1600,
   });
 });

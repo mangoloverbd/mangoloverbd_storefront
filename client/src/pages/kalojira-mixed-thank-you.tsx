@@ -91,7 +91,13 @@ export default function KalojiraMixedThankYouPage({
         variant: confirmation.variantLabel,
         price: confirmation.unitPrice,
         quantity: confirmation.quantity,
-      })],
+      }), ...(confirmation.addOn ? [toGoogleAnalyticsItem({
+        id: confirmation.addOn.name,
+        name: confirmation.addOn.name,
+        variant: confirmation.addOn.label,
+        price: confirmation.addOn.price,
+        quantity: 1,
+      })] : [])],
     });
   }, [confirmation]);
 
@@ -140,6 +146,12 @@ export default function KalojiraMixedThankYouPage({
             <dt className="text-[#654b2f]">সাবটোটাল</dt>
             <dd className="font-semibold"><Money value={confirmation.subtotal} /></dd>
           </div>
+          {confirmation.addOn ? (
+            <div className="flex items-center justify-between gap-4 border-b border-[#eee4cf] py-4">
+              <dt className="text-[#654b2f]">{confirmation.addOn.name} {confirmation.addOn.label}</dt>
+              <dd className="font-semibold"><Money value={confirmation.addOn.price} /></dd>
+            </div>
+          ) : null}
           <div className="flex items-center justify-between gap-4 border-b border-[#eee4cf] py-4">
             <dt className="text-[#654b2f]">ডেলিভারি</dt>
             <dd className="font-semibold">{deliveryCharge ? <Money value={deliveryCharge} /> : <span className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">ফ্রি</span>}</dd>

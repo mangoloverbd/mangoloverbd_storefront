@@ -305,6 +305,30 @@ export async function fetchStorefrontProduct(slug: string) {
   return data.product;
 }
 
+// Checkout add-on offers published by the Suite. The prices are for display;
+// the Suite re-prices every order item, so the storefront never sets a price.
+export type StorefrontOrderOffer = {
+  id: string;
+  triggerProductId: string;
+  productId: string;
+  productSlug: string;
+  productName: string;
+  imageUrl: string | null;
+  variantId: string;
+  variantLabel: string;
+  regularPrice: number;
+  offerPrice: number;
+  maxQuantity: number;
+  available: boolean;
+};
+
+export async function fetchStorefrontOrderOffers(): Promise<StorefrontOrderOffer[]> {
+  const res = await fetch(`${STOREFRONT_API_BASE}/order-offers`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Could not load offers.");
+  const data = await res.json() as { offers?: unknown } | null;
+  return Array.isArray(data?.offers) ? data.offers as StorefrontOrderOffer[] : [];
+}
+
 export type StorefrontInventoryVariant = {
   available: boolean;
   stock_quantity: number;
