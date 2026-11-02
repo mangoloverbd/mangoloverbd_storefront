@@ -19,6 +19,7 @@ import { readAbandonedCartCampaign } from "@/lib/abandoned-cart-capture";
 import { useAbandonedCartCapture } from "@/hooks/use-abandoned-cart-capture";
 import {
   mergeInventory,
+  type StorefrontOrderOffer,
   type StorefrontProduct,
   type StorefrontProductInventory,
 } from "@/lib/storefront-products";
@@ -44,19 +45,23 @@ import {
   KALOJIRA_DELIVERY_CHARGE,
   buildKalojiraAddress,
   buildKalojiraOrderConfirmation,
+  buildKalojiraOrderItems,
   buildKalojiraOrderPayload,
   calculateKalojiraOrder,
+  getKalojiraAddOn,
   getKalojiraPackOptions,
   writeKalojiraOrderConfirmation,
   type KalojiraOrderPayload,
   type KalojiraPackOption,
 } from "./order";
 import { WhatsAppBrandIcon } from "./campaign-layout";
+import { BoriOilOffer, type BoriOilChoice } from "./bori-oil-offer";
 
 const PHONE_NUMBER = KALOJIRA_CAMPAIGN_PHONE_NUMBER;
 const PHONE_HREF = KALOJIRA_CAMPAIGN_PHONE_HREF;
 const WHATSAPP_HREF = KALOJIRA_CAMPAIGN_WHATSAPP_HREF;
 const AVAILABILITY_ERROR = "এই প্যাকটি এখন অর্ডারের জন্য পাওয়া যাচ্ছে না। অন্য প্যাক বেছে নিন বা আমাদের কল করুন।";
+const ADD_ON_UNAVAILABLE = "সরিষার তেলের অফারটি এখন পাওয়া যাচ্ছে না। শুধু বড়ি অর্ডার করতে আবার বোতাম চাপুন।";
 
 type RefreshResult<T> = {
   data: T | undefined;
@@ -143,7 +148,7 @@ function SupportActions({ whatsappHref }: { whatsappHref: string }) {
   );
 }
 
-export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, freeDeliveryVariantIds = [], packSavings }: KalojiraCheckoutProps & { deliveryCharge?: number; freeDeliveryVariantIds?: readonly string[]; packSavings?: Readonly<Record<string, number>> }) {
+export function KalojiraCheckout({ product, status, productQuery, inventoryQuery, onRetry, deliveryCharge = KALOJIRA_DELIVERY_CHARGE, freeDeliveryVariantIds = [], packSavings, orderOffers, orderOffersQuery }: KalojiraCheckoutProps & { deliveryCharge?: number; freeDeliveryVariantIds?: readonly string[]; packSavings?: Readonly<Record<string, number>>; orderOffers?: readonly StorefrontOrderOffer[]; orderOffersQuery?: RefreshQuery<StorefrontOrderOffer[]> }) {
   // Merchant-Suite ships these packs free (server/shippingCalculation.js), so the checkout must match.
   const deliveryChargeFor = (pack: KalojiraPackOption) => freeDeliveryVariantIds.includes(pack.variantId) ? 0 : deliveryCharge;
   const [, setLocation] = useLocation();
@@ -156,6 +161,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   const packs = status === "ready" ? livePacks : lastPacksRef.current;
   const [selectedVariantId, setSelectedVariantId] = useState(() => packs[0]?.variantId ?? "");
   const [quantity, setQuantity] = useState(1);
+  const [oilChoice, setOilChoice] = useState<BoriOilChoice>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -172,11 +178,15 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
   const beganCheckoutRef = useRef(false);
   const selectedPack = packs.find(({ variantId }) => variantId === selectedVariantId);
   const presentedPack = status === "ready" ? selectedPack : null;
+  // Add-on offer from the Suite (bori + mustard oil). Optional: no answer means no oil.
+  const addOn = status === "ready" ? getKalojiraAddOn(orderOffers, product) : null;
+  const chosenAddOn = oilChoice === "yes" ? addOn : null;
   const totals = presentedPack
     ? calculateKalojiraOrder(
         presentedPack.unitPrice,
         Number.isSafeInteger(quantity) && quantity > 0 && quantity <= MAX_LINE_QUANTITY ? quantity : 1,
         deliveryChargeFor(presentedPack),
+        chosenAddOn?.price ?? 0,
       )
     : null;
 
@@ -191,8 +201,13 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         variantName: presentedPack.label,
         quantity: totals.quantity,
         unitPrice: presentedPack.unitPrice,
-      }],
-      subtotal: totals.subtotal,
+      }, ...(chosenAddOn ? [{
+        productName: chosenAddOn.name,
+        variantName: chosenAddOn.label,
+        quantity: 1,
+        unitPrice: chosenAddOn.price,
+      }] : [])],
+      subtotal: totals.subtotal + totals.addOnPrice,
       deliveryRate: totals.deliveryCharge,
       total: totals.total,
       campaign: readAbandonedCartCampaign(window.location.search),
@@ -262,7 +277,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
 
   useEffect(() => {
     updateCapture();
-  }, [address, name, phone, product, quantity, selectedVariantId, status]);
+  }, [address, name, phone, product, quantity, selectedVariantId, status, oilChoice]);
 
   const focusFirstInvalidField = (
     fieldErrors: KalojiraFieldErrors,
@@ -334,6 +349,19 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         return;
       }
 
+      let submitAddOn: ReturnType<typeof getKalojiraAddOn> = null;
+      if (chosenAddOn) {
+        const offersRefresh = orderOffersQuery
+          ? await orderOffersQuery.refetch()
+          : { data: orderOffers ? [...orderOffers] : undefined, isError: false };
+        submitAddOn = offersRefresh.isError ? null : getKalojiraAddOn(offersRefresh.data, refreshedProduct);
+        if (!submitAddOn || submitAddOn.price !== chosenAddOn.price) {
+          setOilChoice(null);
+          setAnnouncement(ADD_ON_UNAVAILABLE);
+          return;
+        }
+      }
+
       const combinedAddress = buildKalojiraAddress(address);
       const landingPagePath = currentLandingPagePath();
       const payload: KalojiraOrderPayload & { draftKey?: string; items: Array<{ productId: string; variantId: string; quantity: number }>; shippingZoneId?: string; website: string; turnstileToken: string; clientSessionId: string; checkoutStartedAt: string; landingPagePath?: string } = {
@@ -345,10 +373,11 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
           phone,
           address: combinedAddress,
           deliveryCharge: deliveryChargeFor(freshPack),
+          addOn: submitAddOn,
         }),
         deliveryCharge: deliveryChargeFor(freshPack),
         paymentMethod: "cash_on_delivery" as const,
-        items: [{ productId: String(refreshedProduct.id ?? ""), variantId: freshPack.variantId, quantity }],
+        items: buildKalojiraOrderItems(String(refreshedProduct.id ?? ""), freshPack, quantity, submitAddOn),
         ...buildProtectionPayload(website),
         ...(landingPagePath ? { landingPagePath } : {}),
         ...(draftKey ? { draftKey } : {}),
@@ -366,7 +395,7 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
         throw new Error("missing-order-reference");
       }
       capture.clear();
-      const confirmation = buildKalojiraOrderConfirmation(result.orderRef, payload);
+      const confirmation = buildKalojiraOrderConfirmation(result.orderRef, payload, submitAddOn);
       writeKalojiraOrderConfirmation(window.sessionStorage, confirmation);
       trackMerchantSuiteEvent("purchased");
       setLocation(thankYouPath);
@@ -585,10 +614,19 @@ export function KalojiraCheckout({ product, status, productQuery, inventoryQuery
             <div className="flex justify-between gap-4"><dt>প্যাক</dt><dd className="font-semibold">{presentedPack?.label ?? "—"}</dd></div>
             <div className="flex justify-between gap-4"><dt>পরিমাণ</dt><dd className="font-semibold">{quantity}</dd></div>
             <div className="flex justify-between gap-4"><dt>পণ্যের মূল্য</dt><dd className="font-semibold">৳{totals?.subtotal.toLocaleString("en-US") ?? "—"}</dd></div>
+            {chosenAddOn ? <div className="flex justify-between gap-4 font-semibold"><dt>{chosenAddOn.name} {chosenAddOn.label}</dt><dd>৳{chosenAddOn.price.toLocaleString("en-US")}</dd></div> : null}
             <div className="flex justify-between gap-4"><dt>ডেলিভারি</dt><dd className="rounded-full bg-[#187d48]/10 px-3 py-0.5 font-bold text-[#187d48]">{(totals?.deliveryCharge ?? deliveryCharge) ? `৳${totals?.deliveryCharge ?? deliveryCharge}` : "ফ্রি"}</dd></div>
             <div className="flex justify-between gap-4 border-t border-[#19382d]/15 pt-4 text-lg"><dt className="font-bold">সর্বমোট</dt><dd className="font-bold text-[#187d48]">৳{totals?.total.toLocaleString("en-US") ?? "—"}</dd></div>
           </dl>
           <p className="mt-4 rounded-xl bg-white/70 px-4 py-3 text-center text-sm font-bold leading-6 sm:text-left">পেমেন্ট: ক্যাশ অন ডেলিভারি</p>
+
+          {addOn ? <BoriOilOffer
+            addOn={addOn}
+            choice={oilChoice}
+            onChoose={(choice) => { beginCheckout(); setOilChoice(choice); }}
+            totalWithOil={totals?.total ?? null}
+            disabled={isPending}
+          /> : null}
 
           <div className="mt-5 min-h-6 text-center text-sm sm:text-left" aria-live="polite" aria-atomic="true">
             {announcement}
